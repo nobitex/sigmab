@@ -9,6 +9,6 @@ After cloning the repo, you can start traversing the book:
 ```
 git clone https://github.com/nobitex/sigmab
 cd sigmab
-mdbooks serve --open
+mdbook serve --open
 ```
 
