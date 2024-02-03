@@ -61,11 +61,11 @@ template MptLast(maxPrefixLen, maxLowerLen) {
     hasherUpper.inp <== upperLayer;
     component commitUpperToBlocks = Hasher();
     commitUpperToBlocks.left <== hasherUpper.out;
-    commitUpperToBlocks.right <== upperLayerLen;
+    commitUpperToBlocks.right <== 2 * 136 * 8;
     component commitUpperToSalt = Hasher();
     commitUpperToSalt.left <== commitUpperToBlocks.hash;
     commitUpperToSalt.right <== salt;
     commitUpper <== commitUpperToSalt.hash;
  }
 
- component main = MptLast(64, 128);
+ component main = MptLast(64, 256);

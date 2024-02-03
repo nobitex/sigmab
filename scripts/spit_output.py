@@ -3,8 +3,10 @@
 import sys
 
 inp = sys.stdin.read()
-print(inp.replace('fclose(write_ptr);', 
-    '''fclose(write_ptr);
+print(
+    inp.replace(
+        "fclose(write_ptr);",
+        """fclose(write_ptr);
     std::ofstream out("output.json",std::ios::binary | std::ios::out);
     out<<"[";
     int numOutputs = get_main_input_signal_start() - 1;
@@ -18,4 +20,6 @@ print(inp.replace('fclose(write_ptr);',
     }
     out<<"]";
     out.flush();
-    out.close();'''))
+    out.close();""",
+    )
+)

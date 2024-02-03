@@ -21,22 +21,22 @@ template KeccakLayerChecker(maxBlocks) {
     // Commit to lowerLayer
     component hasherLower = HashBits(maxBlocks * 136 * 8, 250);
     hasherLower.inp <== lowerLayer;
-    component commitLowerToBlocks = Hasher();
-    commitLowerToBlocks.left <== hasherLower.out;
-    commitLowerToBlocks.right <== numLowerLayerBlocks;
+    component commitLowerToLen = Hasher();
+    commitLowerToLen.left <== hasherLower.out;
+    commitLowerToLen.right <== numLowerLayerBlocks * 136 * 8;
     component commitLowerToSalt = Hasher();
-    commitLowerToSalt.left <== commitLowerToBlocks.hash;
+    commitLowerToSalt.left <== commitLowerToLen.hash;
     commitLowerToSalt.right <== salt;
     commitLower <== commitLowerToSalt.hash;
 
     // Commit to upperLayer
     component hasherUpper = HashBits(maxBlocks * 136 * 8, 250);
     hasherUpper.inp <== upperLayer;
-    component commitUpperToBlocks = Hasher();
-    commitUpperToBlocks.left <== hasherUpper.out;
-    commitUpperToBlocks.right <== numUpperLayerBlocks;
+    component commitUpperToLen = Hasher();
+    commitUpperToLen.left <== hasherUpper.out;
+    commitUpperToLen.right <== numUpperLayerBlocks * 136 * 8;
     component commitUpperToSalt = Hasher();
-    commitUpperToSalt.left <== commitUpperToBlocks.hash;
+    commitUpperToSalt.left <== commitUpperToLen.hash;
     commitUpperToSalt.right <== salt;
     commitUpper <== commitUpperToSalt.hash;
 
