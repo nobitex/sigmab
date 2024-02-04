@@ -1,17 +1,15 @@
 import json, io
 import os
 
-maxPrefixLen = 64
+maxBlocks = 4
 maxLowerLen = 256
+maxPrefixLen = maxBlocks * 136 - maxLowerLen
 
 
 def get_last_proof(salt, lowerLayerPrefix, lowerLayer):
+    lowerLayerLen = len(lowerLayer)
     lowerLayerPrefixLen = len(lowerLayerPrefix)
 
-    lowerLayer += (
-        b"\x01" + b"\x00" * (134 - len(lowerLayerPrefix + lowerLayer)) + b"\x80"
-    )
-    lowerLayerLen = len(lowerLayer)
     lowerLayer += (maxLowerLen - len(lowerLayer)) * b"\x00"
     lowerLayerPrefix += (maxPrefixLen - len(lowerLayerPrefix)) * b"\x00"
 

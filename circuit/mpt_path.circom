@@ -4,7 +4,7 @@ include "./utils/keccak/keccak.circom";
 include "./utils/substring_finder.circom";
 include "./utils/hasher.circom";
 include "./utils/padding.circom";
-include "./hashbits.circom";
+include "./hashbytes.circom";
 
 template KeccakLayerChecker(maxBlocks) {
 
@@ -43,22 +43,22 @@ template KeccakLayerChecker(maxBlocks) {
     signal output result;
 
     // Commit to lowerLayer
-    component hasherLower = HashBits(maxBlocks * 136 * 8, 250);
-    hasherLower.inp <== lowerLayer;
+    component hasherLower = HashBytes(maxBlocks * 136, 31);
+    hasherLower.inp <== lowerLayerBytes;
     component commitLowerToLen = Hasher();
     commitLowerToLen.left <== hasherLower.out;
-    commitLowerToLen.right <== numLowerLayerBlocks * 136 * 8;
+    commitLowerToLen.right <== numLowerLayerBytes;
     component commitLowerToSalt = Hasher();
     commitLowerToSalt.left <== commitLowerToLen.hash;
     commitLowerToSalt.right <== salt;
     commitLower <== commitLowerToSalt.hash;
 
     // Commit to upperLayer
-    component hasherUpper = HashBits(maxBlocks * 136 * 8, 250);
-    hasherUpper.inp <== upperLayer;
+    component hasherUpper = HashBytes(maxBlocks * 136, 31);
+    hasherUpper.inp <== upperLayerBytes;
     component commitUpperToLen = Hasher();
     commitUpperToLen.left <== hasherUpper.out;
-    commitUpperToLen.right <== numUpperLayerBlocks * 136 * 8;
+    commitUpperToLen.right <== numUpperLayerBytes;
     component commitUpperToSalt = Hasher();
     commitUpperToSalt.left <== commitUpperToLen.hash;
     commitUpperToSalt.right <== salt;

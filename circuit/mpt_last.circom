@@ -2,9 +2,12 @@ pragma circom 2.1.6;
 
 include "./utils/concat.circom";
 include "./utils/hasher.circom";
-include "./hashbits.circom";
+include "./hashbytes.circom";
 
-template MptLast(maxPrefixLen, maxLowerLen) {
+template MptLast(maxBlocks, maxLowerLen) {
+
+    var maxPrefixLen = maxBlocks * 136 - maxLowerLen;
+
     signal input lowerLayerPrefixLen;
     signal input lowerLayerPrefix[maxPrefixLen];
 
@@ -27,11 +30,11 @@ template MptLast(maxPrefixLen, maxLowerLen) {
     upperLayerBytes <== concat.out;
     upperLayerBytesLen <== concat.outLen;
 
-    signal upperLayer[4 * 136 * 8];
+    signal upperLayer[maxBlocks * 136 * 8];
     signal upperLayerLen;
     upperLayerLen <== 8 * upperLayerBytesLen;
     component decomps[maxPrefixLen + maxLowerLen];
-    for(var i = 0; i < 4 * 136; i++) {
+    for(var i = 0; i < maxBlocks * 136; i++) {
         if(i < maxPrefixLen + maxLowerLen) {
             decomps[i] = BitDecompose(8);
             decomps[i].num <== upperLayerBytes[i];
@@ -46,7 +49,7 @@ template MptLast(maxPrefixLen, maxLowerLen) {
     }
 
     // Commit to lowerLayer
-    component hasherLower = HashBits(maxLowerLen, 250);
+    component hasherLower = HashBytes(maxLowerLen, 31);
     hasherLower.inp <== lowerLayer;
     component commitLowerToBlocks = Hasher();
     commitLowerToBlocks.left <== hasherLower.out;
@@ -57,15 +60,15 @@ template MptLast(maxPrefixLen, maxLowerLen) {
     commitLower <== commitLowerToSalt.hash;
 
     // Commit to upperLayer
-    component hasherUpper = HashBits(4 * 136 * 8, 250);
-    hasherUpper.inp <== upperLayer;
+    component hasherUpper = HashBytes(maxBlocks * 136, 31);
+    hasherUpper.inp <== upperLayerBytes;
     component commitUpperToBlocks = Hasher();
     commitUpperToBlocks.left <== hasherUpper.out;
-    commitUpperToBlocks.right <== 1 * 136 * 8;
+    commitUpperToBlocks.right <== upperLayerBytesLen;
     component commitUpperToSalt = Hasher();
     commitUpperToSalt.left <== commitUpperToBlocks.hash;
     commitUpperToSalt.right <== salt;
     commitUpper <== commitUpperToSalt.hash;
  }
 
- component main = MptLast(64, 256);
+ component main = MptLast(4, 256);

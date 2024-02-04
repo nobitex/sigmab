@@ -2,39 +2,39 @@ pragma circom 2.1.6;
 
 include "./utils/hasher.circom";
 
-template Bits2Num(len, startIndex, nBits) {
+template Bytes2Num(len, startIndex, nBytes) {
     signal input block[len];
     signal output out;
 
     var result = 0;
-    for(var i = 0; i < nBits; i++) {
-        result += (2**i) * block[startIndex + i];
+    for(var i = 0; i < nBytes; i++) {
+        result += (256**i) * block[startIndex + i];
     }
 
     out <== result;
 }
 
-template BitsToNums(numBits, bitsPerNum) {
-    var cnt = numBits \ bitsPerNum + (numBits % bitsPerNum != 0 ? 1 : 0);
+template BytesToNums(numBytes, bytesPerNum) {
+    var cnt = numBytes \ bytesPerNum + (numBytes % bytesPerNum != 0 ? 1 : 0);
 
-    signal input inp[numBits];
+    signal input inp[numBytes];
     signal output out[cnt];
 
     component converters[cnt];
     for(var i = 0; i < cnt; i++) {
-        converters[i] = Bits2Num(numBits, i * bitsPerNum, numBits - i * bitsPerNum < bitsPerNum ? numBits - i * bitsPerNum : bitsPerNum);
+        converters[i] = Bytes2Num(numBytes, i * bytesPerNum, numBytes - i * bytesPerNum < bytesPerNum ? numBytes - i * bytesPerNum : bytesPerNum);
         converters[i].block <== inp;
         out[i] <== converters[i].out;
     }
 }
 
-template HashBits(numBits, bitsPerNum) {
-    signal input inp[numBits];
+template HashBytes(numBytes, bytesPerNum) {
+    signal input inp[numBytes];
     signal output out;
 
-    var cnt = numBits \ bitsPerNum + (numBits % bitsPerNum != 0 ? 1 : 0);
+    var cnt = numBytes \ bytesPerNum + (numBytes % bytesPerNum != 0 ? 1 : 0);
 
-    component tonums = BitsToNums(numBits, bitsPerNum);
+    component tonums = BytesToNums(numBytes, bytesPerNum);
     tonums.inp <== inp;
 
     component hashers[cnt];
