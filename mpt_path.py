@@ -27,22 +27,19 @@ def keccak_bits(block):
 
 def get_mpt_path_proof(salt, lower, upper):
     MAX_BLOCKS = 4
-    lowerLayer = keccak_bits(lower)
-    upperLayer = keccak_bits(upper)
-
-    numLowerLayerBlocks = len(lowerLayer) // (136 * 8)
-    numUpperLayerBlocks = len(upperLayer) // (136 * 8)
-    lowerLayer += (MAX_BLOCKS * 8 * 136 - len(lowerLayer)) * [0]
-    upperLayer += (MAX_BLOCKS * 8 * 136 - len(upperLayer)) * [0]
+    numLowerLayerBytes = len(lower)
+    numUpperLayerBytes = len(upper)
+    lowerLayer = list(lower) + (MAX_BLOCKS * 136 - len(lower)) * [0]
+    upperLayer = list(upper) + (MAX_BLOCKS * 136 - len(upper)) * [0]
 
     with io.open("circuit/input.json", "w") as f:
         json.dump(
             {
                 "salt": salt,
-                "numLowerLayerBlocks": numLowerLayerBlocks,
-                "numUpperLayerBlocks": numUpperLayerBlocks,
-                "lowerLayer": lowerLayer,
-                "upperLayer": upperLayer,
+                "numLowerLayerBytes": numLowerLayerBytes,
+                "numUpperLayerBytes": numUpperLayerBytes,
+                "lowerLayerBytes": lowerLayer,
+                "upperLayerBytes": upperLayer,
             },
             f,
         )

@@ -3,14 +3,38 @@ pragma circom 2.1.6;
 include "./utils/keccak/keccak.circom";
 include "./utils/substring_finder.circom";
 include "./utils/hasher.circom";
+include "./utils/padding.circom";
 include "./hashbits.circom";
 
 template KeccakLayerChecker(maxBlocks) {
-    signal input numUpperLayerBlocks;
-    signal input upperLayer[maxBlocks * 136 * 8];
 
-    signal input numLowerLayerBlocks;
-    signal input lowerLayer[maxBlocks * 136 * 8];
+    signal input numUpperLayerBytes;
+    signal input upperLayerBytes[maxBlocks * 136];
+
+    signal input numLowerLayerBytes;
+    signal input lowerLayerBytes[maxBlocks * 136];
+
+    signal numUpperLayerBlocks;
+    signal upperLayer[maxBlocks * 136 * 8];
+
+    signal numLowerLayerBlocks;
+    signal lowerLayer[maxBlocks * 136 * 8];
+
+    component upperPadding = Padding(maxBlocks, 136);
+    upperPadding.a <== upperLayerBytes;
+    upperPadding.aLen <== numUpperLayerBytes;
+    component upperBitConverter = BytesToBits(maxBlocks * 136);
+    upperBitConverter.bytes <== upperPadding.out;
+    upperLayer <== upperBitConverter.bits;
+    numUpperLayerBlocks <== upperPadding.num_blocks;
+
+    component lowerPadding = Padding(maxBlocks, 136);
+    lowerPadding.a <== lowerLayerBytes;
+    lowerPadding.aLen <== numLowerLayerBytes;
+    component lowerBitConverter = BytesToBits(maxBlocks * 136);
+    lowerBitConverter.bytes <== lowerPadding.out;
+    lowerLayer <== lowerBitConverter.bits;
+    numLowerLayerBlocks <== lowerPadding.num_blocks;
 
     signal input salt;
 
