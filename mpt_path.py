@@ -3,28 +3,6 @@ import os
 import io
 
 
-def to_binary(inp):
-    bits = []
-    for ch in inp:
-        for _ in range(8):
-            bits.append(ch % 2)
-            ch = ch // 2
-    return bits
-
-
-def keccak_bits(block):
-    bits = to_binary(block)
-
-    # Padding
-    if len(bits) % (8 * 136) != 0:
-        bits.append(1)
-        while len(bits) % (8 * 136) != 8 * 136 - 1:
-            bits.append(0)
-        bits.append(1)
-
-    return bits
-
-
 def get_mpt_path_proof(salt, lower, upper):
     MAX_BLOCKS = 4
     numLowerLayerBytes = len(lower)
