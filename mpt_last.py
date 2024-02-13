@@ -1,12 +1,13 @@
 import json, io
 import os
 
+security = 20
 maxBlocks = 4
 maxLowerLen = 256
 maxPrefixLen = maxBlocks * 136 - maxLowerLen
 
 
-def get_last_proof(salt, lowerLayerPrefix, lowerLayer):
+def get_last_proof(salt, addressBytes, lowerLayerPrefix, lowerLayer):
     lowerLayerLen = len(lowerLayer)
     lowerLayerPrefixLen = len(lowerLayerPrefix)
 
@@ -17,6 +18,7 @@ def get_last_proof(salt, lowerLayerPrefix, lowerLayer):
         json.dump(
             {
                 "salt": salt,
+                "address": list(addressBytes),
                 "lowerLayer": list(lowerLayer),
                 "lowerLayerLen": lowerLayerLen,
                 "lowerLayerPrefix": list(lowerLayerPrefix),
@@ -30,4 +32,4 @@ def get_last_proof(salt, lowerLayerPrefix, lowerLayer):
     )
 
     with io.open("circuit/mpt_last_cpp/output.json", "r") as f:
-        return f.read()
+        return [int(s) for s in json.loads(f.read())]
