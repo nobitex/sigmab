@@ -4,6 +4,7 @@ include "./utils/concat.circom";
 include "./utils/hasher.circom";
 include "./utils/keccak/keccak.circom";
 include "./hashbytes.circom";
+include "./rlp.circom";
 
 template HashAddress() {
     signal input address[20];
@@ -57,20 +58,34 @@ template MptLast(maxBlocks, maxLowerLen, security) {
     signal input lowerLayerPrefixLen;
     signal input lowerLayerPrefix[maxPrefixLen];
 
-    signal input lowerLayerLen;
-    signal input lowerLayer[maxLowerLen];
+    signal input nonce;
+    signal input balance;
+    signal input storageHash[32];
+    signal input codeHash[32];
 
     signal input salt;
 
     signal output commitUpper;
     signal output commitLower;
 
+    component account_rlp_calculator = Rlp();
+    account_rlp_calculator.nonce <== nonce;
+    account_rlp_calculator.balance <== balance;
+    account_rlp_calculator.storage_hash <== storageHash;
+    account_rlp_calculator.code_hash <== codeHash;
+
+    signal output lowerLayerLen;
+    signal output lowerLayer[maxLowerLen];
+
+    lowerLayerLen <== account_rlp_calculator.rlp_encoded_len;
+    lowerLayer <== account_rlp_calculator.rlp_encoded;
+
     signal hash_address[32];
     component addr_hasher = HashAddress();
     addr_hasher.address <== address;
     hash_address <== addr_hasher.hash_address;
 
-    signal output expected_prefix[security + 2];
+    signal expected_prefix[security + 2];
     for(var i = 0; i < security; i++) {
         expected_prefix[i] <== hash_address[32 - security + i];
     }
@@ -129,4 +144,4 @@ template MptLast(maxBlocks, maxLowerLen, security) {
     commitUpper <== commitUpperToSalt.hash;
  }
 
- component main = MptLast(4, 256, 20);
+ component main = MptLast(4, 79, 20);

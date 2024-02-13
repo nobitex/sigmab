@@ -100,5 +100,3 @@ template Rlp() {
 
     rlp_encoded_len <== concat3.outLen;
 }
-
-component main = Rlp();

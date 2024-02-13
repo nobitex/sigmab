@@ -3,15 +3,14 @@ import os
 
 security = 20
 maxBlocks = 4
-maxLowerLen = 256
+maxLowerLen = 79
 maxPrefixLen = maxBlocks * 136 - maxLowerLen
 
 
-def get_last_proof(salt, addressBytes, lowerLayerPrefix, lowerLayer):
-    lowerLayerLen = len(lowerLayer)
+def get_last_proof(
+    salt, addressBytes, lowerLayerPrefix, nonce, balance, storageHash, codeHash
+):
     lowerLayerPrefixLen = len(lowerLayerPrefix)
-
-    lowerLayer += (maxLowerLen - len(lowerLayer)) * b"\x00"
     lowerLayerPrefix += (maxPrefixLen - len(lowerLayerPrefix)) * b"\x00"
 
     with io.open("circuit/input.json", "w") as f:
@@ -19,8 +18,10 @@ def get_last_proof(salt, addressBytes, lowerLayerPrefix, lowerLayer):
             {
                 "salt": salt,
                 "address": list(addressBytes),
-                "lowerLayer": list(lowerLayer),
-                "lowerLayerLen": lowerLayerLen,
+                "nonce": nonce,
+                "balance": balance,
+                "storageHash": list(storageHash),
+                "codeHash": list(codeHash),
                 "lowerLayerPrefix": list(lowerLayerPrefix),
                 "lowerLayerPrefixLen": lowerLayerPrefixLen,
             },

@@ -22,25 +22,35 @@ def get_account_eth_mpt_proof(account, provider):
         if index >= 1:
             if Web3.keccak(level) not in p.accountProof[index - 1]:
                 raise Exception("Not verified!")
-            #print(mpt_path.get_mpt_path_proof(SALT, level, p.accountProof[index - 1]))
+            print(mpt_path.get_mpt_path_proof(SALT, level, p.accountProof[index - 1]))
 
     accountRlp = rlp.encode([p.nonce, p.balance, p.storageHash, p.codeHash])
 
     address_bytes = bytes.fromhex(str(account)[2:])
-    print(accountRlp.hex())
+    # print(accountRlp.hex())
     prefixAccountRlp = p.accountProof[-1][: -len(accountRlp)]
 
-    print(rlp.encode(accountRlp).hex())
+    # print(rlp.encode(accountRlp).hex())
 
-    print(address_bytes.hex())
-    print(Web3.keccak(address_bytes).hex())
-    print(prefixAccountRlp.hex())
+    # print(address_bytes.hex())
+    # print(Web3.keccak(address_bytes).hex())
+    # print(prefixAccountRlp.hex())
 
     if Web3.keccak(prefixAccountRlp + accountRlp) not in p.accountProof[-2]:
         raise Exception("Not verified!")
 
-    result = mpt_last.get_last_proof(SALT, address_bytes, bytes(prefixAccountRlp), bytes(accountRlp))
-    print(bytes(result[-22:]).hex())
+    result = mpt_last.get_last_proof(
+        SALT,
+        address_bytes,
+        bytes(prefixAccountRlp),
+        p.nonce,
+        p.balance,
+        p.storageHash,
+        p.codeHash,
+    )
+    print(list(accountRlp))
+    print(result)
+    # print(bytes(result[-22:]).hex())
 
 
 get_account_eth_mpt_proof(
