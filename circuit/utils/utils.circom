@@ -16,6 +16,23 @@ template BitDecompose(N) {
     total === num;
 }
 
+template ByteDecompose(N) { 
+    signal input num;
+    signal output bytes[N];
+    var pow = 1;
+    var total = 0;
+    component bd[N];
+    for (var i = 0; i < N; i++) {
+        bytes[i] <-- (num >> (8 * i)) & 0xFF;
+        bd[i] = BitDecompose(8);
+        bd[i].num <==  bytes[i];
+        total += pow * bytes[i];
+        pow = pow * 256; 
+    }
+
+    total === num; 
+}
+
 template IsZero() {
     signal input in;
     signal output out;
