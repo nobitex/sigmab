@@ -8,9 +8,11 @@ template Rlp() {
     signal input balance; 
     signal input storage_hash[32];
     signal input code_hash[32];
-
     signal output rlp_encoded[79];
     signal output rlp_encoded_len;
+
+    // signal output rlp_encoded[128];
+    // signal output final_rlp_encoded_len;
 
     // Updated RLP lengths
     signal nonceRlpLen; 
@@ -27,17 +29,36 @@ template Rlp() {
     // RLP Encoding for nonce
     component bdNonce = ByteDecompose(5);
     bdNonce.num <== nonce;
+
+    component byteln = GetByteLength(5);
+    byteln.num <== nonce;
  
     signal nonceIsSingleByte;
     nonceIsSingleByte <-- (nonce < 0x80) ? 1 : 0;
 
-    nonceRlpEncoded[0] <== nonceIsSingleByte * nonce + (1 - nonceIsSingleByte) * (0x80 + 4);
+    signal isSingleBytePrefix;
+    signal extendedPrefix;
+    signal finalPrefix;
 
-    for (var i = 1; i < 5; i++) {
-        nonceRlpEncoded[5-i] <== (1 - nonceIsSingleByte) * bdNonce.bytes[i];
+    isSingleBytePrefix <== nonceIsSingleByte * nonce;
+    extendedPrefix <== (1 - nonceIsSingleByte) * (0x80 + byteln.len);
+    finalPrefix <== isSingleBytePrefix + extendedPrefix;
+    nonceRlpEncoded[0] <== finalPrefix;
+
+
+    var MAX_LEN = 5;
+    signal inBytes;
+    component gt[MAX_LEN];
+
+    for (var i = 1; i < MAX_LEN; i++) {
+        gt[i] = GreaterEqThan(250);
+        gt[i].in[0] <== MAX_LEN;
+        gt[i].in[1] <== byteln.len;
+        gt[i].out === 1;
+        nonceRlpEncoded[MAX_LEN - i] <== (1 - nonceIsSingleByte) * bdNonce.bytes[i];
     }
 
-    nonceRlpLen <== nonceIsSingleByte + (1 - nonceIsSingleByte) * 5;
+    nonceRlpLen <== nonceIsSingleByte + (1 - nonceIsSingleByte) * byteln.len;
      
     // RLP Encoding for balance
     component bdBalance = ByteDecompose(9);
