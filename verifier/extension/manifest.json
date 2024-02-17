@@ -18,7 +18,8 @@
                 "<all_urls>"
             ],
             "js": [
-                "content.js"
+                "content.js",
+                "verifier.js"
             ]
         }
     ]

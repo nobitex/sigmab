@@ -1,1 +1,6 @@
 book
+
+verifier/dist
+verifier/node_modules
+verifier/package-lock.json
+verifier/extension/verifier.js
