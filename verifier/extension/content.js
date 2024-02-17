@@ -7,3 +7,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({ message: 'Website reset to original colors.' });
     }
 });
+
+window.addEventListener("TriggerSigmaB", function (evt) {
+    chrome.runtime.sendMessage({
+        type: "notification", options: {
+            type: "basic",
+            iconUrl: "",
+            title: "Test",
+            message: { windowWidth: window.outerWidth }
+        }
+    });
+}, false);

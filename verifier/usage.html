@@ -1,0 +1,15 @@
+<html>
+
+<head>
+    <script>
+        function talk() {
+            window.dispatchEvent(new CustomEvent("TriggerSigmaB", { detail: "Hello" }));
+        }
+    </script>
+</head>
+
+<body>
+    <button onclick="talk()">Talk to extension</button>
+</body>
+
+</html>

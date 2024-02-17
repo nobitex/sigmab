@@ -4,7 +4,7 @@
     "version": "1.0",
     "description": "Turns all websites black and white.",
     "permissions": [
-        "activeTab"
+        "tabs"
     ],
     "background": {
         "service_worker": "background.js"
