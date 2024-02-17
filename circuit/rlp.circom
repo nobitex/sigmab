@@ -3,6 +3,7 @@ pragma circom 2.0.0;
 include "./utils/utils.circom";
 include "./utils/concat.circom";
 
+
 template Rlp() {
     signal input nonce;
     signal input balance; 
@@ -36,26 +37,25 @@ template Rlp() {
     signal nonceIsSingleByte;
     nonceIsSingleByte <-- (nonce < 0x80) ? 1 : 0;
 
-    signal isSingleBytePrefix;
-    signal extendedPrefix;
-    signal finalPrefix;
+    signal isSingleNonceBytePrefix;
+    signal extendedNoncePrefix;
+    signal finalNoncePrefix;
 
-    isSingleBytePrefix <== nonceIsSingleByte * nonce;
-    extendedPrefix <== (1 - nonceIsSingleByte) * (0x80 + byteln.len);
-    finalPrefix <== isSingleBytePrefix + extendedPrefix;
-    nonceRlpEncoded[0] <== finalPrefix;
+    isSingleNonceBytePrefix <== nonceIsSingleByte * nonce;
+    extendedNoncePrefix <== (1 - nonceIsSingleByte) * (0x80 + byteln.len);
+    finalNoncePrefix <== isSingleNonceBytePrefix + extendedNoncePrefix;
+    nonceRlpEncoded[0] <== finalNoncePrefix;
 
 
-    var MAX_LEN = 5;
-    signal inBytes;
-    component gt[MAX_LEN];
+    var NONCE_MAX_LEN = 5; // The fixed maximum length to iterate over
+    component ngt[NONCE_MAX_LEN];
 
-    for (var i = 1; i < MAX_LEN; i++) {
-        gt[i] = GreaterEqThan(250);
-        gt[i].in[0] <== MAX_LEN;
-        gt[i].in[1] <== byteln.len;
-        gt[i].out === 1;
-        nonceRlpEncoded[MAX_LEN - i] <== (1 - nonceIsSingleByte) * bdNonce.bytes[i];
+    for (var i = 1; i < NONCE_MAX_LEN; i++) {
+        ngt[i] = GreaterEqThan(252);
+        ngt[i].in[0] <== NONCE_MAX_LEN;
+        ngt[i].in[1] <== byteln.len;
+        ngt[i].out === 1;
+        nonceRlpEncoded[NONCE_MAX_LEN - i] <== (1 - nonceIsSingleByte) * bdNonce.bytes[i];
     }
 
     nonceRlpLen <== nonceIsSingleByte + (1 - nonceIsSingleByte) * byteln.len;
@@ -64,16 +64,33 @@ template Rlp() {
     component bdBalance = ByteDecompose(9);
     bdBalance.num <== balance;
 
+    component bytelb = GetByteLength(9);
+    bytelb.num <== balance;
+ 
     signal balanceIsSingleByte;
     balanceIsSingleByte <-- (balance < 0x80) ? 1 : 0;
 
-    rlpEncodedBalance[0] <== balanceIsSingleByte * balance + (1 - balanceIsSingleByte) * (0x80 + 9);
+    signal isSingleBalanceBytePrefix;
+    signal extendedBalancePrefix;
+    signal finalBalancePrefix;
 
-    for (var i = 0; i < 9; i++) {
-        rlpEncodedBalance[9-i] <== (1 - balanceIsSingleByte) * bdBalance.bytes[i];
+    
+    isSingleBalanceBytePrefix <== balanceIsSingleByte * nonce;
+    extendedBalancePrefix <== (1 - balanceIsSingleByte) * (0x80 + bytelb.len);
+    finalBalancePrefix <== isSingleBalanceBytePrefix + extendedBalancePrefix;
+    rlpEncodedBalance[0] <== finalBalancePrefix;
+
+    var BALANCE_MAX_LEN = 9; 
+    component bgt[BALANCE_MAX_LEN];
+
+    for (var i = 0; i < BALANCE_MAX_LEN; i++) {
+        bgt[i] = GreaterEqThan(252);
+        bgt[i].in[0] <== BALANCE_MAX_LEN;
+        bgt[i].in[1] <== bytelb.len;
+        bgt[i].out === 1;
+        rlpEncodedBalance[BALANCE_MAX_LEN - i] <== (1 - balanceIsSingleByte) * bdBalance.bytes[i];
     }
-
-    balanceRlpLen <== balanceIsSingleByte + (1 - balanceIsSingleByte) * 10;
+    balanceRlpLen <== balanceIsSingleByte + (1 - balanceIsSingleByte) * bytelb.len;
 
     // RLP Encoding for storage_hash
     storageHashRlpEncoded[0] <== 0x80 + 32;
