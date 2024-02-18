@@ -75,7 +75,7 @@ template Rlp() {
     signal finalBalancePrefix;
 
     
-    isSingleBalanceBytePrefix <== balanceIsSingleByte * nonce;
+    isSingleBalanceBytePrefix <== balanceIsSingleByte * balance;
     extendedBalancePrefix <== (1 - balanceIsSingleByte) * (0x80 + bytelb.len);
     finalBalancePrefix <== isSingleBalanceBytePrefix + extendedBalancePrefix;
     rlpEncodedBalance[0] <== finalBalancePrefix;
