@@ -1,4 +1,4 @@
-pragma circom 2.0.0;
+pragma circom 2.1.5;
 
 include "./utils/utils.circom";
 include "./utils/concat.circom";
@@ -134,12 +134,14 @@ template Rlp() {
     concat3.b <== codeHashRlpEncoded;
     concat3.bLen <== codeHashRlpLen;
 
+    var rlp_encoded_len_calc = nonceRlpLen + balanceRlpLen + codeHashRlpLen + storageHashRlpLen;
+
     rlp_encoded[0] <== 0xf8; 
-    rlp_encoded[1] <== 77; 
+    rlp_encoded[1] <== rlp_encoded_len_calc; 
 
     for (var i = 0; i < 77; i++) {
         rlp_encoded[i + 2] <== concat3.out[i];
     }
 
-    rlp_encoded_len <== concat3.outLen;
+    rlp_encoded_len <== rlp_encoded_len_calc + 2;
 }

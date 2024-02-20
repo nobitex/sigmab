@@ -18,8 +18,8 @@ def get_last_proof(
             {
                 "salt": salt,
                 "address": list(addressBytes),
-                "nonce": nonce,
-                "balance": balance,
+                "nonce": str(nonce),
+                "balance": str(balance),
                 "storageHash": list(storageHash),
                 "codeHash": list(codeHash),
                 "lowerLayerPrefix": list(lowerLayerPrefix),
