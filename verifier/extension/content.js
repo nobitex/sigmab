@@ -1,20 +1,6 @@
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    if (request.action === 'convert') {
-        document.documentElement.style.filter = 'grayscale(100%)';
-        sendResponse({ message: 'Website converted to black and white.' });
-    } else if (request.action === 'reset') {
-        document.documentElement.style.filter = 'none';
-        sendResponse({ message: 'Website reset to original colors.' });
-    }
-});
-
 window.addEventListener("TriggerSigmaB", function (evt) {
     chrome.runtime.sendMessage({
-        type: "notification", options: {
-            type: "basic",
-            iconUrl: "",
-            title: "Test",
-            message: { windowWidth: window.outerWidth }
-        }
+        data: evt.detail,
+        windowWidth: window.outerWidth
     });
 }, false);
