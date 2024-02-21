@@ -127,7 +127,7 @@ const PROOF = {
 const sigmab = {
     verifySigmaB: async function () {
         if (groth16) {
-            if(await groth16.verify(VK, [32], PROOF)) {
+            if(await groth16.verify(VK, [33], PROOF)) {
                 alert("Proof verification works!");
             } else {
                 alert("Oh oh...");
