@@ -145,3 +145,22 @@ template IfThenElse() {
 
     out <== intermediateTrue + intermediateFalse;
 }
+
+template ReverseArray(N) {
+    signal input bytes[N];
+    signal input realByteLen;
+    signal output out[N];
+
+    var lenDiff = N - realByteLen;
+    signal reversed[N];
+
+    component shifter = Shift(N, N);
+    shifter.count <== lenDiff;
+    shifter.in <== bytes; 
+
+   for(var i = 0; i < N; i++) {
+        reversed[i] <== shifter.out[i];
+    }
+
+    out <== reversed;
+}
