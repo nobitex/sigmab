@@ -1,5 +1,5 @@
 
-pragma circom 2.1.6;
+pragma circom 2.1.5;
 
 template IsZero() {
     signal input in;
@@ -11,6 +11,31 @@ template IsZero() {
 
     out <== -in*inv +1;
     in*out === 0;
+}
+
+// template LessThan(n) {
+//     assert(n <= 252);
+//     signal input in[2];
+//     signal output out;
+
+//     component n2b = BitDecompose(n+1);
+
+//     n2b.num <== in[0]+ (1<<n) - in[1];
+
+//     out <== 1-n2b.bits[n];
+// }
+
+// N is the number of bits the input  have.
+// The MSF is the sign bit.
+template GreaterEqThan(n) {
+    signal input in[2];
+    signal output out;
+
+    component lt = LessThan(n);
+
+    lt.in[0] <== in[1];
+    lt.in[1] <== in[0]+1;
+    lt.out ==> out;
 }
 
 template IsEqual() {
@@ -103,4 +128,20 @@ template GetByteLength(N) {
     }
 
     len <== realBytesSize;
+}
+
+template IfThenElse() {
+    signal input condition; 
+    signal input ifTrue;
+    signal input ifFalse;
+    signal output out;
+
+
+    signal intermediateTrue;
+    signal intermediateFalse;
+
+    intermediateTrue <== condition * ifTrue;
+    intermediateFalse <== (1 - condition) * ifFalse;
+
+    out <== intermediateTrue + intermediateFalse;
 }
