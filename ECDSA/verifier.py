@@ -21,6 +21,14 @@ signature = private_key.sign_deterministic(
     hashfunc=hashlib.sha256,
 )
 
+order_size = private_key.curve.order.bit_length() // 8
+
+r, s = ecdsa.util.sigdecode_string(signature, private_key.curve.order)
+
+r_bytes = r.to_bytes(order_size, "big")
+
+s_bytes = s.to_bytes(order_size, "big")
+
 # print the message input (32 bytes)
 print("message_bytes: ", list(message_bytes))
 # print the x coordinate (32 bytes)
@@ -29,3 +37,7 @@ print("x_coordinate: ", x_coordinate_bytes)
 print("y_coordinate: ", y_coordinate_bytes)
 # print the Signature (64 bytes)
 print("signature: ", list(bytes.fromhex(signature.hex())))
+# print the r component of signature (32 bytes)
+print("r", list(r_bytes))
+# print the s component of signature (32 bytes)
+print("s", list(s_bytes))
