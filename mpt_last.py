@@ -3,7 +3,7 @@ import os
 
 security = 20
 maxBlocks = 4
-maxLowerLen = 79
+maxLowerLen = 99
 maxPrefixLen = maxBlocks * 136 - maxLowerLen
 
 
@@ -18,8 +18,8 @@ def get_last_proof(
             {
                 "salt": salt,
                 "address": list(addressBytes),
-                "nonce": nonce,
-                "balance": balance,
+                "nonce": str(nonce),
+                "balance": str(balance),
                 "storageHash": list(storageHash),
                 "codeHash": list(codeHash),
                 "lowerLayerPrefix": list(lowerLayerPrefix),
