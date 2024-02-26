@@ -13,17 +13,28 @@ template IsZero() {
     in*out === 0;
 }
 
-// template LessThan(n) {
-//     assert(n <= 252);
-//     signal input in[2];
-//     signal output out;
+template LessEqThan(n) {
+    signal input in[2];
+    signal output out;
 
-//     component n2b = BitDecompose(n+1);
+    component lt = LessThan(n);
 
-//     n2b.num <== in[0]+ (1<<n) - in[1];
+    lt.in[0] <== in[0];
+    lt.in[1] <== in[1]+1;
+    lt.out ==> out;
+}
 
-//     out <== 1-n2b.bits[n];
-// }
+template LessThan(n) {
+    assert(n <= 252);
+    signal input in[2];
+    signal output out;
+
+    component n2b = BitDecompose(n+1);
+
+    n2b.num <== in[0]+ (1<<n) - in[1];
+
+    out <== 1-n2b.bits[n];
+}
 
 // N is the number of bits the input  have.
 // The MSF is the sign bit.
@@ -96,38 +107,28 @@ template ByteDecompose(N) {
     total === num; 
 }
 
-template GetByteLength(N) {
-    signal input num;
+template GetRealByteLength(N) {
+    signal input bytes[N];
     signal output len;
 
-    signal realBytes[N + 1];
-    var realBytesSize = 0;
-    realBytes[0] <== 1;
+    component isZero[N];
 
-    component byteDecompose = ByteDecompose(N);
-    byteDecompose.num <== num;
+    signal isZeroResult[N+1];
+    isZeroResult[0] <== 1;
 
-    component isz[N];
-    component isz2[N];
-    
     for (var i = 0; i < N; i++) {
-        isz[i] = IsZero();
-        isz2[i] = IsZero();
-        if (i == 0) {
-            isz[i].in <== byteDecompose.bytes[N-1]; 
-            isz2[i].in <== byteDecompose.bytes[N-i-1];
-        } else {
-            isz[i].in <== byteDecompose.bytes[N-i];
-            isz2[i].in <== byteDecompose.bytes[N-i-1];
-        }
-        realBytes[i+1] <== 1 - (isz[i].out + isz2[i].out);
+        isZero[i] = IsZero();
+        isZero[i].in <== bytes[N-i-1];
+        isZeroResult[i+1] <== isZero[i].out * isZeroResult[i];
+    }
+    
+    var total = 0;
+    
+    for (var j = 1; j < N + 1; j++) {
+        total = total + isZeroResult[j];
     }
 
-    for (var j = 0; j < N; j++) {
-        realBytesSize = realBytesSize + realBytes[j];
-    }
-
-    len <== realBytesSize;
+    len <== N - total;
 }
 
 template IfThenElse() {
@@ -144,23 +145,4 @@ template IfThenElse() {
     intermediateFalse <== (1 - condition) * ifFalse;
 
     out <== intermediateTrue + intermediateFalse;
-}
-
-template ReverseArray(N) {
-    signal input bytes[N];
-    signal input realByteLen;
-    signal output out[N];
-
-    var lenDiff = N - realByteLen;
-    signal reversed[N];
-
-    component shifter = Shift(N, N);
-    shifter.count <== lenDiff;
-    shifter.in <== bytes; 
-
-   for(var i = 0; i < N; i++) {
-        reversed[i] <== shifter.out[i];
-    }
-
-    out <== reversed;
 }

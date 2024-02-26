@@ -50,11 +50,11 @@ def print_results(proof, expected_account_rlp, result):
     print("===================================")
 
     print("Circuit result len", result[2])
-    print("Circuit result", result[3:])
+    print("Circuit result", result[3 : result[2] + 3])
 
     print("===================================")
 
-    print("Equality", result[3:] == list(expected_account_rlp))
+    print("Equality", result[3 : result[2] + 3] == list(expected_account_rlp))
 
     print(result[:2])
 

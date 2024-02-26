@@ -1,4 +1,4 @@
-pragma circom 2.1.6;
+pragma circom 2.1.5;
 
 include "./utils/concat.circom";
 include "./utils/hasher.circom";
@@ -144,4 +144,4 @@ template MptLast(maxBlocks, maxLowerLen, security) {
     commitUpper <== commitUpperToSalt.hash;
  }
 
- component main = MptLast(4, 79, 20);
+ component main = MptLast(4, 99, 20);

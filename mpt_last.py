@@ -3,7 +3,7 @@ import os
 
 security = 20
 maxBlocks = 4
-maxLowerLen = 79
+maxLowerLen = 99
 maxPrefixLen = maxBlocks * 136 - maxLowerLen
 
 
