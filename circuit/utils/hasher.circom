@@ -1,4 +1,4 @@
-pragma circom 2.1.6;
+pragma circom 2.1.5;
 
 // implements MiMC-2n/n as hash using a sponge construction.
 // log_5(21888242871839275222246405745257275088548364400416034343698204186575808495617) ~= 110

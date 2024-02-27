@@ -1,5 +1,5 @@
 
-pragma circom 2.1.6;
+pragma circom 2.1.5;
 
 template IsZero() {
     signal input in;
@@ -11,6 +11,42 @@ template IsZero() {
 
     out <== -in*inv +1;
     in*out === 0;
+}
+
+template LessEqThan(n) {
+    signal input in[2];
+    signal output out;
+
+    component lt = LessThan(n);
+
+    lt.in[0] <== in[0];
+    lt.in[1] <== in[1]+1;
+    lt.out ==> out;
+}
+
+template LessThan(n) {
+    assert(n <= 252);
+    signal input in[2];
+    signal output out;
+
+    component n2b = BitDecompose(n+1);
+
+    n2b.num <== in[0]+ (1<<n) - in[1];
+
+    out <== 1-n2b.bits[n];
+}
+
+// N is the number of bits the input  have.
+// The MSF is the sign bit.
+template GreaterEqThan(n) {
+    signal input in[2];
+    signal output out;
+
+    component lt = LessThan(n);
+
+    lt.in[0] <== in[1];
+    lt.in[1] <== in[0]+1;
+    lt.out ==> out;
 }
 
 template IsEqual() {
@@ -71,36 +107,42 @@ template ByteDecompose(N) {
     total === num; 
 }
 
-template GetByteLength(N) {
-    signal input num;
+template GetRealByteLength(N) {
+    signal input bytes[N];
     signal output len;
 
-    signal realBytes[N + 1];
-    var realBytesSize = 0;
-    realBytes[0] <== 1;
+    component isZero[N];
 
-    component byteDecompose = ByteDecompose(N);
-    byteDecompose.num <== num;
+    signal isZeroResult[N+1];
+    isZeroResult[0] <== 1;
 
-    component isz[N];
-    component isz2[N];
-    
     for (var i = 0; i < N; i++) {
-        isz[i] = IsZero();
-        isz2[i] = IsZero();
-        if (i == 0) {
-            isz[i].in <== byteDecompose.bytes[N-1]; 
-            isz2[i].in <== byteDecompose.bytes[N-i-1];
-        } else {
-            isz[i].in <== byteDecompose.bytes[N-i];
-            isz2[i].in <== byteDecompose.bytes[N-i-1];
-        }
-        realBytes[i+1] <== 1 - (isz[i].out + isz2[i].out);
+        isZero[i] = IsZero();
+        isZero[i].in <== bytes[N-i-1];
+        isZeroResult[i+1] <== isZero[i].out * isZeroResult[i];
+    }
+    
+    var total = 0;
+    
+    for (var j = 1; j < N + 1; j++) {
+        total = total + isZeroResult[j];
     }
 
-    for (var j = 0; j < N; j++) {
-        realBytesSize = realBytesSize + realBytes[j];
-    }
+    len <== N - total;
+}
 
-    len <== realBytesSize;
+template IfThenElse() {
+    signal input condition; 
+    signal input ifTrue;
+    signal input ifFalse;
+    signal output out;
+
+
+    signal intermediateTrue;
+    signal intermediateFalse;
+
+    intermediateTrue <== condition * ifTrue;
+    intermediateFalse <== (1 - condition) * ifFalse;
+
+    out <== intermediateTrue + intermediateFalse;
 }

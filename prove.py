@@ -7,50 +7,79 @@ import mpt_path
 SALT = 123
 
 
+def verify_proof(proof, block):
+    for index, level in enumerate(proof.accountProof):
+        if index == 0:
+            if Web3.keccak(level) != block.stateRoot:
+                raise Exception("Not verified!")
+        if index >= 1:
+            if Web3.keccak(level) not in proof.accountProof[index - 1]:
+                raise Exception("Not verified!")
+            print(
+                mpt_path.get_mpt_path_proof(SALT, level, proof.accountProof[index - 1])
+            )
+
+    account_rlp = rlp.encode(
+        [proof.nonce, proof.balance, proof.storageHash, proof.codeHash]
+    )
+    address_bytes = bytes.fromhex(str(proof.address)[2:])
+    prefix_account_rlp = proof.accountProof[-1][: -len(account_rlp)]
+
+    if Web3.keccak(prefix_account_rlp + account_rlp) not in proof.accountProof[-2]:
+        raise Exception("Not verified!")
+
+    return account_rlp, address_bytes, prefix_account_rlp
+
+
+def print_results(proof, expected_account_rlp, result):
+    print("balance", proof.balance)
+    print("nonce", proof.nonce)
+    print("storage hash", list(proof.storageHash))
+    print("code hash", list(proof.codeHash))
+
+    print("===================================")
+
+    print("Expected len", len(expected_account_rlp))
+    print("Expected result", list(expected_account_rlp))
+
+    print("===================================")
+
+    print("Hex expected result", bytes(list(expected_account_rlp)).hex())
+    print("Hex circuit result", bytes(result[3:]).hex())
+
+    print("===================================")
+
+    print("Circuit result len", result[2])
+    print("Circuit result", result[3 : result[2] + 3])
+
+    print("===================================")
+
+    print("Equality", result[3 : result[2] + 3] == list(expected_account_rlp))
+
+    print(result[:2])
+
+
 def get_account_eth_mpt_proof(account, provider):
     w3 = Web3(Web3.HTTPProvider(provider))
 
     num = w3.eth.get_block_number()
 
-    b = w3.eth.get_block(num)
-    p = w3.eth.get_proof(account, [], num)
+    block = w3.eth.get_block(num)
+    proof = w3.eth.get_proof(account, [], num)
 
-    for index, level in enumerate(p.accountProof):
-        if index == 0:
-            if Web3.keccak(level) != b.stateRoot:
-                raise Exception("Not verified!")
-        if index >= 1:
-            if Web3.keccak(level) not in p.accountProof[index - 1]:
-                raise Exception("Not verified!")
-            print(mpt_path.get_mpt_path_proof(SALT, level, p.accountProof[index - 1]))
-
-    accountRlp = rlp.encode([p.nonce, p.balance, p.storageHash, p.codeHash])
-
-    address_bytes = bytes.fromhex(str(account)[2:])
-    # print(accountRlp.hex())
-    prefixAccountRlp = p.accountProof[-1][: -len(accountRlp)]
-
-    # print(rlp.encode(accountRlp).hex())
-
-    # print(address_bytes.hex())
-    # print(Web3.keccak(address_bytes).hex())
-    # print(prefixAccountRlp.hex())
-
-    if Web3.keccak(prefixAccountRlp + accountRlp) not in p.accountProof[-2]:
-        raise Exception("Not verified!")
+    account_rlp, address_bytes, prefix_account_rlp = verify_proof(proof, block)
 
     result = mpt_last.get_last_proof(
         SALT,
         address_bytes,
-        bytes(prefixAccountRlp),
-        p.nonce,
-        p.balance,
-        p.storageHash,
-        p.codeHash,
+        bytes(prefix_account_rlp),
+        proof.nonce,
+        proof.balance,
+        proof.storageHash,
+        proof.codeHash,
     )
-    print(list(accountRlp))
-    print(result)
-    # print(bytes(result[-22:]).hex())
+
+    print_results(proof, account_rlp, result)
 
 
 get_account_eth_mpt_proof(
