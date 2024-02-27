@@ -13,7 +13,7 @@ def get_last_proof(
     lowerLayerPrefixLen = len(lowerLayerPrefix)
     lowerLayerPrefix += (maxPrefixLen - len(lowerLayerPrefix)) * b"\x00"
 
-    with io.open("circuit/input.json", "w") as f:
+    with io.open("/tmp/input_mpt_last.json", "w") as f:
         json.dump(
             {
                 "salt": salt,
@@ -29,8 +29,8 @@ def get_last_proof(
         )
 
     os.system(
-        "cd circuit/mpt_last_cpp && ./mpt_last ../input.json ../mpt_last_witness.wtns"
+        "make gen_mpt_last_witness"
     )
 
-    with io.open("circuit/mpt_last_cpp/output.json", "r") as f:
+    with io.open("/tmp/output_mpt_last.json", "r") as f:
         return [int(s) for s in json.loads(f.read())]

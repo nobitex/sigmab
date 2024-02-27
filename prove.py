@@ -1,13 +1,17 @@
 from web3 import Web3
 import rlp
 
-import mpt_last
+import mpt_first
 import mpt_path
+import mpt_last
 
 SALT = 123
-
+FIELD_SIZE = 21888242871839275222246405745257275088548364400416034343698204186575808495617
 
 def verify_proof(proof, block):
+    print("block hash:", int(block.hash.hex(), 16) % FIELD_SIZE)
+    print("circom calculated block hash:", mpt_first.get_mpt_first_proof(block))
+
     for index, level in enumerate(proof.accountProof):
         if index == 0:
             if Web3.keccak(level) != block.stateRoot:
