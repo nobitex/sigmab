@@ -146,3 +146,23 @@ template IfThenElse() {
 
     out <== intermediateTrue + intermediateFalse;
 }
+
+template Bits2Num(n) {
+    signal input in[n];
+    signal output out;
+    var number = 0;
+    var step1 = 1;
+
+    for (var i = n / 8 - 1; i >= 0; i--) {
+        var step2 = 1;
+        var tmp_number = 0;
+        for (var j = 0; j < 8; j++) {
+            tmp_number += in[i * 8 + j] * step2;
+            step2 *= 2;
+        }
+        number += tmp_number * step1;
+        step1 *= 256;
+    }
+
+    number ==> out;
+}
