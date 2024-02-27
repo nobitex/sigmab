@@ -9,12 +9,12 @@ template VerifyMsgECDSA () {
 
   // Declaration of signals.  
   signal input message[32];
-  signal input r[4];
-  signal input s[4];
-  signal input pubkeyX[4];
-  signal input pubkeyY[4];
+  signal input r[32];
+  signal input s[32];
+  signal input pubkeyX[32];
+  signal input pubkeyY[32];
   
-  signal concatenatedValues[80]; // size = 80 = 16 + 64   
+  signal concatenatedValues[160]; // size = 80 = 5 * 32   
   // signal msghash[32];
 
   signal output verified;
@@ -27,8 +27,8 @@ template VerifyMsgECDSA () {
   }
   
   // compute SHA256 of the serialized values
-  component keccak = Keccak(80, 256);
-  for (var i = 0; i < 80 / 8; i += 1) {
+  component keccak = Keccak(160, 256);
+  for (var i = 0; i < 160 / 8; i += 1) {
     for (var j = 0; j < 8; j++) {
       keccak.in[8*i + j] <== concatenatedValues[8*i + (7-j)];
     }

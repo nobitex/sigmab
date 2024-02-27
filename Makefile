@@ -5,6 +5,9 @@ circuit/mpt_path.r1cs: circuit/mpt_path.circom circuit/utils/*.circom
 circuit/mpt_last.r1cs: circuit/mpt_last.circom circuit/utils/*.circom
 	cd circuit && circom mpt_last.circom --r1cs --wasm --sym --c
 
+circuit/ecdsa_verify.r1cs: circuit/ecdsa_verify.circom circuit/utils/*.circom
+	cd circuit && circom ecdsa_verify.circom --r1cs --wasm --sym --c
+
 circuit/mpt_path_cpp/mpt_path: circuit/mpt_path.r1cs
 	mv circuit/mpt_path_cpp/main.cpp circuit/mpt_path_cpp/main.cpp.tmp && python3 scripts/spit_output.py < circuit/mpt_path_cpp/main.cpp.tmp > circuit/mpt_path_cpp/main.cpp && rm circuit/mpt_path_cpp/main.cpp.tmp
 	cd circuit/mpt_path_cpp && make
@@ -21,6 +24,12 @@ mpt_last_witness.wtns: circuit/mpt_last_cpp/mpt_last
 	cd circuit/mpt_last_cpp && ./mpt_last ../input.json ../mpt_last_witness.wtns
 	mv circuit/mpt_last_cpp/output.json .
 	cat output.json
+
+ecdsa_verify_witness.wtns: circuit/ecdsa_verify/ecdsa_verify
+	python3 ecdsa_verify.py > circuit/input.json
+	cd circuit/ecdsa_verify && ./ecdsa_verify ../input.json ../ecdsa_verify_witness.wtns
+	mv circuit/ecdsa_verify/output.json .
+	cat output.json	
 
 
 circuit/mpt_path_0001.zkey: circuit/mpt_path.r1cs

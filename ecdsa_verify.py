@@ -47,8 +47,8 @@ r_bytes = r.to_bytes(order_size, "big")
 s_bytes = s.to_bytes(order_size, "big")
 
 # print the message input (32 bytes)
-print("message_bytes: ", list(message_bytes))
-print("message_bytes len: ", len(list(message_bytes)))
+print("message_bytes: ", list(bytes.fromhex(hash_result)))
+print("message_bytes len: ", len(list(bytes.fromhex(hash_result))))
 
 # print the x coordinate (32 bytes)
 print("x_coordinate: ", x_coordinate_bytes)
@@ -78,8 +78,8 @@ def verify():
                 "message": list(message_bytes),
                 "r": list(r_bytes),
                 "s": list(s_bytes),
-                "pubkeyX": "",
-                "pubkeyY": "",
+                "pubkeyX": x_coordinate_bytes,
+                "pubkeyY": y_coordinate_bytes,
             },
             f,
         )
