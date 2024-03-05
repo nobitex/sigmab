@@ -12,5 +12,7 @@ circuit/*.json
 circuit/mpt_first_*
 circuit/mpt_path_*
 circuit/mpt_last_*
-
+circuit/stealth_balance_addition_*
 __pycache__
+
+.vscode/

@@ -65,12 +65,31 @@ gen_mpt_last_witness:
 gen_mpt_last_proof:
 	cd circuit && snarkjs groth16 prove mpt_last_0001.zkey mpt_last_witness.wtns mpt_last_proof.json mpt_last_public.json
 
+stealth_balance_addition:
+	cd circuit && circom stealth_balance_addition.circom --r1cs --wasm --sym --c
+
+	mv circuit/stealth_balance_addition_cpp/main.cpp circuit/stealth_balance_addition_cpp/main.cpp.tmp
+	python3 scripts/spit_output.py < circuit/stealth_balance_addition_cpp/main.cpp.tmp > circuit/stealth_balance_addition_cpp/main.cpp
+	rm circuit/stealth_balance_addition_cpp/main.cpp.tmp
+	cd circuit/stealth_balance_addition_cpp && make
+
+stealth_balance_addition_zkey:
+	cd circuit && snarkjs groth16 setup stealth_balance_addition.r1cs pot12_final.ptau stealth_balance_addition_0000.zkey
+	cd circuit && snarkjs zkey contribute stealth_balance_addition_0000.zkey stealth_balance_addition_0001.zkey --entropy=1234 --name="second contribution" -v
+	cd circuit && snarkjs zkey export verificationkey stealth_balance_addition_0001.zkey verification_key.json
+
+gen_stealth_balance_addition_witness:
+	cd circuit && ./stealth_balance_addition_cpp/stealth_balance_addition /tmp/input_stealth_balance_addition.json stealth_balance_addition_witness.wtns
+	mv circuit/output.json /tmp/output_stealth_balance_addition.json
+
+gen_stealth_balance_addition_proof:
+	cd circuit && snarkjs groth16 prove stealth_balance_addition_0001.zkey stealth_balance_addition_witness.wtns stealth_balance_addition_proof.json stealth_balance_addition_public.json
 
 clean:
 	find . -type d -name '__pycache__' -exec rm -rf {} +
-	rm -rf circuit/*.r1cs circuit/*.wasm circuit/*.sym circuit/*.json circuit/*.wtns circuit/mpt_last_cpp/ circuit/mpt_last_js/ circuit/mpt_last_cpp/ circuit/mpt_last_js/
+	rm -rf circuit/*.r1cs circuit/*.wasm circuit/*.sym circuit/*.json circuit/*.wtns circuit/mpt_last_cpp/ circuit/mpt_last_js/ circuit/mpt_last_cpp/ circuit/mpt_last_js/ circuit/mpt_path_cpp/ circuit/mpt_path_js/ circuit/mpt_first_cpp/ circuit/mpt_first_js/ circuit/stealth_balance_addition_cpp/ circuit/stealth_balance_addition_js/
 
 clean_all: clean
 	rm -rf circuit/*.zkey
 
-install: clean mpt_first mpt_path mpt_last
+install: clean mpt_first mpt_path mpt_last stealth_balance_addition
