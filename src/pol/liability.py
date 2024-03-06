@@ -13,7 +13,7 @@ import hashlib
     
 def read_pol_data():
     '''
-    retrieves the proof of liability input data
+    Retrieves the proof of liability input data
 
     Returns:
         liabilitynodes: an array of liability nodes to create the smp.
