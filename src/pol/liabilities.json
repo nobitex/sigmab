@@ -1,0 +1,20 @@
+{
+  "liabilities": [
+    {
+      "id": "blue@gmail.com",
+      "amount": 10
+    },
+    {
+      "id": "white@gmail.com",
+      "amount": 20
+    },
+    {
+      "id": "black@gmail.com",
+      "amount": 30
+    }
+  ],
+  "solvency_data": {
+    "solvency_balance": 1273,
+    "solvency_balance_salt": 1274
+  }
+}

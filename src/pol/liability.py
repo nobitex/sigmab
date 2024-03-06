@@ -1,14 +1,21 @@
-from src.utils.field import Field
-from src.utils.mimc7 import mimc7
-from src.pol.smt import Proof
-from src.pol.smt import LiabilityNode
-from src.pol.smt import SparseMerkleSumTree
-from src.pol.utils import FieldEncoder
-from src.pol.utils import id_hash
+
+import os
+import sys
+# Add the path to project_root
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
+from utils.field  import Field
+from utils.mimc7 import mimc7
+from pol.smt import Proof
+from pol.smt import LiabilityNode
+from pol.smt import SparseMerkleSumTree
+from pol.pol_utils import FieldEncoder
+from pol.pol_utils import id_hash
 from array import *
 import io, json, os
 import subprocess
 import hashlib
+
 
     
 def read_pol_data():
@@ -67,7 +74,7 @@ def generate_input_json(proof):
     '''
     ids = list(map(lambda node: node.id, proof.proof_nodes))
     amounts = list(map(lambda node: node.amount, proof.proof_nodes))  
-    with io.open("circuit/input.json", "w") as f:
+    with io.open("circuit/temp/pol/input_pol.json", "w") as f:
         json.dump(
             {
                 "index": Field(proof.index),

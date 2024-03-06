@@ -1,6 +1,9 @@
 import json
 import hashlib
-from src.utils.field import Field
+import os
+import sys
+
+from utils.field import Field
 
 class FieldEncoder(json.JSONEncoder):
     def default(self, obj):

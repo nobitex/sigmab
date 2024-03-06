@@ -1,5 +1,5 @@
-from src.utils.field import Field
-from src.utils.mimc7 import mimc7
+from utils.field import Field
+from utils.mimc7 import mimc7
 
 class LiabilityNode:
     def __init__(self, id, amount):

@@ -1,8 +1,12 @@
+import os
+import sys
+# Add the path to project_root
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
 from web3 import Web3
 import rlp
-from src.mpt.mpt_last import get_last_proof
-from src.mpt.mpt_path import get_mpt_path_proof
-
+import mpt_last
+import mpt_path
 
 SALT = 123
 
@@ -60,6 +64,7 @@ def print_results(proof, expected_account_rlp, result):
 
 
 def get_account_eth_mpt_proof(account, provider):
+    # import ipdb; ipdb.set_trace()
     w3 = Web3(Web3.HTTPProvider(provider))
 
     num = w3.eth.get_block_number()
