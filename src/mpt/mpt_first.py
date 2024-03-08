@@ -40,7 +40,7 @@ def get_mpt_first_proof(block):
     postfix = header[end_idx:]
     commit_top = header[start_idx:end_idx]
 
-    with open("circuit/temp/mpt_first/input_mpt_first.json", "w") as f:
+    with open("/tmp/input_mpt_first.json", "w") as f:
         json.dump(
             {
                 "numPrefixBytes": len(prefix),
@@ -59,5 +59,5 @@ def get_mpt_first_proof(block):
         "make gen_mpt_first_witness"
     )
 
-    with io.open("circuit/temp/mpt_first/input_mpt_first.json", "r") as f:
+    with io.open("/tmp/output_mpt_first.json", "r") as f:
         return f.read()
