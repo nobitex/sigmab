@@ -1,16 +1,18 @@
 .PHONY = all
 # trusted set up
+
 trusted_setup:
+	mkdir -p circuit/temp/setup
 	cd circuit && snarkjs powersoftau new bn128 21 temp/setup/pot12_0000.ptau -v
 	cd circuit && snarkjs powersoftau contribute temp/setup/pot12_0000.ptau temp/setup/pot12_0001.ptau --entropy=1234 --name="first contribution" -v
 	cd circuit && snarkjs powersoftau prepare phase2 temp/setup/pot12_0001.ptau temp/setup/pot12_final.ptau -v
 
 # mpt_first commands
 mpt_first:
-    mkdir -p circuit/temp/mpt_first
+	mkdir -p circuit/temp/mpt_first
 	cd circuit && circom mpt_first.circom --r1cs --wasm --sym --c
-	mv circuit/mpt_first_cpp circuit/temp/mpt_first/mpt_first_cpp
-	mv circuit/mpt_first_js circuit/temp/mpt_first/mpt_first_js
+	mv circuit/mpt_first_cpp circuit/temp/mpt_first
+	mv circuit/mpt_first_js circuit/temp/mpt_first
 	mv circuit/temp/mpt_first/mpt_first_cpp/main.cpp circuit/temp/mpt_first/mpt_first_cpp/main.cpp.tmp
 	python3 scripts/spit_output.py < circuit/temp/mpt_first/mpt_first_cpp/main.cpp.tmp > circuit/temp/mpt_first/mpt_first_cpp/main.cpp
 	rm circuit/temp/mpt_first/mpt_first_cpp/main.cpp.tmp
@@ -40,8 +42,8 @@ gen_mpt_first_proof:
 mpt_path:
 	mkdir -p circuit/temp/mpt_path
 	cd circuit && circom mpt_path.circom --r1cs --wasm --sym --c
-	mv circuit/mpt_path_cpp circuit/temp/mpt_path/mpt_path_cpp
-	mv circuit/mpt_path_js circuit/temp/mpt_path/mpt_path_js
+	mv circuit/mpt_path_cpp circuit/temp/mpt_path
+	mv circuit/mpt_path_js circuit/temp/mpt_path
 	mv circuit/temp/mpt_path/mpt_path_cpp/main.cpp circuit/temp/mpt_path/mpt_path_cpp/main.cpp.tmp
 	python3 scripts/spit_output.py < circuit/temp/mpt_path/mpt_path_cpp/main.cpp.tmp > circuit/temp/mpt_path/mpt_path_cpp/main.cpp
 	rm circuit/temp/mpt_path/mpt_path_cpp/main.cpp.tmp
@@ -71,8 +73,8 @@ gen_mpt_path_proof:
 mpt_last:
 	mkdir -p circuit/temp/mpt_last
 	cd circuit && circom mpt_last.circom --r1cs --wasm --sym --c
-	mv circuit/mpt_last_cpp circuit/temp/mpt_last/mpt_last_cpp
-	mv circuit/mpt_last_js circuit/temp/mpt_last/mpt_last_js
+	mv circuit/mpt_last_cpp circuit/temp/mpt_last
+	mv circuit/mpt_last_js circuit/temp/mpt_last
 	mv circuit/temp/mpt_last/mpt_last_cpp/main.cpp circuit/temp/mpt_last/mpt_last_cpp/main.cpp.tmp
 	python3 scripts/spit_output.py < circuit/temp/mpt_last/mpt_last_cpp/main.cpp.tmp > circuit/temp/mpt_last/mpt_last_cpp/main.cpp
 	rm circuit/temp/mpt_last/mpt_last_cpp/main.cpp.tmp
@@ -102,8 +104,8 @@ gen_mpt_last_proof:
 stealth_balance_addition:
 	mkdir -p circuit/temp/stealth_balance_addition
 	cd circuit && circom stealth_balance_addition.circom --r1cs --wasm --sym --c
-	mv circuit/stealth_balance_addition_cpp circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp
-	mv circuit/stealth_balance_addition_js circuit/temp/stealth_balance_addition/stealth_balance_addition_js
+	mv circuit/stealth_balance_addition_cpp circuit/temp/stealth_balance_addition
+	mv circuit/stealth_balance_addition_js circuit/temp/stealth_balance_addition
 	mv circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/main.cpp circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/main.cpp.tmp
 	python3 scripts/spit_output.py < circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/main.cpp.tmp > circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/main.cpp
 	rm circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/main.cpp.tmp
@@ -132,8 +134,8 @@ gen_stealth_balance_addition_proof:
 pol:
 	mkdir -p circuit/temp/pol
 	cd circuit && circom pol.circom --r1cs --wasm --sym --c
-	mv circuit/pol_cpp circuit/temp/pol/pol_cpp
-	mv circuit/pol_js circuit/temp/pol/pol_js
+	mv circuit/pol_cpp circuit/temp/pol
+	mv circuit/pol_js circuit/temp/pol
 
 	mv circuit/temp/pol/pol_cpp/main.cpp circuit/temp/pol/pol_cpp/main.cpp.tmp
 	python3 scripts/spit_output.py < circuit/temp/pol/pol_cpp/main.cpp.tmp > circuit/temp/pol/pol_cpp/main.cpp
@@ -174,4 +176,4 @@ clean:
 clean_all: clean
 	rm -rf circuit/*.zkey
 
-install: clean mpt_first mpt_path mpt_last stealth_balance_addition
+install: clean mpt_first mpt_path mpt_last stealth_balance_addition pol
