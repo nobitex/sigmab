@@ -16,5 +16,6 @@ You can test project by executing prove.py. for execute this file you need to ru
 
 ```
 make install
-python prove.py
+python src/prove.py
+
 ```
