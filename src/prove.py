@@ -5,8 +5,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from web3 import Web3
 import rlp
-import mpt_last
-import mpt_path
+from mpt import mpt_last
+from mpt import mpt_path
 
 SALT = 123
 
