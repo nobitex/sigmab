@@ -1,5 +1,4 @@
-from field import Field
-
+from .field import Field
 
 def mimc_feistel(left, right, k):
     NROUNDS = 220

@@ -1,17 +1,17 @@
+import os
+import sys
+# Add the path to project_root
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
 from web3 import Web3
 import rlp
-
-import mpt_first
-import mpt_path
-import mpt_last
+from mpt import mpt_last
+from mpt import mpt_path
 
 SALT = 123
-FIELD_SIZE = 21888242871839275222246405745257275088548364400416034343698204186575808495617
+
 
 def verify_proof(proof, block):
-    print("block hash:", int(block.hash.hex(), 16) % FIELD_SIZE)
-    print("circom calculated block hash:", mpt_first.get_mpt_first_proof(block))
-
     for index, level in enumerate(proof.accountProof):
         if index == 0:
             if Web3.keccak(level) != block.stateRoot:
@@ -64,6 +64,7 @@ def print_results(proof, expected_account_rlp, result):
 
 
 def get_account_eth_mpt_proof(account, provider):
+    # import ipdb; ipdb.set_trace()
     w3 = Web3(Web3.HTTPProvider(provider))
 
     num = w3.eth.get_block_number()
