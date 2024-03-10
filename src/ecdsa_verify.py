@@ -110,7 +110,7 @@ def verify():
     pub1_array = bigint_to_array(64, 4, pubkey.y())
 
     # Save to input file
-    with io.open("circuit/input.json", "w") as f:
+    with io.open("circuit/temp/ecdsa_verify/input_ecdsa_verify.json", "w") as f:
         json.dump(
             {
                 "msghash": chunks_to_string(msghash_array),
