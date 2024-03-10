@@ -12,3 +12,10 @@ cd sigmab
 mdbook serve --open
 ```
 
+You can test project by executing prove.py. for execute this file you need to run below commands:
+
+```
+make install
+python src/prove.py
+
+```

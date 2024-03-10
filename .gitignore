@@ -4,3 +4,17 @@ verifier/dist
 verifier/node_modules
 verifier/package-lock.json
 verifier/extension/verifier.js
+
+*.ptau
+*.r1cs
+*.sym
+temp
+circuit/*.json
+circuit/mpt_first_*
+circuit/mpt_path_*
+circuit/mpt_last_*
+circuit/pol_*
+circuit/stealth_balance_addition_*
+__pycache__
+
+.vscode/

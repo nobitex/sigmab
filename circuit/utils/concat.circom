@@ -1,32 +1,6 @@
-pragma circom 2.0.0;
+pragma circom 2.1.5;
 
 include "./utils.circom";
-
-
-template LessThan(n) {
-    assert(n <= 252);
-    signal input in[2];
-    signal output out;
-
-    component n2b = BitDecompose(n+1);
-
-    n2b.num <== in[0]+ (1<<n) - in[1];
-
-    out <== 1-n2b.bits[n];
-}
-
-// N is the number of bits the input  have.
-// The MSF is the sign bit.
-template LessEqThan(n) {
-    signal input in[2];
-    signal output out;
-
-    component lt = LessThan(n);
-
-    lt.in[0] <== in[0];
-    lt.in[1] <== in[1]+1;
-    lt.out ==> out;
-}
 
 template Mask(n) {
     signal input in[n];
@@ -119,4 +93,23 @@ template Concat(maxLenA, maxLenB) {
     }
 
     outLen <== aLen + bLen;
+}
+
+template ReverseArray(N) {
+    signal input bytes[N];
+    signal input realByteLen;
+    signal output out[N];
+
+    var lenDiff = N - realByteLen;
+    signal reversed[N];
+
+    component shifter = Shift(N, N);
+    shifter.count <== lenDiff;
+    shifter.in <== bytes; 
+
+   for(var i = 0; i < N; i++) {
+        reversed[i] <== shifter.out[N - i - 1];
+    }
+
+    out <== reversed;
 }
