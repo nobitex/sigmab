@@ -167,6 +167,37 @@ gen_pol_proof:
 verify_pol_proof:
 	cd circuit && snarkjs groth16 verify temp/pol/verification_key.json temp/pol/pol_public.json temp/pol/pol_proof.json
 
+ecdsa_verify:
+	mkdir -p circuit/temp/ecdsa_verify
+	cd circuit && circom ecdsa_verify.circom --r1cs --wasm --sym --c
+	mv circuit/ecdsa_verify_cpp circuit/temp/ecdsa_verify
+	mv circuit/ecdsa_verify_js circuit/temp/ecdsa_verify
+	mv circuit/temp/ecdsa_verify/ecdsa_verify_cpp/main.cpp circuit/temp/ecdsa_verify/ecdsa_verify_cpp/main.cpp.tmp
+	python3 scripts/spit_output.py < circuit/temp/ecdsa_verify/ecdsa_verify_cpp/main.cpp.tmp > circuit/temp/ecdsa_verify/ecdsa_verify_cpp/main.cpp
+	rm circuit/temp/ecdsa_verify/ecdsa_verify_cpp/main.cpp.tmp
+	cd circuit/temp/ecdsa_verify/ecdsa_verify_cpp && make
+	mv circuit/ecdsa_verify.r1cs circuit/temp/ecdsa_verify/ecdsa_verify.r1cs
+	mv circuit/ecdsa_verify.sym circuit/temp/ecdsa_verify/ecdsa_verify.sym 
+
+ecdsa_verify_zkey:
+	cd circuit && snarkjs groth16 setup temp/ecdsa_verify/ecdsa_verify.r1cs temp/setup/pot20_final.ptau ecdsa_verify_0000.zkey
+	mv circuit/ecdsa_verify_0000.zkey circuit/temp/ecdsa_verify/ecdsa_verify_0000.zkey
+	cd circuit && snarkjs zkey contribute temp/ecdsa_verify/ecdsa_verify_0000.zkey temp/ecdsa_verify/ecdsa_verify_0001.zkey --entropy=1234 --name="second contribution" -v
+	cd circuit && snarkjs zkey export verificationkey temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/verification_key.json
+
+gen_ecdsa_verify_witness:
+	python3 src/ecdsa_verify.py
+	cd circuit/temp/ecdsa_verify/ecdsa_verify_cpp && ./ecdsa_verify ../input_ecdsa_verify.json ecdsa_verify_witness.wtns
+	mv circuit/temp/ecdsa_verify/ecdsa_verify_cpp/ecdsa_verify_witness.wtns circuit/temp/ecdsa_verify/ecdsa_verify_witness.wtns 
+	mv circuit/temp/ecdsa_verify/ecdsa_verify_cpp/output.json circuit/temp/ecdsa_verify/output_ecdsa_verify.json
+
+
+gen_ecdsa_verify_proof:
+	cd circuit && snarkjs groth16 prove circuit/temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/ecdsa_verify_witness.wtns ecdsa_verify_proof.json ecdsa_verify_public.json
+	snarkjs generatecall circuit/ecdsa_verify_public.json circuit/ecdsa_verify_proof.json > /tmp/ecdsa_verify_proof.json 
+	mv circuit/ecdsa_verify_proof.json circuit/temp/ecdsa_verify/ecdsa_verify_proof.json
+	mv circuit/ecdsa_verify_public.json circuit/temp/ecdsa_verify/ecdsa_verify_public.json
+
 
 # utils
 clean:
