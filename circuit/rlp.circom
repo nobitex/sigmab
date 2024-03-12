@@ -1,8 +1,49 @@
 pragma circom 2.1.5;
 
-include "./utils/utils.circom";
-include "./utils/concat.circom";
+include "./utils.circom";
+include "./concat.circom";
 
+template Mux() {
+    signal input c[2];
+    signal input s;
+    signal output out;
+    out <== c[0] + s * (c[1] - c[0]);
+}
+
+template RlpInt(N) {
+    signal input num;
+    signal output out[N];
+    signal output outLen;
+
+    component decomp = ByteDecompose(N);
+    decomp.num <== num;
+
+    component length = GetRealByteLength(N);
+    length.bytes <== decomp.bytes;
+
+    component reversed = ReverseArray(N);
+    reversed.bytes <== decomp.bytes;
+    reversed.realByteLen <== length.len;
+
+    component isSingleByte = LessThan(252);
+    isSingleByte.in[0] <== num;
+    isSingleByte.in[1] <== 128;
+
+    component isZero = IsZero();
+    isZero.in <== num;
+
+    outLen <== (1 - isSingleByte.out) + length.len + isZero.out;
+
+    component firstRlpByteSelector = Mux();
+    firstRlpByteSelector.c[0] <== 0x80 + length.len;
+    firstRlpByteSelector.c[1] <== num;
+    firstRlpByteSelector.s <== isSingleByte.out;
+
+    out[0] <== firstRlpByteSelector.out + isZero.out * 0x80;
+    for (var i = 1; i < N; i++) {
+        out[i] <== (1 - isSingleByte.out) * reversed.out[i-1];
+    }
+}
 
 template Rlp() {
     signal input nonce;
@@ -12,141 +53,39 @@ template Rlp() {
     signal output rlp_encoded[99];
     signal output rlp_encoded_len;
 
-    // Updated RLP lengths
-    signal nonceRlpLen; 
-    signal balanceRlpLen;
-    var storageHashRlpLen = 33; // 32 bytes + 1 byte length prefix
-    var codeHashRlpLen = 33; // 32 bytes + 1 byte length prefix
+    var storageAndCodeHashRlpLen = 66;
+    signal storageAndCodeHashRlpEncoded[storageAndCodeHashRlpLen];
 
-    // Placeholder signals for RLP encoded parts
-    signal nonceRlpEncoded[10];
-    signal rlpEncodedBalance[21];
-    signal storageHashRlpEncoded[33];
-    signal codeHashRlpEncoded[33];
+    component nonceRlp = RlpInt(10);
+    nonceRlp.num <== nonce;
+    component balanceRlp = RlpInt(21);
+    balanceRlp.num <== balance;
 
-    // RLP Encoding for nonce
-    component bdNonce = ByteDecompose(10);
-    bdNonce.num <== nonce;
-
-    component byteln = GetRealByteLength(10);
-    byteln.bytes <== bdNonce.bytes;
-
-    component reverseNonce = ReverseArray(10);
-    reverseNonce.bytes <== bdNonce.bytes;
-    reverseNonce.realByteLen <== byteln.len;
-
-    
-    log("real bytes of nonce len ", byteln.len);
-    
-    signal nonceIsSingleByte;
-    nonceIsSingleByte <-- (nonce < 0x80) ? 1 : 0;
-
-    signal nonceRlpLenCalc;
-    nonceRlpLenCalc <== (1 - nonceIsSingleByte) + byteln.len;
-
-    signal isSingleNonceBytePrefix;
-    signal extendedNoncePrefix;
-    signal finalNoncePrefix;
-
-    isSingleNonceBytePrefix <== nonceIsSingleByte * nonce;
-    extendedNoncePrefix <== (1 - nonceIsSingleByte) * (0x80 + byteln.len);
-    finalNoncePrefix <== isSingleNonceBytePrefix + extendedNoncePrefix;
-    nonceRlpEncoded[0] <== finalNoncePrefix;
-
-    var NONCE_MAX_LEN = 10; 
-    component ngt[NONCE_MAX_LEN];
-
-    for (var i = 1; i < NONCE_MAX_LEN; i++) {
-        nonceRlpEncoded[i] <== (1 - nonceIsSingleByte) * reverseNonce.out[i-1];
-    }
-
-    nonceRlpLen <== nonceIsSingleByte + (1 - nonceIsSingleByte) * byteln.len;
-     
-    // RLP Encoding for balance
-    component bdBalance = ByteDecompose(21);
-    bdBalance.num <== balance;
-
-    component bytelb = GetRealByteLength(21);
-    bytelb.bytes <== bdBalance.bytes;
-
-    log("the real bytes len for balance is", bytelb.len);
-
-    component reverseBalance = ReverseArray(21);
-    reverseBalance.bytes <== bdBalance.bytes;
-    reverseBalance.realByteLen <== bytelb.len;
-
- 
-    signal balanceIsSingleByte;
-    balanceIsSingleByte <-- (balance < 0x80) ? 1 : 0;
-
-    signal balanceRlpLenCalc;
-    balanceRlpLenCalc <== (1 - balanceIsSingleByte) + bytelb.len;
-
-    signal isSingleBalanceBytePrefix;
-    signal extendedBalancePrefix;
-    signal finalBalancePrefix;
-
-    isSingleBalanceBytePrefix <== balanceIsSingleByte * balance;
-    extendedBalancePrefix <== (1 - balanceIsSingleByte) * (0x80 + bytelb.len);
-    finalBalancePrefix <== isSingleBalanceBytePrefix + extendedBalancePrefix;
-    rlpEncodedBalance[0] <== finalBalancePrefix;
-
-    var BALANCE_MAX_LEN = 21; 
-    component bgt[BALANCE_MAX_LEN];
-
-    for (var i = 1; i < BALANCE_MAX_LEN; i++) {
-         log("byte decompose balance ", reverseBalance.out[i]);
-        rlpEncodedBalance[i] <== (1 - balanceIsSingleByte) * reverseBalance.out[i-1];
-    }
-
-    balanceRlpLen <== balanceIsSingleByte + (1 - balanceIsSingleByte) * bytelb.len + 1;
-
-    // RLP Encoding for storage_hash
-    storageHashRlpEncoded[0] <== 0x80 + 32;
-    
+    storageAndCodeHashRlpEncoded[0] <== 0x80 + 32;
     for (var i = 0; i < 32; i++) {
-        storageHashRlpEncoded[i + 1] <== storage_hash[i]; 
+        storageAndCodeHashRlpEncoded[i + 1] <== storage_hash[i]; 
     }
-
-    // RLP Encoding for code_hash
-    codeHashRlpEncoded[0] <== 0x80 + 32;
-    
+    storageAndCodeHashRlpEncoded[33] <== 0x80 + 32;
     for (var i = 0; i < 32; i++) {
-        codeHashRlpEncoded[i + 1] <== code_hash[i];
+        storageAndCodeHashRlpEncoded[i + 34] <== code_hash[i];
     }
 
-    // Concatenation Steps
     component concat1 = Concat(10, 21);
-    concat1.a <== nonceRlpEncoded;
-    concat1.aLen <== nonceRlpLen;
-    concat1.b <== rlpEncodedBalance;
-    concat1.bLen <== balanceRlpLen;
+    concat1.a <== nonceRlp.out;
+    concat1.aLen <== nonceRlp.outLen;
+    concat1.b <== balanceRlp.out;
+    concat1.bLen <== balanceRlp.outLen;
 
-    component concat2 = Concat(31, 33);
+    component concat2 = Concat(31, 66);
     concat2.a <== concat1.out;
     concat2.aLen <== concat1.outLen;
-    concat2.b <== storageHashRlpEncoded;
-    concat2.bLen <== storageHashRlpLen;
+    concat2.b <== storageAndCodeHashRlpEncoded;
+    concat2.bLen <== storageAndCodeHashRlpLen;
 
-    component concat3 = Concat(64, 33); 
-    concat3.a <== concat2.out; 
-    concat3.aLen <== concat2.outLen;
-    concat3.b <== codeHashRlpEncoded;
-    concat3.bLen <== codeHashRlpLen;
-
-    var rlp_encoded_len_calc = nonceRlpLen + balanceRlpLen + codeHashRlpLen + storageHashRlpLen;
-
-    signal final_rlp_prefix[2];
-
-    final_rlp_prefix[0] <== 0xf8; 
-    final_rlp_prefix[1] <== rlp_encoded_len_calc; 
-
-    component concat4 = Concat(2, 97);
-    concat4.a <== final_rlp_prefix;
-    concat4.aLen <== 2;
-    concat4.b <== concat3.out;
-    concat4.bLen <== concat3.outLen;
-
-    rlp_encoded <== concat4.out;
-    rlp_encoded_len <== concat4.outLen;
+    rlp_encoded[0] <== 0xf8; 
+    rlp_encoded[1] <== concat2.outLen;
+    for(var i = 0; i < 97; i++) {
+        rlp_encoded[i+2] <== concat2.out[i];
+    }
+    rlp_encoded_len <== 2 + concat2.outLen;
 }
