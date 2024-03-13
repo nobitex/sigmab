@@ -92,11 +92,10 @@ def bigint_to_Uint8Array(x, length=32):
     return x.to_bytes(length, byteorder="big", signed=False)
 
 
-def production_verify(public_key, signature, message):
+def production_verify(message, signature, public_key):
+    verify_signature(message, signature, public_key_hex=public_key)
     msg = string_to_int(message)
-    recovered_address = Account.recover_message(message, signature=signature)
-    print("check public_key and recovered_address", recovered_address == public_key)
-    vk = VerifyingKey.from_string(bytes.fromhex(recovered_address[2:]), curve=SECP256k1)
+    vk = VerifyingKey.from_string(bytes.fromhex(public_key), curve=SECP256k1)
     pubkey = vk.pubkey.point
     curve_order = SECP256k1.order
     r, s = util.sigdecode_string(signature, curve_order)
