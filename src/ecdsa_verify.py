@@ -2,7 +2,9 @@ import ecdsa, io, json
 from eth_utils.crypto import keccak
 from Crypto.Hash import keccak
 from web3 import Web3
+from eth_account import Account
 from ecdsa import VerifyingKey, SigningKey, SECP256k1, util
+from ecdsa.curves import SECP256k1
 
 
 def int_to_big_endian(x, length=32):
@@ -90,22 +92,14 @@ def bigint_to_Uint8Array(x, length=32):
     return x.to_bytes(length, byteorder="big", signed=False)
 
 
-def production_verify():
-    priv = 88549154299169935420064281163296845505587953610183896504176354567359434168161
-    text = "hello"
-    message = "hello".encode("utf-8")
-    msg = string_to_int(text)
-    # Generate signing and verifying keys
-    sk = SigningKey.from_secret_exponent(priv, curve=SECP256k1)
-    vk = sk.verifying_key
+def production_verify(public_key, signature, message):
+    msg = string_to_int(message)
+    recovered_address = Account.recover_message(message, signature=signature)
+    print("check public_key and recovered_address", recovered_address == public_key)
+    vk = VerifyingKey.from_string(bytes.fromhex(recovered_address[2:]), curve=SECP256k1)
     pubkey = vk.pubkey.point
-
-    # Signing
-    signature = sk.sign_digest(message, sigencode=util.sigencode_string)
-
-    # Extract r and s from signature
-    r, s = util.sigdecode_string(signature, sk.curve.order)
-
+    curve_order = SECP256k1.order
+    r, s = util.sigdecode_string(signature, curve_order)
     # Convert values
     r_array = bigint_to_array(64, 4, r)
     s_array = bigint_to_array(64, 4, s)
@@ -209,4 +203,4 @@ s_bits = get_bit_array(s_bytes)
 verify_signature(message_bytes, signature, public_key_hex)
 
 
-production_verify()
+verify()
