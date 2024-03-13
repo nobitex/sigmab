@@ -67,6 +67,13 @@ template MptLast(maxBlocks, maxLowerLen, security) {
 
     signal output commitUpper;
     signal output commitLower;
+    signal output coin;
+
+    component coinHasher = Hasher();
+    
+    coinHasher.left <== balances;
+    coinHasher.right <== salts;
+    coin <== coinHasher.hash;
 
     component account_rlp_calculator = Rlp();
     account_rlp_calculator.nonce <== nonce;
