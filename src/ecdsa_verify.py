@@ -9,6 +9,11 @@ def int_to_big_endian(x, length=32):
     return x.to_bytes(length, byteorder="big")
 
 
+def string_to_int(string):
+    byte = string.encode("utf-8")
+    return int.from_bytes(byte, "big")
+
+
 def big_endian_to_int(x):
     return int.from_bytes(x, byteorder="big")
 
@@ -83,6 +88,45 @@ def verify_signature(message, signature, public_key_hex):
 
 def bigint_to_Uint8Array(x, length=32):
     return x.to_bytes(length, byteorder="big", signed=False)
+
+
+def production_verify():
+    priv = 88549154299169935420064281163296845505587953610183896504176354567359434168161
+    text = "hello"
+    message = "hello".encode("utf-8")
+    msg = string_to_int(text)
+    # Generate signing and verifying keys
+    sk = SigningKey.from_secret_exponent(priv, curve=SECP256k1)
+    vk = sk.verifying_key
+    pubkey = vk.pubkey.point
+
+    # Signing
+    signature = sk.sign_digest(message, sigencode=util.sigencode_string)
+
+    # Extract r and s from signature
+    r, s = util.sigdecode_string(signature, sk.curve.order)
+
+    # Convert values
+    r_array = bigint_to_array(64, 4, r)
+    s_array = bigint_to_array(64, 4, s)
+    msghash_array = bigint_to_array(64, 4, msg)
+    pub0_array = bigint_to_array(64, 4, pubkey.x())
+    pub1_array = bigint_to_array(64, 4, pubkey.y())
+
+    # Save to input file
+    with io.open("circuit/temp/ecdsa_verify/input_ecdsa_verify.json", "w") as f:
+        json.dump(
+            {
+                "msghash": chunks_to_string(msghash_array),
+                "r": chunks_to_string(r_array),
+                "s": chunks_to_string(s_array),
+                "pubkey": [
+                    chunks_to_string(pub0_array),
+                    chunks_to_string(pub1_array),
+                ],
+            },
+            f,
+        )
 
 
 def verify():
@@ -165,4 +209,4 @@ s_bits = get_bit_array(s_bytes)
 verify_signature(message_bytes, signature, public_key_hex)
 
 
-verify()
+production_verify()
