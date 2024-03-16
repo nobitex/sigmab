@@ -3,7 +3,7 @@ import os
 import io
 
 
-def get_mpt_path_proof(salt, lower, upper):
+def get_mpt_path_proof(salt, lower, upper, is_top):
     MAX_BLOCKS = 4
     numLowerLayerBytes = len(lower)
     numUpperLayerBytes = len(upper)
@@ -13,17 +13,16 @@ def get_mpt_path_proof(salt, lower, upper):
     with io.open("/tmp/input_mpt_path.json", "w") as f:
         json.dump(
             {
-                "salt": salt,
+                "salt": str(salt),
                 "numLowerLayerBytes": numLowerLayerBytes,
-                "numUpperLayerBytes": numUpperLayerBytes,
+                "numUpperLayerBytes": 1 if is_top else numUpperLayerBytes,
                 "lowerLayerBytes": lowerLayer,
-                "upperLayerBytes": upperLayer,
+                "upperLayerBytes": [0] * MAX_BLOCKS * 136 if is_top else upperLayer,
+                "isTop": 1 if is_top else 0,
             },
             f,
         )
 
-    os.system(
-        "make gen_mpt_path_witness"
-    )
+    os.system("make gen_mpt_path_witness")
     with io.open("/tmp/output_mpt_path.json", "r") as f:
         return f.read()
