@@ -1,8 +1,7 @@
 pragma circom 2.1.6;
 
-include "./circom-ecdsa/circuits/vocdoni-keccak/keccak.circom";
-include "./circomlib/circuits/bitify.circom";
-include "./circom-ecdsa/circuits/ecdsa.circom";
+include "./utils/keccak/keccak.circom";
+include "./utils/ecdsa/ecdsa.circom";
 
 template VerifyMsgECDSA () {  
   signal input r[4];
