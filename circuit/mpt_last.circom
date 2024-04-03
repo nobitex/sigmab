@@ -72,7 +72,7 @@ template MptLast(maxBlocks, maxLowerLen, security) {
     component coinHasher = Hasher();
     
     coinHasher.left <== balances;
-    coinHasher.right <== salts;
+    coinHasher.right <== salt;
     coin <== coinHasher.hash;
 
     component account_rlp_calculator = Rlp();
