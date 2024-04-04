@@ -26,14 +26,41 @@ template VerifyMsgECDSA () {
   verifySignature.result === 1;
   verified <== verifySignature.result;
 
-  component pubHasher = Hasher();
+  component pubHasher[7];
 
-  pubHasher.left <== pubkey[0];
-  pubHasher.right <== pubkey[1];
+  pubHasher[0] = Hasher();
+  pubHasher[1] = Hasher();
+  pubHasher[2] = Hasher();
+  pubHasher[3] = Hasher();
+  pubHasher[4] = Hasher();
+  pubHasher[5] = Hasher();
+  pubHasher[6] = Hasher();
+  
+  pubHasher[0].left <== pubkey[0][0];
+  pubHasher[0].right <==  pubkey[1][0];
+
+  pubHasher[1].left  <==  pubkey[0][1];
+  pubHasher[1].right <==  pubkey[1][1];        
+
+  pubHasher[2].left <== pubkey[0][2];
+  pubHasher[2].right <==  pubkey[1][2];
+  
+  pubHasher[3].left  <==  pubkey[0][3];
+  pubHasher[3].right <==  pubkey[1][3];      
+
+
+  pubHasher[4].left <== pubHasher[0].hash;
+  pubHasher[4].right <== pubHasher[1].hash;
+
+  pubHasher[5].left <== pubHasher[2].hash;
+  pubHasher[5].right <== pubHasher[3].hash;
+
+  pubHasher[6].left <== pubHasher[4].hash;
+  pubHasher[6].right <== pubHasher[5].hash;
+
 
   component cHasher = Hasher();
-  
-  cHasher.left <== pubHasher.hash;
+  cHasher.left <== pubHasher[6].hash;
   cHasher.right <== salt;
 
   commit <== cHasher.hash;
