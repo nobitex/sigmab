@@ -29,6 +29,14 @@ def bigint_to_array(n, k, x):
     return ret
 
 
+def array_to_bigint(n, k, arr):
+    mod = 2**n
+    x = 0
+    for i in range(k):
+        x += arr[i] * (mod**i)
+    return x
+
+
 def get_bit_array(byte_list):
     bit_array = [bin(byte)[2:].zfill(8) for byte in byte_list]
     bit_string = "".join(bit_array)
@@ -125,6 +133,7 @@ def production_verify(message, signature, public_key):
 def verify():
     priv = 88549154299169935420064281163296845505587953610183896504176354567359434168161
     msghash_bigint = 1234
+    salt = "123"
 
     # Generate signing and verifying keys
     sk = SigningKey.from_secret_exponent(priv, curve=SECP256k1)
@@ -157,6 +166,7 @@ def verify():
                     chunks_to_string(pub0_array),
                     chunks_to_string(pub1_array),
                 ],
+                "salt": salt,
             },
             f,
         )
