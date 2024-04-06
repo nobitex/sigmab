@@ -180,7 +180,7 @@ ecdsa_verify:
 	mv circuit/ecdsa_verify.sym circuit/temp/ecdsa_verify/ecdsa_verify.sym 
 
 ecdsa_verify_zkey:
-	cd circuit && snarkjs groth16 setup temp/ecdsa_verify/ecdsa_verify.r1cs temp/setup/pot20_final.ptau ecdsa_verify_0000.zkey
+	cd circuit && snarkjs groth16 setup temp/ecdsa_verify/ecdsa_verify.r1cs temp/setup/pot22_final.ptau ecdsa_verify_0000.zkey
 	mv circuit/ecdsa_verify_0000.zkey circuit/temp/ecdsa_verify/ecdsa_verify_0000.zkey
 	cd circuit && snarkjs zkey contribute temp/ecdsa_verify/ecdsa_verify_0000.zkey temp/ecdsa_verify/ecdsa_verify_0001.zkey --entropy=1234 --name="second contribution" -v
 	cd circuit && snarkjs zkey export verificationkey temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/verification_key.json
@@ -193,10 +193,12 @@ gen_ecdsa_verify_witness:
 
 
 gen_ecdsa_verify_proof:
-	cd circuit && snarkjs groth16 prove circuit/temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/ecdsa_verify_witness.wtns ecdsa_verify_proof.json ecdsa_verify_public.json
+	cd circuit && snarkjs groth16 prove temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/ecdsa_verify_witness.wtns ecdsa_verify_proof.json ecdsa_verify_public.json
 	snarkjs generatecall circuit/ecdsa_verify_public.json circuit/ecdsa_verify_proof.json > /tmp/ecdsa_verify_proof.json 
 	mv circuit/ecdsa_verify_proof.json circuit/temp/ecdsa_verify/ecdsa_verify_proof.json
 	mv circuit/ecdsa_verify_public.json circuit/temp/ecdsa_verify/ecdsa_verify_public.json
+verify_ecdsa_verify_proof:
+	cd circuit && snarkjs groth16 verify temp/ecdsa_verify/verification_key.json temp/ecdsa_verify/ecdsa_verify_public.json temp/ecdsa_verify/ecdsa_verify_proof.json
 
 
 # utils
