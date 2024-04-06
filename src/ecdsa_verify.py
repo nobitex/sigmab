@@ -2,11 +2,18 @@ import ecdsa, io, json
 from eth_utils.crypto import keccak
 from Crypto.Hash import keccak
 from web3 import Web3
+from eth_account import Account
 from ecdsa import VerifyingKey, SigningKey, SECP256k1, util
+from ecdsa.curves import SECP256k1
 
 
 def int_to_big_endian(x, length=32):
     return x.to_bytes(length, byteorder="big")
+
+
+def string_to_int(string):
+    byte = string.encode("utf-8")
+    return int.from_bytes(byte, "big")
 
 
 def big_endian_to_int(x):
@@ -20,6 +27,14 @@ def bigint_to_array(n, k, x):
         ret.append(x % mod)
         x = x // mod
     return ret
+
+
+def array_to_bigint(n, k, arr):
+    mod = 2**n
+    x = 0
+    for i in range(k):
+        x += arr[i] * (mod**i)
+    return x
 
 
 def get_bit_array(byte_list):
@@ -85,9 +100,40 @@ def bigint_to_Uint8Array(x, length=32):
     return x.to_bytes(length, byteorder="big", signed=False)
 
 
+def production_verify(message, signature, public_key):
+    verify_signature(message, signature, public_key_hex=public_key)
+    msg = string_to_int(message)
+    vk = VerifyingKey.from_string(bytes.fromhex(public_key), curve=SECP256k1)
+    pubkey = vk.pubkey.point
+    curve_order = SECP256k1.order
+    r, s = util.sigdecode_string(signature, curve_order)
+    # Convert values
+    r_array = bigint_to_array(64, 4, r)
+    s_array = bigint_to_array(64, 4, s)
+    msghash_array = bigint_to_array(64, 4, msg)
+    pub0_array = bigint_to_array(64, 4, pubkey.x())
+    pub1_array = bigint_to_array(64, 4, pubkey.y())
+
+    # Save to input file
+    with io.open("circuit/temp/ecdsa_verify/input_ecdsa_verify.json", "w") as f:
+        json.dump(
+            {
+                "msghash": chunks_to_string(msghash_array),
+                "r": chunks_to_string(r_array),
+                "s": chunks_to_string(s_array),
+                "pubkey": [
+                    chunks_to_string(pub0_array),
+                    chunks_to_string(pub1_array),
+                ],
+            },
+            f,
+        )
+
+
 def verify():
     priv = 88549154299169935420064281163296845505587953610183896504176354567359434168161
     msghash_bigint = 1234
+    salt = "123"
 
     # Generate signing and verifying keys
     sk = SigningKey.from_secret_exponent(priv, curve=SECP256k1)
@@ -120,6 +166,7 @@ def verify():
                     chunks_to_string(pub0_array),
                     chunks_to_string(pub1_array),
                 ],
+                "salt": salt,
             },
             f,
         )
