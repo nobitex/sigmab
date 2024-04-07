@@ -14,6 +14,7 @@ circuit/mpt_first_*
 circuit/mpt_path_*
 circuit/mpt_last_*
 circuit/pol_*
+circuit/ecdsa_verify_*
 circuit/stealth_balance_addition_*
 __pycache__
 
