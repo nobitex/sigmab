@@ -19,3 +19,4 @@ circuit/stealth_balance_addition_*
 __pycache__
 
 .vscode/
+.env
