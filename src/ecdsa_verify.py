@@ -210,6 +210,3 @@ s_bits = get_bit_array(s_bytes)
 
 
 verify_signature(message_bytes, signature, public_key_hex)
-
-
-verify()
