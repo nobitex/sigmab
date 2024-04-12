@@ -1,4 +1,4 @@
-import os
+import os, json
 import sys
 # Add the path to project_root
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -7,6 +7,10 @@ from web3 import Web3
 import rlp
 from mpt import mpt_last
 from mpt import mpt_path
+from dotenv import load_dotenv
+dotenv_path = os.path.join(project_root, '.env')
+load_dotenv(dotenv_path)
+
 
 SALT = 123
 
@@ -28,7 +32,6 @@ def verify_proof(proof, block):
     )
     address_bytes = bytes.fromhex(str(proof.address)[2:])
     prefix_account_rlp = proof.accountProof[-1][: -len(account_rlp)]
-
     if Web3.keccak(prefix_account_rlp + account_rlp) not in proof.accountProof[-2]:
         raise Exception("Not verified!")
 
@@ -63,7 +66,7 @@ def print_results(proof, expected_account_rlp, result):
     print(result[:2])
 
 
-def get_account_eth_mpt_proof(account, provider):
+def get_account_eth_mpt_proof(account,ECDS_commitment, provider):
     # import ipdb; ipdb.set_trace()
     w3 = Web3(Web3.HTTPProvider(provider))
 
@@ -73,7 +76,7 @@ def get_account_eth_mpt_proof(account, provider):
     proof = w3.eth.get_proof(account, [], num)
 
     account_rlp, address_bytes, prefix_account_rlp = verify_proof(proof, block)
-
+    
     result = mpt_last.get_last_proof(
         SALT,
         address_bytes,
@@ -82,13 +85,27 @@ def get_account_eth_mpt_proof(account, provider):
         proof.balance,
         proof.storageHash,
         proof.codeHash,
+        ECDS_commitment
     )
 
     print_results(proof, account_rlp, result)
 
+def get_ECDSA_ommitment(accounts_index):
+    
+    output_file = f"circuit/temp/ecdsa_verify/output_ecdsa_verify_{accounts_index}.json"
+    if os.path.exists(output_file) :
+            with open(output_file, 'r') as f:
+                commitment = json.load(f)
+    else:
+        raise Exception("ERROR: ECDSA commitment is not generated. ")
+    return commitment[1]
 
+
+ECDS_commitment = get_ECDSA_ommitment(0)
+account_address = os.getenv("ADDR0")
 get_account_eth_mpt_proof(
-    "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+    account_address,
+    ECDS_commitment,
     "https://yolo-shy-fog.discover.quiknode.pro/97f7aeb00bc7a8d80c3d4834a16cd9c86b54b552/",
 )
 print("OK!")
