@@ -59,7 +59,7 @@ template PubkeyToAddress() {
     // public key is (x, y) curve point. this is a 512-bit little-endian bitstring representation of y + 2**256 * x
     signal input pubkeyBits[512];
 
-    signal output address[20];
+    signal output address;
 
     // our representation is little-endian 512-bit bitstring
     // keccak template operates on bytestrings one byte at a time, starting with the biggest byte
@@ -81,14 +81,13 @@ template PubkeyToAddress() {
     // the output of keccak is 32 bytes. bytes are arranged from largest to smallest
     // but bytes themselves are little-endian bitstrings of 8 bits
     // we just want a little-endian bitstring of 160 bits
-    component addr[20];
+    component bits2Num = Bits2Num(160);
     for (var i = 0; i < 20; i++) {
-      addr[i] = Bits2Num(8);
       for (var j = 0; j < 8; j++) {
-         addr[i].in[j] <== keccak.out[256 - 8 * (i + 1) + j]; // Assign bits to bits2Num.in
+        bits2Num.in[8*i + j] <== keccak.out[256 - 8*(i+1) + j];
       }
-      //reverse the bytes
-      address[19-i] <== addr[i].out;
     }
+
+    address <== bits2Num.out;
 
 }
