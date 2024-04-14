@@ -27,16 +27,17 @@ mpt_path_zkey:
 	cd circuit && snarkjs zkey export verificationkey temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/verification_key.json
 
 gen_mpt_path_witness:
-	cd circuit/temp/mpt_path/mpt_path_cpp && ./mpt_path /tmp/input_mpt_path.json mpt_path_witness.wtns
-	cd circuit/temp/pol/pol_cpp && ./pol ../input_pol.json pol_witness.wtns
+	cd circuit/temp/mpt_path/mpt_path_cpp && ./mpt_path ../input_mpt_path.json mpt_path_witness.wtns
 	mv circuit/temp/mpt_path/mpt_path_cpp/mpt_path_witness.wtns circuit/temp/mpt_path/mpt_path_witness.wtns
-	mv circuit/temp/mpt_path/mpt_path_cpp/output.json /tmp/output_mpt_path.json
+	mv circuit/temp/mpt_path/mpt_path_cpp/output.json circuit/temp/mpt_path/output_mpt_path.json
 
 gen_mpt_path_proof:
-	cd circuit && snarkjs groth16 prove circuit/temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/mpt_path_witness.wtns mpt_path_proof.json mpt_path_public.json
+	cd circuit && snarkjs groth16 prove temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/mpt_path_witness.wtns mpt_path_proof.json mpt_path_public.json
 	snarkjs generatecall circuit/mpt_path_public.json circuit/mpt_path_proof.json > /tmp/mpt_path_proof.json 
 	mv circuit/mpt_path_proof.json circuit/temp/mpt_path/mpt_path_proof.json
 	mv circuit/mpt_path_public.json circuit/temp/mpt_path/mpt_path_public.json
+verify_mpt_path_proof:
+	cd circuit && snarkjs groth16 verify temp/mpt_path/verification_key.json temp/mpt_path/mpt_path_public.json temp/mpt_path/mpt_path_proof.json
 
 # mpt_last commands
 mpt_last:
@@ -58,16 +59,18 @@ mpt_last_zkey:
 	cd circuit && snarkjs zkey export verificationkey temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/verification_key.json
 
 gen_mpt_last_witness:
-	cd circuit/temp/mpt_last/mpt_last_cpp && ./mpt_last /tmp/input_mpt_last.json mpt_last_witness.wtns
-	cd circuit/temp/pol/pol_cpp && ./pol ../input_pol.json pol_witness.wtns
+	cd circuit/temp/mpt_last/mpt_last_cpp && ./mpt_last ../input_mpt_last.json mpt_last_witness.wtns
 	mv circuit/temp/mpt_last/mpt_last_cpp/mpt_last_witness.wtns circuit/temp/mpt_last/mpt_last_witness.wtns
-	mv circuit/temp/mpt_last/mpt_last_cpp/output.json /tmp/output_mpt_last.json
+	mv circuit/temp/mpt_last/mpt_last_cpp/output.json circuit/temp/mpt_last/output_mpt_last.json
 
 gen_mpt_last_proof:
-	cd circuit && snarkjs groth16 prove circuit/temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/mpt_last_witness.wtns mpt_last_proof.json mpt_last_public.json
+	cd circuit && snarkjs groth16 prove temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/mpt_last_witness.wtns mpt_last_proof.json mpt_last_public.json
 	snarkjs generatecall circuit/mpt_last_public.json circuit/mpt_last_proof.json > /tmp/mpt_last_proof.json 
 	mv circuit/mpt_last_proof.json circuit/temp/mpt_last/mpt_last_proof.json
 	mv circuit/mpt_last_public.json circuit/temp/mpt_last/mpt_last_public.json
+
+verify_mpt_last_proof:
+	cd circuit && snarkjs groth16 verify temp/mpt_last/verification_key.json temp/mpt_last/mpt_last_public.json temp/mpt_last/mpt_last_proof.json
 
 # stealth_balance_addition commands
 stealth_balance_addition:
