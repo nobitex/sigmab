@@ -43,12 +43,9 @@ template VerifyMsgECDSA () {
         pubToAddr.pubkeyBits[i] <== flattenPub.pubkeyBits[i];
     }
     
-  // generate commitment hash from address bytes and salt
-  component b2n = BytesToNums(20,20);
-  b2n.inp <== pubToAddr.address;
-  
+   // generate commitment hash from address bytes and salt
   component commitmentHasher = Hasher();
-  commitmentHasher.left <== b2n.out[0];
+  commitmentHasher.left <== pubToAddr.address;
   commitmentHasher.right <== salt;
 
   commitmentHash <== commitmentHasher.hash;
