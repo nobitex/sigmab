@@ -7,37 +7,6 @@ trusted_setup:
 	cd circuit && snarkjs powersoftau contribute temp/setup/pot12_0000.ptau temp/setup/pot12_0001.ptau --entropy=1234 --name="first contribution" -v
 	cd circuit && snarkjs powersoftau prepare phase2 temp/setup/pot12_0001.ptau temp/setup/pot12_final.ptau -v
 
-# mpt_first commands
-mpt_first:
-	mkdir -p circuit/temp/mpt_first
-	cd circuit && circom mpt_first.circom --r1cs --wasm --sym --c
-	mv circuit/mpt_first_cpp circuit/temp/mpt_first
-	mv circuit/mpt_first_js circuit/temp/mpt_first
-	mv circuit/temp/mpt_first/mpt_first_cpp/main.cpp circuit/temp/mpt_first/mpt_first_cpp/main.cpp.tmp
-	python3 scripts/spit_output.py < circuit/temp/mpt_first/mpt_first_cpp/main.cpp.tmp > circuit/temp/mpt_first/mpt_first_cpp/main.cpp
-	rm circuit/temp/mpt_first/mpt_first_cpp/main.cpp.tmp
-	cd circuit/temp/mpt_first/mpt_first_cpp && make
-	mv circuit/mpt_first.r1cs circuit/temp/mpt_first/mpt_first.r1cs
-	mv circuit/mpt_first.sym circuit/temp/mpt_first/mpt_first.sym 
-
-mpt_first_zkey:
-	cd circuit && snarkjs groth16 setup temp/mpt_first/mpt_first.r1cs temp/setup/pot20_final.ptau mpt_first_0000.zkey
-	mv circuit/mpt_first_0000.zkey circuit/temp/mpt_first/mpt_first_0000.zkey
-	cd circuit && snarkjs zkey contribute temp/mpt_first/mpt_first_0000.zkey temp/mpt_first/mpt_first_0001.zkey --entropy=1234 --name="second contribution" -v
-	cd circuit && snarkjs zkey export verificationkey temp/mpt_first/mpt_first_0001.zkey temp/mpt_first/verification_key.json
-
-gen_mpt_first_witness:
-	cd circuit/temp/mpt_first/mpt_first_cpp && ./mpt_first /tmp/input_mpt_first.json mpt_first_witness.wtns
-	cd circuit/temp/pol/pol_cpp && ./pol ../input_pol.json pol_witness.wtns
-	mv circuit/temp/mpt_first/mpt_first_cpp/mpt_first_witness.wtns circuit/temp/mpt_first/mpt_first_witness.wtns
-	mv circuit/temp/mpt_first/mpt_first_cpp/output.json /tmp/output_mpt_first.json
-
-gen_mpt_first_proof:
-	cd circuit && snarkjs groth16 prove circuit/temp/mpt_first/mpt_first_0001.zkey temp/mpt_first/mpt_first_witness.wtns mpt_first_proof.json mpt_first_public.json
-	snarkjs generatecall circuit/mpt_first_public.json circuit/mpt_first_proof.json > /tmp/pol_proof.json 
-	mv circuit/mpt_first_proof.json circuit/temp/mpt_first/mpt_first_proof.json
-	mv circuit/mpt_first_public.json circuit/temp/mpt_first/mpt_first_public.json
-
 # mpt_path commands
 mpt_path:
 	mkdir -p circuit/temp/mpt_path
@@ -204,9 +173,9 @@ verify_ecdsa_verify_proof:
 # utils
 clean:
 	find . -type d -name '__pycache__' -exec rm -rf {} +
-	rm -rf circuit/*.r1cs circuit/*.wasm circuit/*.sym circuit/*.json circuit/*.wtns circuit/mpt_last_cpp/ circuit/mpt_last_js/ circuit/mpt_last_cpp/ circuit/mpt_last_js/ circuit/mpt_path_cpp/ circuit/mpt_path_js/ circuit/mpt_first_cpp/ circuit/mpt_first_js/ circuit/stealth_balance_addition_cpp/ circuit/stealth_balance_addition_js/
+	rm -rf circuit/*.r1cs circuit/*.wasm circuit/*.sym circuit/*.json circuit/*.wtns circuit/mpt_last_cpp/ circuit/mpt_last_js/ circuit/mpt_last_cpp/ circuit/mpt_last_js/ circuit/mpt_path_cpp/ circuit/mpt_path_js/ circuit/stealth_balance_addition_cpp/ circuit/stealth_balance_addition_js/
 
 clean_all: clean
 	rm -rf circuit/*.zkey
 
-install: clean mpt_first mpt_path mpt_last stealth_balance_addition pol
+install: clean mpt_path mpt_last stealth_balance_addition pol
