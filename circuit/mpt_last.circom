@@ -146,7 +146,7 @@ template MptLast(maxBlocks, maxLowerLen, security) {
 
 
     // recreate the ecdsa commitment hash from address bytes and salt
-    component b2n = BytesToNums(20,20);
+    component b2n = BytesToNumsLittleEndian(20,20);
     b2n.inp <== address;
   
     component commitmentHasher = Hasher();
