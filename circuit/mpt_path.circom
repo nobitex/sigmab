@@ -3,6 +3,7 @@ pragma circom 2.1.5;
 include "./utils/keccak/keccak.circom";
 include "./utils/substring_finder.circom";
 include "./utils/hasher.circom";
+include "./utils/utils.circom";
 include "./utils/padding.circom";
 include "./hashbytes.circom";
 

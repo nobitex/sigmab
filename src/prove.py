@@ -15,9 +15,14 @@ SALT = 123
 def verify_proof(proof, block):
     rev_proof = proof.accountProof[::-1]
     layers = []
-
+    account_rlp = rlp.encode(
+        [proof.nonce, proof.balance, proof.storageHash, proof.codeHash]
+    )
+    address_bytes = bytes.fromhex(str(proof.address)[2:])
+    prefix_account_rlp = proof.accountProof[-1][: -len(account_rlp)]
     last_proof, last_proof_upper_commit = mpt_last.get_last_proof(
         SALT,
+        address_bytes,
         bytes(prefix_account_rlp),
         proof.nonce,
         proof.balance,
@@ -44,44 +49,39 @@ def verify_proof(proof, block):
             path_proofs.append(mpt_path_proof)
             layers.append(mpt_path_upper_commit)
 
-    account_rlp = rlp.encode(
-        [proof.nonce, proof.balance, proof.storageHash, proof.codeHash]
-    )
-    address_bytes = bytes.fromhex(str(proof.address)[2:])
-    prefix_account_rlp = proof.accountProof[-1][: -len(account_rlp)]
 
     if Web3.keccak(prefix_account_rlp + account_rlp) not in proof.accountProof[-2]:
         raise Exception("Not verified!")
 
-    return account_rlp, address_bytes, prefix_account_rlp, root_proof
+    return account_rlp, address_bytes, prefix_account_rlp
 
 
-def print_results(proof, expected_account_rlp, result):
-    print("balance", proof.balance)
-    print("nonce", proof.nonce)
-    print("storage hash", list(proof.storageHash))
-    print("code hash", list(proof.codeHash))
+# def print_results(proof, expected_account_rlp, result):
+#     print("balance", proof.balance)
+#     print("nonce", proof.nonce)
+#     print("storage hash", list(proof.storageHash))
+#     print("code hash", list(proof.codeHash))
 
-    print("===================================")
+#     print("===================================")
 
-    print("Expected len", len(expected_account_rlp))
-    print("Expected result", list(expected_account_rlp))
+#     print("Expected len", len(expected_account_rlp))
+#     print("Expected result", list(expected_account_rlp))
 
-    print("===================================")
+#     print("===================================")
 
-    print("Hex expected result", bytes(list(expected_account_rlp)).hex())
-    print("Hex circuit result", bytes(result[3:]).hex())
+#     print("Hex expected result", bytes(list(expected_account_rlp)).hex())
+#     print("Hex circuit result", bytes(result[3:]).hex())
 
-    print("===================================")
+#     print("===================================")
 
-    print("Circuit result len", result[2])
-    print("Circuit result", result[3 : result[2] + 3])
+#     print("Circuit result len", result[2])
+#     print("Circuit result", result[3 : result[2] + 3])
 
-    print("===================================")
+#     print("===================================")
 
-    print("Equality", result[3 : result[2] + 3] == list(expected_account_rlp))
+#     print("Equality", result[3 : result[2] + 3] == list(expected_account_rlp))
 
-    print(result[:2])
+#     print(result[:2])
 
 
 def get_account_eth_mpt_proof(account, provider):
@@ -105,7 +105,7 @@ def get_account_eth_mpt_proof(account, provider):
         proof.codeHash,
     )
 
-    print_results(proof, account_rlp, result)
+    # print_results(proof, account_rlp, result)
 
 
 get_account_eth_mpt_proof(

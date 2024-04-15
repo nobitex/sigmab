@@ -10,7 +10,7 @@ def get_mpt_path_proof(salt, lower, upper, is_top):
     lowerLayer = list(lower) + (MAX_BLOCKS * 136 - len(lower)) * [0]
     upperLayer = list(upper) + (MAX_BLOCKS * 136 - len(upper)) * [0]
 
-    with io.open("/tmp/input_mpt_path.json", "w") as f:
+    with io.open("circuit/temp/mpt_path/input_mpt_path.json", "w") as f:
         json.dump(
             {
                 "salt": str(salt),
@@ -24,5 +24,6 @@ def get_mpt_path_proof(salt, lower, upper, is_top):
         )
 
     os.system("make gen_mpt_path_witness")
-    with io.open("/tmp/output_mpt_path.json", "r") as f:
-        return f.read()
+    with io.open("circuit/temp/mpt_path/output_mpt_path.json", "r") as f:
+        data = json.load(f)
+        return [data[0], data[1]]

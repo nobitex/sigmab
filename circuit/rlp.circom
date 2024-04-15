@@ -1,7 +1,7 @@
 pragma circom 2.1.5;
 
-include "./utils.circom";
-include "./concat.circom";
+include "./utils/utils.circom";
+include "./utils/concat.circom";
 
 template Mux() {
     signal input c[2];
