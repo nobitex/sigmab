@@ -95,9 +95,9 @@ stealth_balance_addition_zkey:
 	cd circuit && snarkjs zkey export verificationkey temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/verification_key.json
 
 gen_stealth_balance_addition_witness:
-	cd circuit/temp/stealth_balance_addition && ./stealth_balance_addition_cpp/stealth_balance_addition /tmp/input_stealth_balance_addition.json stealth_balance_addition_witness.wtns
-	mv circuit/stealth_balance_addition_witness.wtns circuit/temp/stealth_balance_addition/stealth_balance_addition_witness.wtns
-	mv circuit/temp/stealth_balance_addition/output.json /tmp/output_stealth_balance_addition.json
+	cd circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp && ./stealth_balance_addition ../input_stealth_balance_addition.json stealth_balance_addition_witness.wtns
+	mv circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/stealth_balance_addition_witness.wtns circuit/temp/stealth_balance_addition/stealth_balance_addition_witness.wtns
+	mv circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/output.json circuit/temp/stealth_balance_addition/output_stealth_balance_addition.json
 
 gen_stealth_balance_addition_proof:
 	cd circuit && snarkjs groth16 prove temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/stealth_balance_addition_witness.wtns stealth_balance_addition_proof.json stealth_balance_addition_public.json
@@ -105,6 +105,8 @@ gen_stealth_balance_addition_proof:
 	mv circuit/stealth_balance_addition_proof.json circuit/temp/stealth_balance_addition/stealth_balance_addition_proof.json
 	mv circuit/stealth_balance_addition_public.json circuit/temp/stealth_balance_addition/stealth_balance_addition_public.json
 
+verify_stealth_balance_addition_proof:
+	cd circuit && snarkjs groth16 verify temp/stealth_balance_addition/verification_key.json temp/stealth_balance_addition/stealth_balance_addition_public.json temp/stealth_balance_addition/stealth_balance_addition_proof.json
 # pol commands
 pol:
 	mkdir -p circuit/temp/pol
