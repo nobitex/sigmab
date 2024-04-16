@@ -28,6 +28,22 @@ template BytesToNums(numBytes, bytesPerNum) {
     }
 }
 
+template BytesToNumsLittleEndian(numBytes, bytesPerNum) {
+    var cnt = numBytes \ bytesPerNum + (numBytes % bytesPerNum != 0 ? 1 : 0);
+
+    signal input inp[numBytes];
+    signal output out[cnt];
+
+    component converters[cnt];
+    for(var i = 0; i < cnt; i++) {
+        // Reverse the bytes order for little-endian
+        var startIndex = (cnt - i - 1) * bytesPerNum;
+        converters[i] = Bytes2Num(numBytes, startIndex, numBytes - startIndex < bytesPerNum ? numBytes - startIndex : bytesPerNum);
+        converters[i].block <== inp;
+        out[i] <== converters[i].out;
+    }
+}
+
 template HashBytes(numBytes, bytesPerNum) {
     signal input inp[numBytes];
     signal output out;

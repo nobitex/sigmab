@@ -27,6 +27,7 @@ mpt_path_zkey:
 	cd circuit && snarkjs zkey export verificationkey temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/verification_key.json
 
 gen_mpt_path_witness:
+
 	cd circuit/temp/mpt_path/mpt_path_cpp && ./mpt_path ../input_mpt_path.json mpt_path_witness.wtns
 	mv circuit/temp/mpt_path/mpt_path_cpp/mpt_path_witness.wtns circuit/temp/mpt_path/mpt_path_witness.wtns
 	mv circuit/temp/mpt_path/mpt_path_cpp/output.json circuit/temp/mpt_path/output_mpt_path.json
@@ -59,6 +60,7 @@ mpt_last_zkey:
 	cd circuit && snarkjs zkey export verificationkey temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/verification_key.json
 
 gen_mpt_last_witness:
+
 	cd circuit/temp/mpt_last/mpt_last_cpp && ./mpt_last ../input_mpt_last.json mpt_last_witness.wtns
 	mv circuit/temp/mpt_last/mpt_last_cpp/mpt_last_witness.wtns circuit/temp/mpt_last/mpt_last_witness.wtns
 	mv circuit/temp/mpt_last/mpt_last_cpp/output.json circuit/temp/mpt_last/output_mpt_last.json
@@ -71,6 +73,7 @@ gen_mpt_last_proof:
 
 verify_mpt_last_proof:
 	cd circuit && snarkjs groth16 verify temp/mpt_last/verification_key.json temp/mpt_last/mpt_last_public.json temp/mpt_last/mpt_last_proof.json
+
 
 # stealth_balance_addition commands
 stealth_balance_addition:
@@ -97,7 +100,7 @@ gen_stealth_balance_addition_witness:
 	mv circuit/temp/stealth_balance_addition/output.json /tmp/output_stealth_balance_addition.json
 
 gen_stealth_balance_addition_proof:
-	cd circuit && snarkjs groth16 prove circuit/temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/stealth_balance_addition_witness.wtns stealth_balance_addition_proof.json stealth_balance_addition_public.json
+	cd circuit && snarkjs groth16 prove temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/stealth_balance_addition_witness.wtns stealth_balance_addition_proof.json stealth_balance_addition_public.json
 	snarkjs generatecall circuit/stealth_balance_addition_public.json circuit/stealth_balance_addition_proof.json > /tmp/stealth_balance_addition_proof.json 
 	mv circuit/stealth_balance_addition_proof.json circuit/temp/stealth_balance_addition/stealth_balance_addition_proof.json
 	mv circuit/stealth_balance_addition_public.json circuit/temp/stealth_balance_addition/stealth_balance_addition_public.json
@@ -181,4 +184,6 @@ clean:
 clean_all: clean
 	rm -rf circuit/*.zkey
 
-install: clean mpt_path mpt_last stealth_balance_addition pol
+
+install: clean mpt_first mpt_path mpt_last stealth_balance_addition pol ecdsa_verify
+

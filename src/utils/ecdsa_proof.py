@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess
 import ecdsa, io, json, hashlib
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(project_root)
 from eth_utils.crypto import keccak
 from Crypto.Hash import keccak
@@ -13,18 +13,17 @@ from ecdsa.curves import SECP256k1
 from ecdsa import NIST384p, SigningKey
 from ecdsa.util import randrange_from_seed__trytryagain
 from sign import sign_message_with_sha256, checkECDSA
+from dotenv import load_dotenv
+dotenv_path = os.path.join(project_root, '.env')
+load_dotenv(dotenv_path)
 
 
 
-
-def make_key(seed):
-    secexp = randrange_from_seed__trytryagain(seed, ecdsa.SECP256k1.order)
-    return SigningKey.from_secret_exponent(secexp, curve=ecdsa.SECP256k1)
 
 def generate_sks_hex(num_sks):
     
     '''
-    Generates a list of secret_key and public_key from a random seed in hex format.
+    Generates a list of secret_key and public_key from env file in hex format.
     
     Args:`
         num_sks: number of needed secret_key and public_key pairs.
@@ -35,11 +34,17 @@ def generate_sks_hex(num_sks):
     '''
     accounts = []
     for i in range(num_sks):
-        seed = os.urandom(ecdsa.SECP256k1.baselen)
-        sk = make_key(seed)
-        sk_hex= sk.to_string().hex()
-        public_key = sk.get_verifying_key()
-        public_key_hex = public_key.to_string("uncompressed").hex()
+        sk_hex = os.getenv(f"PK{i}")
+        private_key_bytes = bytes.fromhex(sk_hex)
+
+        # Create a signing key from the private key bytes
+        signing_key = SigningKey.from_string(private_key_bytes, curve=SECP256k1)
+
+        # Get the corresponding verifying key (public key)
+        verifying_key = signing_key.get_verifying_key()
+
+        # The hexadecimal representation of the public key
+        public_key_hex = verifying_key.to_string().hex()
         accounts.append([sk_hex, public_key_hex])
     return accounts
 
@@ -59,7 +64,7 @@ def generate_signature_data(num_sks):
     data=[]
     for i in range(num_sks): 
         signature = sign_message_with_sha256(generated_accounts[i][0], message)
-        data.append([signature, generated_accounts[i][1]])
+        data.append([signature, generated_accounts[i][1]])  
     return data
 
 
@@ -156,10 +161,9 @@ def generate_signature_proof_verification_data(signature_data, message, salt):
         generate_proof(i)
     combine_files(accounts_count)
     print("proof json file generated successfully.")
-      
-    
+   
 # Example usage:
-num_sks = 3
+num_sks = 1
 salt = 123
 message = "Nobitex"
 signature_data = generate_signature_data(num_sks)

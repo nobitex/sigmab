@@ -1,6 +1,7 @@
 import ecdsa, io, json, hashlib
 from ecdsa import VerifyingKey, SECP256k1, util
 from eth_keys import keys
+from eth_utils import keccak, encode_hex
 
 
 def int_to_big_endian(x, length=32):
@@ -137,6 +138,15 @@ def verify_signature_using_ecdsa(message, signature, pub):
         )
     except ecdsa.BadSignatureError:
         print("Bad Signature, Signature verification failed.")
+      
+def public_key_to_address(_public_key):
+    public_key = bytes.fromhex(_public_key)
+    # Step 1: Hash the public key using Keccak-256
+    hashed_public_key = keccak(hexstr=_public_key)
+    # Step 2: Take the last 20 bytes of the hash (the address)
+    address = hashed_public_key[-20:]
+    return encode_hex(address)
+
 
 
 def checkECDSA(message, public_key, signature, salt, counter):
@@ -144,7 +154,9 @@ def checkECDSA(message, public_key, signature, salt, counter):
     eth_encoded_msg = message.encode("utf-8")
     message_hash = hashlib.sha256(eth_encoded_msg).digest()
     msg = string_to_int(message_hash)
-
+    addr = public_key_to_address(public_key)
+    addr_bytes = bytes.fromhex(str(addr)[2:])
+    print("address byte list",list(addr_bytes))
     vk = VerifyingKey.from_string(bytes.fromhex(public_key), curve=SECP256k1)
     pubkey = vk.pubkey.point
     curve_order = SECP256k1.order
@@ -190,4 +202,3 @@ print("Recovered Public Key (Address):", uncompressed_public_key_hex)
 verify_signature(message, sig, public_key)
 verify_signature_using_ecdsa(message, signed_message, uncompressed_public_key_bytes)
 
-checkECDSA(message, uncompressed_public_key_hex, signed_message, salt)
