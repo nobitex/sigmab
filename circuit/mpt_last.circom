@@ -77,6 +77,7 @@ template MptLast(maxBlocks, maxLowerLen, security) {
 
     signal output lowerLayerLen;
     signal output lowerLayer[maxLowerLen];
+    signal output balanceCommitment;
 
     lowerLayerLen <== account_rlp_calculator.rlp_encoded_len;
     lowerLayer <== account_rlp_calculator.rlp_encoded;
@@ -156,6 +157,12 @@ template MptLast(maxBlocks, maxLowerLen, security) {
     // check the created commitment with the input commitment
     ECDSACommitmentHash === commitmentHasher.hash;
 
+
+    component balanceCommitmentHaher = Hasher();
+    balanceCommitmentHaher.left <== balance;
+    balanceCommitmentHaher.right <== salt;
+
+    balanceCommitment <== balanceCommitmentHaher.hash;
 
  }
 
