@@ -16,7 +16,7 @@ load_dotenv(dotenv_path)
 SALT = 123
 
 
-def verify_proof(proof, block):
+def verify_proof(proof, block, ECDS_commitment):
     rev_proof = proof.accountProof[::-1]
     layers = []
     account_rlp = rlp.encode(
@@ -33,6 +33,7 @@ def verify_proof(proof, block):
         proof.balance,
         proof.storageHash,
         proof.codeHash,
+        ECDS_commitment
     )
     layers.append(last_proof_upper_commit)
     root_proof = None
@@ -90,7 +91,8 @@ def verify_proof(proof, block):
 #     print(result[:2])
 
 
-def get_account_eth_mpt_proof(account,ECDS_commitment, provider):
+def get_account_eth_mpt_proof(account, provider, index):
+    ECDS_commitment = get_ECDSA_ommitment(index)
     # import ipdb; ipdb.set_trace()
     w3 = Web3(Web3.HTTPProvider(provider))
 
@@ -99,7 +101,7 @@ def get_account_eth_mpt_proof(account,ECDS_commitment, provider):
     block = w3.eth.get_block(num)
     proof = w3.eth.get_proof(account, [], num)
 
-    account_rlp, address_bytes, prefix_account_rlp = verify_proof(proof, block)
+    account_rlp, address_bytes, prefix_account_rlp = verify_proof(proof, block, ECDS_commitment)
     
     result = mpt_last.get_last_proof(
         SALT,
@@ -124,12 +126,4 @@ def get_ECDSA_ommitment(accounts_index):
         raise Exception("ERROR: ECDSA commitment is not generated. ")
     return commitment[1]
 
-
-ECDS_commitment = get_ECDSA_ommitment(0)
-account_address = os.getenv("ADDR0")
-get_account_eth_mpt_proof(
-    account_address,
-    ECDS_commitment,
-    "https://yolo-shy-fog.discover.quiknode.pro/97f7aeb00bc7a8d80c3d4834a16cd9c86b54b552/",
-)
 print("OK!")
