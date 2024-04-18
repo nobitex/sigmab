@@ -49,7 +49,7 @@ def generate_sks_hex(num_sks):
     return accounts
 
  
-def generate_signature_data(num_sks):
+def generate_signature_data(num_sks, message):
     '''
     Generates the signature from a given secret key and a pre_defined message.
     
@@ -163,7 +163,5 @@ def generate_signature_proof_verification_data(signature_data, message, salt):
     print("proof json file generated successfully.")
    
 
-salt = 123
-message = "Nobitex"
 
 
