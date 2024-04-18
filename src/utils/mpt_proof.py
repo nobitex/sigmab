@@ -13,7 +13,7 @@ from prove import get_account_eth_mpt_proof
 provider = "https://yolo-shy-fog.discover.quiknode.pro/97f7aeb00bc7a8d80c3d4834a16cd9c86b54b552/"
 
 
-def generate_mpt_cicuit_inputs(account_address, counter):
+def generate_mpt_cicuit_inputs(account_address, counter, salt):
     '''
     Generates the inputs for mpt last and mpt path circuit and saves them in coresponding files in circuit/temp.
     
@@ -21,7 +21,7 @@ def generate_mpt_cicuit_inputs(account_address, counter):
         signature_data: the list of company addresses,
         counter: the number used as iterator.
     ''' 
-    get_account_eth_mpt_proof(account_address, provider,counter)
+    get_account_eth_mpt_proof(account_address, provider,counter, salt)
     # rename mpt_last files according to the counter
     os.rename('circuit/temp/mpt_last/input_mpt_last.json', f'circuit/temp/mpt_last/input_mpt_last_{counter}.json')
     os.rename('circuit/temp/mpt_last/output_mpt_last.json', f'circuit/temp/mpt_last/output_mpt_last_{counter}.json')
@@ -123,7 +123,7 @@ def combine_mpt_path_files(counter):
         
         
         
-def generate_mpt_proof_data(address_list):
+def generate_mpt_proof_data(address_list, salt):
     '''
     Generates the cicuit inputs the witness, the output files, the proof, and the public arguments for mpt circuits.
     
@@ -132,7 +132,7 @@ def generate_mpt_proof_data(address_list):
     ''' 
     accounts_count = len(address_list)
     for i in range(accounts_count):
-        generate_mpt_cicuit_inputs(address_list[i], i)
+        generate_mpt_cicuit_inputs(address_list[i], i, salt)
         generate_proof(i)
     combine_mpt_last_files(accounts_count)
     combine_mpt_path_files(accounts_count)

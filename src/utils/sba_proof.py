@@ -7,11 +7,10 @@ sys.path.append(project_root)
 from web3 import Web3
 import rlp
 from mpt.stealth_balance_addition import get_stealth_balance_addtion_proof_prod
-SALT = 123
 
 
 
-def generate_sba_cicuit_inputs(balances, account_conuts):
+def generate_sba_cicuit_inputs(balances, account_conuts, salt):
     '''
     Generates the inputs for stealth_balance_addition circuit and saves them in coresponding files in circuit/temp.
     
@@ -21,8 +20,8 @@ def generate_sba_cicuit_inputs(balances, account_conuts):
     ''' 
     salts = []
     for i in range(account_conuts):
-        salts.append(SALT)
-    get_stealth_balance_addtion_proof_prod(balances, salts, SALT*account_conuts ,account_conuts)
+        salts.append(salt)
+    get_stealth_balance_addtion_proof_prod(balances, salts, salt*account_conuts ,account_conuts)
     print("inputs, outputs and witness files generated successfully.")
 
         
@@ -76,7 +75,7 @@ def combine_stealth_balance_addition_files():
         
         
         
-def generate_sba_proof_data(balances):
+def generate_sba_proof_data(balances, salt):
     '''
     Generates the cicuit inputs the witness, the output files, the proof, and the public arguments for mpt circuits.
     
@@ -84,13 +83,9 @@ def generate_sba_proof_data(balances):
         address_list: the list of company addresses.
     ''' 
     accounts_count = len(balances)
-    generate_sba_cicuit_inputs(balances, accounts_count)
+    generate_sba_cicuit_inputs(balances, accounts_count, salt)
     generate_proof()
     combine_stealth_balance_addition_files()
     print("proof json file generated successfully.")
     
     
-# Example usage:
-
-# balances = [90313886187000, 518994566333498]
-# generate_sba_proof_data(balances)

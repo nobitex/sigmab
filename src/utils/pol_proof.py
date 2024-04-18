@@ -11,25 +11,23 @@ from pol.liability import generate_input_json
 from pol.smt import LiabilityNode
 from utils.field  import Field
 from utils.mimc7 import mimc7
+from utils.utils import get_solvency_data
 from pol.pol_utils import id_hash
-SALT = 123
 
-with open('src/pol/liabilities.json', 'r') as file:
+with open('data/liability_data.json', 'r') as file:
     data = json.load(file)
 
 liabilities_data = data.get('liabilities', [])
-solvency_data = data.get('solvency_data', {})
 
 liabilitynodes = [LiabilityNode(Field(id_hash(item['id'])), Field(item['amount'])) for item in liabilities_data]
 liabilityNodeLength = len(liabilitynodes)
-
-solvency_balance = solvency_data.get('solvency_balance', 0)
-solvency_balance_salt = solvency_data.get('solvency_balance_salt', '')
+message, signature_data, address_array, num_accounts, balances = get_solvency_data()
+solvency_balance = sum(balances)
 # create the tree
 liabilityTree = buildLiabilityTree(liabilitynodes, 10)
 
 
-def generate_pol_cicuit_inputs(counter):
+def generate_pol_cicuit_inputs(counter, salt):
     '''
     Generates the inputs for pol last and pol path circuit and saves them in coresponding files in circuit/temp.
     
@@ -37,7 +35,7 @@ def generate_pol_cicuit_inputs(counter):
         signature_data: the list of company addresses,
         counter: the number used as iterator.
     ''' 
-    Proof = liabilityTree.createProof(counter, solvency_balance, solvency_balance_salt)
+    Proof = liabilityTree.createProof(counter, solvency_balance, salt)
     generate_input_json(Proof)
     os.system("make gen_pol_witness")
     # rename pol files according to the counter
@@ -100,7 +98,7 @@ def combine_pol_files(counter):
         
         
         
-def generate_pol_proof_data():
+def generate_pol_proof_data(salt):
     '''
     Generates the cicuit inputs the witness, the output files, the proof, and the public arguments for pol circuits.
     
@@ -108,7 +106,7 @@ def generate_pol_proof_data():
         address_list: the list of company addresses.
     ''' 
     for i in range(liabilityNodeLength):
-        generate_pol_cicuit_inputs(i)
+        generate_pol_cicuit_inputs(i, salt)
         generate_proof(i)
     combine_pol_files(liabilityNodeLength)
     print("proof json file generated successfully.")
