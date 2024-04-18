@@ -1,0 +1,15 @@
+{
+  "message": "Nobitex",
+  "accounts": {
+    "account_1": {
+      "address": "0x727d270cB6d427A431b0C5A88AD6491712c86061",
+      "pubkey": "bdccbcf0a540e38f2234c28d8f4f880fe9c0a15d2b4b2ef0056f4272d3c380c39486be7a8263cafd9073d731f013d7ed5eef2ed7b4fce77106c695b5eb781fd2",
+      "signature": "f6dc09753a148c67b283c2ba24c9431fc31ad608d014f27b4b22c74692655c0be45d899e946771a30ff4ad9fade553fc41197d800849f7c581345809f2a9d365"
+    },
+    "account_2": {
+      "address": "0x27A0cfeE639c8cd775FdD4E34210f148dDB041A1",
+      "pubkey": "54a8d1c094108400ec5d4d0d8e356ccdb094f788b64d765aab693e514af477d3e30552ec809501f1693883d0bad66695699abd25c8beffd4409ba2f8de35c44d",
+      "signature": "95c7f9080265fac3f1cdefd546d382d0e05afcf18df1c33df197e88d44e7993d4a184674d0ce5303d3e2ca79422101754bcf2295a80b81be75d925c3d9f973da"
+    }
+  }
+}
