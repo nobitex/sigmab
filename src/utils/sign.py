@@ -149,8 +149,9 @@ def public_key_to_address(_public_key):
 
 
 
-def checkECDSA(message, public_key, signature, salt, counter):
-    
+def checkECDSA(message,public_key, signature, salt, counter):
+    # uncompressed_public_key_hex, public_key, sig, uncompressed_public_key_bytes =  recover_raw_public_key(message, signature)
+    # public_key = str(public_key)[2:]
     eth_encoded_msg = message.encode("utf-8")
     message_hash = hashlib.sha256(eth_encoded_msg).digest()
     msg = string_to_int(message_hash)
@@ -185,20 +186,20 @@ def checkECDSA(message, public_key, signature, salt, counter):
         )
 
 
-# Example usage
-private_key_hex = "80711e79125489fe9c245784d6fe6fcbfe4eb57975d7b2add5f27048a7904b62"
-salt = 1234
-message = "Hello, Ethereum!"
-# Sign the message
-signed_message = sign_message_with_sha256(private_key_hex, message)
-print("Signed Message:", signed_message)
+# # Example usage
+# private_key_hex = "80711e79125489fe9c245784d6fe6fcbfe4eb57975d7b2add5f27048a7904b62"
+# salt = 1234
+# message = "Hello, Ethereum!"
+# # Sign the message
+# signed_message = sign_message_with_sha256(private_key_hex, message)
+# print("Signed Message:", signed_message)
 
-# Now recover the public key
-uncompressed_public_key_hex, public_key, sig, uncompressed_public_key_bytes = (
-    recover_raw_public_key(message, signed_message)
-)
-print("Recovered Public Key (Address):", uncompressed_public_key_hex)
+# # Now recover the public key
+# uncompressed_public_key_hex, public_key, sig, uncompressed_public_key_bytes = (
+#     recover_raw_public_key(message, signed_message)
+# )
+# print("Recovered Public Key (Address):", uncompressed_public_key_hex)
 
-verify_signature(message, sig, public_key)
-verify_signature_using_ecdsa(message, signed_message, uncompressed_public_key_bytes)
+# verify_signature(message, sig, public_key)
+# verify_signature_using_ecdsa(message, signed_message, uncompressed_public_key_bytes)
 
