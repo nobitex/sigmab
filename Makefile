@@ -1,6 +1,15 @@
 .PHONY = all
 # trusted set up
 
+
+rapidsnark/package/bin/prover:
+	cd circuit/rapidsnark && git submodule init
+	cd circuit/rapidsnark && git submodule update
+	cd circuit/rapidsnark && ./build_gmp.sh host
+	cd circuit/rapidsnark && mkdir -p build_prover
+	cd circuit/rapidsnark && cd build_prover && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package
+	cd circuit/rapidsnark && cd build_prover && make -j4 && make install
+
 trusted_setup:
 	mkdir -p circuit/temp/setup
 	cd circuit && snarkjs powersoftau new bn128 21 temp/setup/pot12_0000.ptau -v
@@ -33,7 +42,7 @@ gen_mpt_path_witness:
 	mv circuit/temp/mpt_path/mpt_path_cpp/output.json circuit/temp/mpt_path/output_mpt_path.json
 
 gen_mpt_path_proof:
-	cd circuit && snarkjs groth16 prove temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/mpt_path_witness.wtns mpt_path_proof.json mpt_path_public.json
+	cd circuit && rapidsnark/package/bin/prover temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/mpt_path_witness.wtns mpt_path_proof.json mpt_path_public.json
 	snarkjs generatecall circuit/mpt_path_public.json circuit/mpt_path_proof.json > /tmp/mpt_path_proof.json 
 	mv circuit/mpt_path_proof.json circuit/temp/mpt_path/mpt_path_proof.json
 	mv circuit/mpt_path_public.json circuit/temp/mpt_path/mpt_path_public.json
@@ -66,7 +75,7 @@ gen_mpt_last_witness:
 	mv circuit/temp/mpt_last/mpt_last_cpp/output.json circuit/temp/mpt_last/output_mpt_last.json
 
 gen_mpt_last_proof:
-	cd circuit && snarkjs groth16 prove temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/mpt_last_witness.wtns mpt_last_proof.json mpt_last_public.json
+	cd circuit && rapidsnark/package/bin/prover temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/mpt_last_witness.wtns mpt_last_proof.json mpt_last_public.json
 	snarkjs generatecall circuit/mpt_last_public.json circuit/mpt_last_proof.json > /tmp/mpt_last_proof.json 
 	mv circuit/mpt_last_proof.json circuit/temp/mpt_last/mpt_last_proof.json
 	mv circuit/mpt_last_public.json circuit/temp/mpt_last/mpt_last_public.json
@@ -100,7 +109,7 @@ gen_stealth_balance_addition_witness:
 	mv circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/output.json circuit/temp/stealth_balance_addition/output_stealth_balance_addition.json
 
 gen_stealth_balance_addition_proof:
-	cd circuit && snarkjs groth16 prove temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/stealth_balance_addition_witness.wtns stealth_balance_addition_proof.json stealth_balance_addition_public.json
+	cd circuit && rapidsnark/package/bin/prover temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/stealth_balance_addition_witness.wtns stealth_balance_addition_proof.json stealth_balance_addition_public.json
 	snarkjs generatecall circuit/stealth_balance_addition_public.json circuit/stealth_balance_addition_proof.json > /tmp/stealth_balance_addition_proof.json 
 	mv circuit/stealth_balance_addition_proof.json circuit/temp/stealth_balance_addition/stealth_balance_addition_proof.json
 	mv circuit/stealth_balance_addition_public.json circuit/temp/stealth_balance_addition/stealth_balance_addition_public.json
@@ -137,7 +146,7 @@ gen_pol_witness:
 	mv circuit/temp/pol/pol_cpp/output.json circuit/temp/pol/output_pol.json
 
 gen_pol_proof:
-	cd circuit && snarkjs groth16 prove temp/pol/pol_0001.zkey temp/pol/pol_witness.wtns pol_proof.json pol_public.json
+	cd circuit && rapidsnark/package/bin/prover temp/pol/pol_0001.zkey temp/pol/pol_witness.wtns pol_proof.json pol_public.json
 	snarkjs generatecall circuit/pol_public.json circuit/pol_proof.json > /tmp/pol_proof.json 
 	mv circuit/pol_proof.json circuit/temp/pol/pol_proof.json
 	mv circuit/pol_public.json circuit/temp/pol/pol_public.json
@@ -170,7 +179,7 @@ gen_ecdsa_verify_witness:
 
 
 gen_ecdsa_verify_proof:
-	cd circuit && snarkjs groth16 prove temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/ecdsa_verify_witness.wtns ecdsa_verify_proof.json ecdsa_verify_public.json
+	cd circuit && rapidsnark/package/bin/prover temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/ecdsa_verify_witness.wtns ecdsa_verify_proof.json ecdsa_verify_public.json
 	snarkjs generatecall circuit/ecdsa_verify_public.json circuit/ecdsa_verify_proof.json > /tmp/ecdsa_verify_proof.json 
 	mv circuit/ecdsa_verify_proof.json circuit/temp/ecdsa_verify/ecdsa_verify_proof.json
 	mv circuit/ecdsa_verify_public.json circuit/temp/ecdsa_verify/ecdsa_verify_public.json
@@ -187,5 +196,5 @@ clean_all: clean
 	rm -rf circuit/*.zkey
 
 
-install: clean mpt_first mpt_path mpt_last stealth_balance_addition pol ecdsa_verify
+install: clean rapidsnark/package/bin/prover mpt_path mpt_path_zkey mpt_last mpt_last_zkey stealth_balance_addition stealth_balance_addition_zkey pol pol_zkey ecdsa_verify ecdsa_verify_zkey 
 
