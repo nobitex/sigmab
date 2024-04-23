@@ -13,10 +13,9 @@ dotenv_path = os.path.join(project_root, '.env')
 load_dotenv(dotenv_path)
 
 
-SALT = 123
 
 
-def verify_proof(proof, block):
+def verify_proof(proof, block, ECDS_commitment, salt):
     rev_proof = proof.accountProof[::-1]
     layers = []
     account_rlp = rlp.encode(
@@ -26,13 +25,14 @@ def verify_proof(proof, block):
     prefix_account_rlp = proof.accountProof[-1][: -len(account_rlp)]
 
     last_proof, last_proof_upper_commit = mpt_last.get_last_proof(
-        SALT,
+        salt,
         address_bytes,
         bytes(prefix_account_rlp),
         proof.nonce,
         proof.balance,
         proof.storageHash,
         proof.codeHash,
+        ECDS_commitment
     )
     layers.append(last_proof_upper_commit)
     root_proof = None
@@ -43,13 +43,13 @@ def verify_proof(proof, block):
             if Web3.keccak(level) != block.stateRoot:
                 raise Exception("Not verified!")
             root_proof, _ = mpt_path.get_mpt_path_proof(
-                SALT, level, block.stateRoot, True
+                salt, level, block.stateRoot, True
             )
         else:
             if Web3.keccak(level) not in rev_proof[index + 1]:
                 raise Exception("Not verified!")
             mpt_path_proof, mpt_path_upper_commit = mpt_path.get_mpt_path_proof(
-                SALT, level, rev_proof[index + 1], False
+                salt, level, rev_proof[index + 1], False
             )
             path_proofs.append(mpt_path_proof)
             layers.append(mpt_path_upper_commit)
@@ -90,19 +90,21 @@ def verify_proof(proof, block):
 #     print(result[:2])
 
 
-def get_account_eth_mpt_proof(account,ECDS_commitment, provider):
+def get_account_eth_mpt_proof(account, provider, index, salt):
+    ECDS_commitment = get_ECDSA_ommitment(index)
     # import ipdb; ipdb.set_trace()
     w3 = Web3(Web3.HTTPProvider(provider))
 
     num = w3.eth.get_block_number()
+    print("generating proof for block number: ", num)
 
     block = w3.eth.get_block(num)
     proof = w3.eth.get_proof(account, [], num)
 
-    account_rlp, address_bytes, prefix_account_rlp = verify_proof(proof, block)
+    account_rlp, address_bytes, prefix_account_rlp = verify_proof(proof, block, ECDS_commitment, salt)
     
     result = mpt_last.get_last_proof(
-        SALT,
+        salt,
         address_bytes,
         bytes(prefix_account_rlp),
         proof.nonce,
@@ -124,12 +126,4 @@ def get_ECDSA_ommitment(accounts_index):
         raise Exception("ERROR: ECDSA commitment is not generated. ")
     return commitment[1]
 
-
-ECDS_commitment = get_ECDSA_ommitment(0)
-account_address = os.getenv("ADDR0")
-get_account_eth_mpt_proof(
-    account_address,
-    ECDS_commitment,
-    "https://yolo-shy-fog.discover.quiknode.pro/97f7aeb00bc7a8d80c3d4834a16cd9c86b54b552/",
-)
 print("OK!")

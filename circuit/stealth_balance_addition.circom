@@ -28,6 +28,15 @@ template StealthBalanceAddition(NUM_BALANCE) {
     sumHasher.left <== sum;
     sumHasher.right <== sumOfBalancesSalt;
     sumOfBalancesCoin <== sumHasher.hash;
+
+    // check the balance commmitments generated match the ones from mpt_last
+    signal input balanceCommitments[NUM_BALANCE];
+    for(var i = 0; i < NUM_BALANCE; i++) {
+        balanceCommitments[i] === coins[i];
+    }
+
+
+
 }
 
 component main = StealthBalanceAddition(2);

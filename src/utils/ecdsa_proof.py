@@ -12,7 +12,7 @@ from ecdsa import VerifyingKey, SigningKey, SECP256k1, util
 from ecdsa.curves import SECP256k1
 from ecdsa import NIST384p, SigningKey
 from ecdsa.util import randrange_from_seed__trytryagain
-from sign import sign_message_with_sha256, checkECDSA
+from utils.sign import sign_message_with_sha256, checkECDSA
 from dotenv import load_dotenv
 dotenv_path = os.path.join(project_root, '.env')
 load_dotenv(dotenv_path)
@@ -49,7 +49,7 @@ def generate_sks_hex(num_sks):
     return accounts
 
  
-def generate_signature_data(num_sks):
+def generate_signature_data(num_sks, message):
     '''
     Generates the signature from a given secret key and a pre_defined message.
     
@@ -162,10 +162,6 @@ def generate_signature_proof_verification_data(signature_data, message, salt):
     combine_files(accounts_count)
     print("proof json file generated successfully.")
    
-# Example usage:
-num_sks = 1
-salt = 123
-message = "Nobitex"
-signature_data = generate_signature_data(num_sks)
-generate_signature_proof_verification_data(signature_data, message, salt)
+
+
 

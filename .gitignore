@@ -10,6 +10,7 @@ verifier/extension/verifier.js
 *.sym
 temp
 circuit/*.json
+data/proofs.json
 circuit/mpt_path_*
 circuit/mpt_last_*
 circuit/pol_*

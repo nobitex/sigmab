@@ -9,12 +9,11 @@ import rlp
 from mpt import mpt_last
 from mpt import mpt_path
 from prove import get_account_eth_mpt_proof
-SALT = 123
 
 provider = "https://yolo-shy-fog.discover.quiknode.pro/97f7aeb00bc7a8d80c3d4834a16cd9c86b54b552/"
 
 
-def generate_mpt_cicuit_inputs(account_address, counter):
+def generate_mpt_cicuit_inputs(account_address, counter, salt):
     '''
     Generates the inputs for mpt last and mpt path circuit and saves them in coresponding files in circuit/temp.
     
@@ -22,7 +21,7 @@ def generate_mpt_cicuit_inputs(account_address, counter):
         signature_data: the list of company addresses,
         counter: the number used as iterator.
     ''' 
-    get_account_eth_mpt_proof(account_address, provider)
+    get_account_eth_mpt_proof(account_address, provider,counter, salt)
     # rename mpt_last files according to the counter
     os.rename('circuit/temp/mpt_last/input_mpt_last.json', f'circuit/temp/mpt_last/input_mpt_last_{counter}.json')
     os.rename('circuit/temp/mpt_last/output_mpt_last.json', f'circuit/temp/mpt_last/output_mpt_last_{counter}.json')
@@ -42,7 +41,7 @@ def generate_proof(counter):
     Args:
         counter: the number used as iterator.
     ''' 
-    print("Generating proof and verification for the account number:", counter+1)
+    print("Generating proof and verification for the account number:", counter)
     # mpt_last
     os.rename(f'circuit/temp/mpt_last/mpt_last_witness_{counter}.wtns', 'circuit/temp/mpt_last/mpt_last_witness.wtns')
     os.system("make gen_mpt_last_proof")
@@ -124,7 +123,7 @@ def combine_mpt_path_files(counter):
         
         
         
-def generate_mpt_proof_data(address_list):
+def generate_mpt_proof_data(address_list, salt):
     '''
     Generates the cicuit inputs the witness, the output files, the proof, and the public arguments for mpt circuits.
     
@@ -133,13 +132,10 @@ def generate_mpt_proof_data(address_list):
     ''' 
     accounts_count = len(address_list)
     for i in range(accounts_count):
-        generate_mpt_cicuit_inputs(address_list[i], i)
+        generate_mpt_cicuit_inputs(address_list[i], i, salt)
         generate_proof(i)
     combine_mpt_last_files(accounts_count)
     combine_mpt_path_files(accounts_count)
     print("proof json file generated successfully.")
     
     
-# Example usage:
-address_list = ["0x727d270cB6d427A431b0C5A88AD6491712c86061", "0x27A0cfeE639c8cd775FdD4E34210f148dDB041A1"] 
-generate_mpt_proof_data(address_list)

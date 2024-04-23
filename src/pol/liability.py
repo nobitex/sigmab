@@ -6,6 +6,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from utils.field  import Field
 from utils.mimc7 import mimc7
+from utils.utils import get_solvency_data
 from pol.smt import Proof
 from pol.smt import LiabilityNode
 from pol.smt import SparseMerkleSumTree
@@ -25,21 +26,20 @@ def read_pol_data():
     Returns:
         liabilitynodes: an array of liability nodes to create the smp.
         solvency_balance: the solvency_balance to complete the proof data.
-        solvency_balance_salt: the solvency_balance_salt to complete the proof data.
 
     '''
-    with open('src/pol/liabilities.json', 'r') as file:
+    with open('data/liability_data.json', 'r') as file:
         data = json.load(file)
 
     liabilities_data = data.get('liabilities', [])
-    solvency_data = data.get('solvency_data', {})
 
     liabilitynodes = [LiabilityNode(Field(id_hash(item['id'])), Field(item['amount'])) for item in liabilities_data]
 
-    solvency_balance = solvency_data.get('solvency_balance', 0)
-    solvency_balance_salt = solvency_data.get('solvency_balance_salt', '')
+    # get data
+    message, signature_data, address_array, num_accounts, balances = get_solvency_data()
+    solvency_balance = sum(balances)
 
-    return liabilitynodes, solvency_balance, solvency_balance_salt
+    return liabilitynodes, solvency_balance, 
 
 
 #  
@@ -90,9 +90,9 @@ def generate_input_json(proof):
         )
 
 # create the pol data
-liabilitynodes, solvency_balance, solvency_balance_salt = read_pol_data()
+liabilitynodes, solvency_balance = read_pol_data()
 solvency_balance = Field(solvency_balance)
-solvency_balance_salt = Field(solvency_balance_salt)
+solvency_balance_salt = Field(123)
 # create the tree
 liabilityTree = buildLiabilityTree(liabilitynodes, 10)
 # create a test proof
