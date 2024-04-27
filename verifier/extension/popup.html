@@ -5,19 +5,37 @@
     <link rel="stylesheet" type="text/css" href="popup.css">
     <script src="verifier.js"></script>
     <script src="popup.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        .item {
+            font-size: 1.2em;
+            border-radius: 2px; border:1px solid darkcyan; padding: 0.2em; margin: 1em;
+        }
+        body {
+            max-width: 350px;
+        }
+        .label {
+            font-size: 0.8em;
+            width: 70px;
+            display: inline-block;
+        }
+    </style>
 </head>
 
 <body>
-    <h1 style="text-align: center;">sigmaB</h1>
-    <h2 style="text-align: center;">Private Proof of Reserve/Solvency</h2>
-    <p>This website wants to prove you:</p>
-    <ul>
-        <li>Email: satoshi@gmail.com</li>
-        <li>Amount: 0.98 ETH</li>
-        <li>Date: 2024/2/21</li>
-    </ul>
-    <button style="text-align: center;" id="verifyButton">Verify!</button>
-    <p style="text-align: center; font-size: 0.5em;">By Nobitex Labs</p>
+    <img src="sigmab.svg" style="width: 30%; margin: 2em auto; display: block;"/>
+    <h1 class="roboto-bold" style="text-align: center; font-size: 1.5em">sigmaB</h1>
+    <p class="roboto-thin-italic">This website wants to prove you:</p>
+
+    <div class="item roboto-light-italic"><span class="label roboto-thin">Issuer: </span>nobitex.ir</div>
+    <div class="item roboto-light-italic"><span class="label roboto-thin">Date: </span>2024/2/21</div>
+    <div class="item roboto-light-italic"><span class="label roboto-thin">Email: </span>satoshi@gmail.com</div>
+    <div class="item roboto-light-italic"><span class="label roboto-thin">Amount: </span>0.98 ETH</div>
+    
+    <button id="verifyButton" class="roboto-regular">Verify!</button>
+    <p style="text-align: center; font-size: 0.8em;" class="roboto-regular-italic">By <a href="https://labs.nobitex.ir">Nobitex Labs</a></p>
 </body>
 
 </html>
