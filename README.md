@@ -71,3 +71,7 @@ f(i,ethereum_accounts, sig) {
 * امضایی را می‌دانیم که نشان می‌دهد صاحب یکی از اکانت های داخل اتریوم هستیم، و مقدار موجودی این اکانت برابر b است.
 
 
+
+## TODO
+- in mpt path we shoud make public `ECDSACommitmentHash` to be able to chain it with ecdsa circuit
+- stealth balance addition currently is only for maximum 2 accounts, we should make it dynamic (addition of n accounts)
