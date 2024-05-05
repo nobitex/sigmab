@@ -7,35 +7,71 @@
     <script src="popup.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <script src="jq.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="progress.css">
     <style>
         .item {
             font-size: 1.2em;
-            border-radius: 2px; border:1px solid darkcyan; padding: 0.2em; margin: 1em;
+            border-radius: 2px;
+            border: 2px solid rgb(200, 201, 255);
+            padding: 0.2em;
+            margin: 1em;
         }
+
         body {
+            background-color: rgb(55, 60, 92);
+            justify-content: center;
             max-width: 350px;
         }
+
         .label {
             font-size: 0.8em;
             width: 70px;
+            display: inline-block;
+        }
+
+        .inl {
             display: inline-block;
         }
     </style>
 </head>
 
 <body>
-    <img src="sigmab.svg" style="width: 30%; margin: 2em auto; display: block;"/>
-    <h1 class="roboto-bold" style="text-align: center; font-size: 1.5em">sigmaB</h1>
-    <p class="roboto-thin-italic">This website wants to prove you:</p>
+    <div id="progress" style="display: none;">
+        <div class="simple-spinner">
+            <h4 id="spinner-stage" style="color: white;">pol verification<h4>
+                    <span></span>
+        </div>
+    </div>
+    <div id="content" style="display: block;">
+        <img src="sigmab.svg" style="width: 30%; margin: 2em auto; display: block;" />
+        <h1 class="roboto-bold" style="text-align: center; font-size: 1.5em; color: #fff;">sigmaB</h1>
+        <p class="roboto-bold-italic">This website wants to prove you:</p>
 
-    <div class="item roboto-light-italic"><span class="label roboto-thin">Issuer: </span>nobitex.ir</div>
-    <div class="item roboto-light-italic"><span class="label roboto-thin">Date: </span>2024/2/21</div>
-    <div class="item roboto-light-italic"><span class="label roboto-thin">Email: </span>satoshi@gmail.com</div>
-    <div class="item roboto-light-italic"><span class="label roboto-thin">Amount: </span>0.98 ETH</div>
-    
-    <button id="verifyButton" class="roboto-regular">Verify!</button>
-    <p style="text-align: center; font-size: 0.8em;" class="roboto-regular-italic">By <a href="https://labs.nobitex.ir">Nobitex Labs</a></p>
+        <div class="item roboto-light-italic"><span class="label roboto-thin">Issuer: </span>
+            <div id="issuer" class="inl">nobitex.ir</div>
+        </div>
+        <div class="item roboto-light-italic"><span class="label roboto-thin">Date: </span>
+            <div id="date" class="inl">2024/2/21</div>
+        </div>
+        <div class="item roboto-light-italic"><span class="label roboto-thin">Email: </span>
+            <div id="uid" class="inl"> - </div>
+        </div>
+        <div class="item roboto-light-italic"><span class="label roboto-thin">Amount: </span>
+            <div id="amount" class="inl"> - </div> ETH
+        </div>
+
+        <a id="verifyButton">Verify!</a>
+        <p style="text-align: center; font-size: 0.8em; color: rgb(228, 228, 228);" class="roboto-regular-italic">By
+            <a href="https://labs.nobitex.ir" target="_blank"
+                style="display: inline-block; color: rgb(228, 228, 228);">Nobitex Labs</a>
+        </p>
+    </div>
+    <div id="result" style="position: absolute; z-index: 1000; width: 100% !important; height: 100vh !important; background-color: green; top: 0; left: 0; display: none;">
+        <h4 id="result-text" style="display: block; margin: 50vh auto; text-align: center; width: 100%;"> Proof verified successfully </h4>
+    </div>
 </body>
 
 </html>
