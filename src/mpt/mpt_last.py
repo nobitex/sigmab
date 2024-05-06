@@ -12,17 +12,6 @@ def get_last_proof(
 ):
     lowerLayerPrefixLen = len(lowerLayerPrefix)
     lowerLayerPrefix += (maxPrefixLen - len(lowerLayerPrefix)) * b"\x00"
-    
-    print("///////////////////////////////////")
-    print("salt: ", salt)
-    print("addressBytes: ", addressBytes)
-    print("nonce: ", nonce)
-    print("balance: ", balance)
-    print("storageHash: ", storageHash)
-    print("codeHash: ", codeHash)
-    print("lowerLayerPrefix: ", lowerLayerPrefix)
-    print("lowerLayerPrefixLen: ", lowerLayerPrefixLen)
-    print("ECDS_commitment: ", ECDS_commitment)
 
     with io.open("circuit/temp/mpt_last/input_mpt_last.json", "w") as f:
 

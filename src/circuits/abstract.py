@@ -39,7 +39,8 @@ class AbstractCircuit:
 
     def prove(self, witness_path: str) -> str:
         with tempfile.NamedTemporaryFile() as f_public, tempfile.NamedTemporaryFile(delete=False) as f_proof:
-            os.system(f"{self.prover_path} {self.zk_params_path} {witness_path} {f_public.name} {f_proof.name}")
+            os.system(f"{self.prover_path} {self.zk_params_path} {witness_path} {f_proof.name} {f_public.name}")
+            f_public.seek(0)
             self.context[ContextKeys.LATEST_PUBLIC_VALUES] = f_public.readlines()
             self.context[ContextKeys.LATEST_PROOF_PATH] = f_proof.name
             return f_proof.name
@@ -48,9 +49,3 @@ class AbstractCircuit:
         with tempfile.NamedTemporaryFile() as f:
             os.system(f"{self.snarkjs_path} zkey verify {verification_key_path} {proof_path}")
             return f.read() == "true"
-
-
-# circuit = SumCircuit("/home/ostadgeorge/work/nobitex/playground/sample/circuit/main_c_cpp/main_c", "zk_params")
-
-# witness_path = circuit.generate_witness(1, 2)
-# print(witness_path)
