@@ -4,10 +4,6 @@ from eth_keys import keys
 from eth_utils import keccak, encode_hex
 
 
-def int_to_big_endian(x, length=32):
-    return x.to_bytes(length, byteorder="big")
-
-
 def string_to_int(string):
     # byte = string.encode("utf-8")
     return int.from_bytes(string, "big")
@@ -154,7 +150,7 @@ def checkECDSA(message,public_key, signature, salt, counter):
     # public_key = str(public_key)[2:]
     eth_encoded_msg = message.encode("utf-8")
     message_hash = hashlib.sha256(eth_encoded_msg).digest()
-    msg = string_to_int(message_hash)
+    msg = int.from_bytes(message_hash, "big")
     addr = public_key_to_address(public_key)
     addr_bytes = bytes.fromhex(str(addr)[2:])
     print("address byte list",list(addr_bytes))

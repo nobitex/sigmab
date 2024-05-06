@@ -3,6 +3,8 @@ import sys
 import subprocess
 import ecdsa, io, json, hashlib
 
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(project_root)
 from eth_utils.crypto import keccak
 from Crypto.Hash import keccak
 from web3 import Web3
@@ -12,6 +14,57 @@ from ecdsa.curves import SECP256k1
 from ecdsa import NIST384p, SigningKey
 from ecdsa.util import randrange_from_seed__trytryagain
 from utils.sign import sign_message_with_sha256, checkECDSA
+from dotenv import load_dotenv
+
+dotenv_path = os.path.join(project_root, ".env")
+load_dotenv(dotenv_path)
+
+
+def generate_sks_hex(num_sks):
+    """
+    Generates a list of secret_key and public_key from env file in hex format.
+
+    Args:`
+        num_sks: number of needed secret_key and public_key pairs.
+
+    Returns:
+        accounts: an array of generated secret_key and public_keys.
+
+    """
+    accounts = []
+    for i in range(num_sks):
+        sk_hex = os.getenv(f"PK{i}")
+        private_key_bytes = bytes.fromhex(sk_hex)
+
+        # Create a signing key from the private key bytes
+        signing_key = SigningKey.from_string(private_key_bytes, curve=SECP256k1)
+
+        # Get the corresponding verifying key (public key)
+        verifying_key = signing_key.get_verifying_key()
+
+        # The hexadecimal representation of the public key
+        public_key_hex = verifying_key.to_string().hex()
+        accounts.append([sk_hex, public_key_hex])
+    return accounts
+
+
+def generate_signature_data(num_sks, message):
+    """
+    Generates the signature from a given secret key and a pre_defined message.
+
+    Args:
+        num_sks: number of needed secret_key and public_key pairs.
+
+    Returns:
+        data: an array of generated signatures and related public_keys.
+
+    """
+    generated_accounts = generate_sks_hex(num_sks)
+    data = []
+    for i in range(num_sks):
+        signature = sign_message_with_sha256(generated_accounts[i][0], message)
+        data.append([signature, generated_accounts[i][1]])
+    return data
 
 
 def generate_ecdsa_cicuit_input(signature_data, message, salt, counter):
@@ -108,7 +161,7 @@ def combine_files(counter):
         json.dump(ecdsa_proofs, f, indent=4)
 
 
-def generate_signature_proof_verification_data(ecdsa_circuit, signature_data, message, salt):
+def generate_signature_proof_verification_data(signature_data, message, salt):
     """
     Generates the cicuit inputs the witness, the output files, the proof, and the public arguments for ECDSA_verify circuit.
 

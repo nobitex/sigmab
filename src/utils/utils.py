@@ -8,7 +8,7 @@ from web3 import Web3
 import rlp
 from mpt import mpt_last
 from mpt import mpt_path
-from prove import get_account_eth_mpt_proof
+# from prove import get_account_eth_mpt_proof
 
 
 provider = "https://yolo-shy-fog.discover.quiknode.pro/97f7aeb00bc7a8d80c3d4834a16cd9c86b54b552/"
