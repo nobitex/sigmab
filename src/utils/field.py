@@ -1,3 +1,6 @@
+import json
+
+
 FIELD_SIZE = (
     21888242871839275222246405745257275088548364400416034343698204186575808495617
 )
@@ -18,3 +21,10 @@ class Field:
 
     def __eq__(self, other):
         return self.val == other.val
+
+
+class FieldEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Field):
+            return obj.val
+        return super().default(obj)
