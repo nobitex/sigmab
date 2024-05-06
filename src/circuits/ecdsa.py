@@ -7,16 +7,12 @@ import hashlib
 
 class ECDSACircuit(AbstractCircuit):
 
-    def generate_witness(self, message, public_key, signature, salt):
-        (msg_hash, r, s, pubkey, salt) = self._prepare_circuit_inputs(
-            message, public_key, signature, salt
-        )
-
+    def _generate_witness(self, msg_hash, r, s, pubkey, salt):
         return super().generate_witness(
             msghash=msg_hash, r=r, s=s, pubkey=pubkey, salt=salt
         )
 
-    def _prepare_circuit_inputs(self, message, public_key, signature, salt):
+    def generate_witness(self, message, public_key, signature, salt):
         msg_hash = hashlib.sha256(message.encode("utf-8")).digest()        
         msg_hash = int.from_bytes(msg_hash, "big")
 
@@ -39,4 +35,4 @@ class ECDSACircuit(AbstractCircuit):
         pub0 = b2a(64, 4, pubkey.x())
         pub1 = b2a(64, 4, pubkey.y())
 
-        return msg_hash, r, s, [pub0, pub1], salt
+        return self._generate_witness(msg_hash, r, s, [pub0, pub1], salt)
