@@ -1,5 +1,5 @@
 from web3 import Web3
-from consts import PROVIDER
+from config import PROVIDER
 import os
 
 

@@ -5,9 +5,12 @@ from circuits import (
     SBACircuit,
     ContextKeys,
 )
-from consts import *
+from config import *
+from utils import load_solvency_data
+
 from web3 import Web3
 import tqdm
+import random
 
 
 def main():
@@ -39,13 +42,8 @@ def main():
         zk_params_path=SBA_ZK_PARAMS_PATH,
     )
 
-    import random
-
     # salt = random.randint(0, 10**5)
     salt = 100
-
-    from utilss import load_solvency_data
-
     message, exchange_accounts_data = load_solvency_data("data/solvency_data.json")
 
     ### ECDSA Proof Generation
