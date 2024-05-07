@@ -1,6 +1,7 @@
 from field import Field
 from mimc7 import mimc7
 
+
 class LiabilityNode:
     def __init__(self, id, amount):
         self.id = id
@@ -19,14 +20,16 @@ class LiabilityNode:
 
 
 class Proof:
-    def __init__(self, index, id, amount, proof_nodes, solvency_balance, solvency_balance_salt):
+    def __init__(
+        self, index, id, amount, proof_nodes, solvency_balance, solvency_balance_salt
+    ):
         self.index = index
         self.id = id
         self.amount = amount
         self.proof_nodes = proof_nodes
         self.solvency_balance = solvency_balance
         self.solvency_balance_salt = solvency_balance_salt
-    
+
     def __str__(self):
         nodes_str = ", ".join(str(node) for node in self.proof_nodes)
         return f"Proof (Index: {self.index}, Id: {self.id}, Amount: {self.amount}, Nodes: {nodes_str}, solvency_balance: {self.solvency_balance}, solvency_balance_salt: {self.solvency_balance_salt})"
@@ -38,8 +41,10 @@ class SparseMerkleSumTree:
         self.levels = [dict() for _ in range(depth + 1)]
         self.defaults = [LiabilityNode(Field(0), Field(0))]
         for _ in range(depth):
-            self.defaults.insert(0, LiabilityNode.combine(self.defaults[0], self.defaults[0]))
-            
+            self.defaults.insert(
+                0, LiabilityNode.combine(self.defaults[0], self.defaults[0])
+            )
+
     def addNode(self, index, id, amount):
         layer = self.depth
         curr = LiabilityNode(id, amount)
@@ -81,10 +86,17 @@ class SparseMerkleSumTree:
                 sibling = self.getNode(self.depth - i, curr_index - 1)
             proof_nodes.append(sibling)
             curr_index //= 2
-        return Proof(index, leaf.id, leaf.amount, proof_nodes, solvency_balance, solvency_balance_salt)
+        return Proof(
+            index,
+            leaf.id,
+            leaf.amount,
+            proof_nodes,
+            solvency_balance,
+            solvency_balance_salt,
+        )
 
     def root(self):
         return self.getNode(0, 0)
-    
+
     def createCommitment(self):
         return mimc7(self.root().id, self.root().amount)

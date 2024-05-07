@@ -21,14 +21,18 @@ class ExchangeAccountData:
         self.context[key] = value
 
     def get_value(self, key):
-        return self.context[key]        
+        return self.context[key]
 
     @classmethod
     def load(cls, account_data):
-        obj = cls(account_data['address'], account_data['pubkey'], bytes.fromhex(account_data['signature']))
+        obj = cls(
+            account_data["address"],
+            account_data["pubkey"],
+            bytes.fromhex(account_data["signature"]),
+        )
         provider = Web3(Web3.HTTPProvider(PROVIDER))
         balance_wei = provider.eth.get_balance(obj.address)
-        obj.set_value('balance', balance_wei)
+        obj.set_value("balance", balance_wei)
         return obj
 
     def __hash__(self):
@@ -46,10 +50,10 @@ class UserAccountData:
         self.amount = amount
 
         self.context = {}
-    
+
     def set_value(self, key, value):
         self.context[key] = value
-    
+
     def get_value(self, key):
         return self.context[key]
 

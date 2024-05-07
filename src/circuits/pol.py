@@ -3,7 +3,6 @@ from field import Field
 
 
 class POLCircuit(AbstractCircuit):
-
     def generate_witness(self, merkle_proof):
         ids = list(map(lambda node: node.id, merkle_proof.proof_nodes))
         amounts = list(map(lambda node: node.amount, merkle_proof.proof_nodes))

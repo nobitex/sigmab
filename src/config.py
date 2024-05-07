@@ -1,7 +1,10 @@
 import os
 
 
-PROVIDER = os.environ.get('PROVIDER', 'https://yolo-shy-fog.discover.quiknode.pro/97f7aeb00bc7a8d80c3d4834a16cd9c86b54b552/')
+PROVIDER = os.environ.get(
+    "PROVIDER",
+    "https://yolo-shy-fog.discover.quiknode.pro/97f7aeb00bc7a8d80c3d4834a16cd9c86b54b552/",
+)
 
 MPT_LAST_WITNESS_GEN_PATH = os.environ.get(
     "MPT_LAST_WITNESS_GEN_PATH",

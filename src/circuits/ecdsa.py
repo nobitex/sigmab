@@ -6,14 +6,13 @@ import hashlib
 
 
 class ECDSACircuit(AbstractCircuit):
-
     def _generate_witness(self, msg_hash, r, s, pubkey, salt):
         return super().generate_witness(
             msghash=msg_hash, r=r, s=s, pubkey=pubkey, salt=salt
         )
 
     def generate_witness(self, message, public_key, signature, salt):
-        msg_hash = hashlib.sha256(message.encode("utf-8")).digest()        
+        msg_hash = hashlib.sha256(message.encode("utf-8")).digest()
         msg_hash = int.from_bytes(msg_hash, "big")
 
         vk = VerifyingKey.from_string(bytes.fromhex(public_key), curve=SECP256k1)

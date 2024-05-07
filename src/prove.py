@@ -90,7 +90,6 @@ def main():
         desc="MPT Proof Progress",
     )
     for exchange_account in mpt_proof_progress:
-
         ecdsa_commitment = exchange_account.get_value("ecdsa_public_outputs")[1]
 
         account_proof = provider.eth.get_proof(
@@ -192,7 +191,9 @@ def main():
     liability_nodes = build_liability_nodes(liability_data)
     liability_tree = build_liability_tree(liability_nodes, 10)
 
-    pol_proof_progress = tqdm.tqdm(liability_data, total=len(liability_data), desc="POL Progress")
+    pol_proof_progress = tqdm.tqdm(
+        liability_data, total=len(liability_data), desc="POL Progress"
+    )
     for idx, item in enumerate(pol_proof_progress):
         merkle_proof = liability_tree.createProof(idx, sum_balances, salt)
         witness_path = pol_circuit.generate_witness(merkle_proof)
@@ -207,41 +208,50 @@ def main():
 
         pol_proof_progress.write(f"Generated POL proof for account: {item.id}")
         pol_proof_progress.write(f"Proof path: {proof_path}")
-    
+
     # Combine all the files
     data = {}
 
     ecdsa_data = []
     for item in exchange_accounts_data:
-        ecdsa_data.append({
-            "address": item.address,
-            "witness_path": item.get_value("ecdsa_witness_path"),
-            "proof_path": item.get_value("ecdsa_proof_path"),
-            "proof": json.load(open(item.get_value("ecdsa_proof_path"), "r")),
-            "public_outputs": item.get_value("ecdsa_public_outputs"),
-        })
+        ecdsa_data.append(
+            {
+                "address": item.address,
+                "witness_path": item.get_value("ecdsa_witness_path"),
+                "proof_path": item.get_value("ecdsa_proof_path"),
+                "proof": json.load(open(item.get_value("ecdsa_proof_path"), "r")),
+                "public_outputs": item.get_value("ecdsa_public_outputs"),
+            }
+        )
     data["ecdsa_data"] = ecdsa_data
 
     mpt_path_data = []
     for item in exchange_accounts_data:
-        mpt_path_data.append({
-            "address": item.address,
-            "witness_paths": item.get_value("mpt_path_witness_paths"),
-            "proof_paths": item.get_value("mpt_path_proof_paths"),
-            "proofs": [json.load(open(path, "r")) for path in item.get_value("mpt_path_proof_paths")],
-            "public_outputs": item.get_value("mpt_path_public_outputs"),
-        })
+        mpt_path_data.append(
+            {
+                "address": item.address,
+                "witness_paths": item.get_value("mpt_path_witness_paths"),
+                "proof_paths": item.get_value("mpt_path_proof_paths"),
+                "proofs": [
+                    json.load(open(path, "r"))
+                    for path in item.get_value("mpt_path_proof_paths")
+                ],
+                "public_outputs": item.get_value("mpt_path_public_outputs"),
+            }
+        )
     data["mpt_path_data"] = mpt_path_data
 
     mpt_last_data = []
     for item in exchange_accounts_data:
-        mpt_last_data.append({
-            "address": item.address,
-            "witness_path": item.get_value("mpt_last_witness_path"),
-            "proof_path": item.get_value("mpt_last_proof_path"),
-            "proof": json.load(open(item.get_value("mpt_last_proof_path"), "r")),
-            "public_outputs": item.get_value("mpt_last_public_outputs"),
-        })
+        mpt_last_data.append(
+            {
+                "address": item.address,
+                "witness_path": item.get_value("mpt_last_witness_path"),
+                "proof_path": item.get_value("mpt_last_proof_path"),
+                "proof": json.load(open(item.get_value("mpt_last_proof_path"), "r")),
+                "public_outputs": item.get_value("mpt_last_public_outputs"),
+            }
+        )
     data["mpt_last_data"] = mpt_last_data
 
     sba_data = {
@@ -253,13 +263,15 @@ def main():
 
     pol_data = []
     for idx, item in enumerate(liability_data):
-        pol_data.append({
-            "id": item.id,
-            "witenss_path": item.get_value("pol_witness_path"),
-            "proof_path": item.get_value("pol_proof_path"),
-            "proof": json.load(open(item.get_value("pol_proof_path"), "r")),
-            "public_outputs": item.get_value("pol_public_outputs"),
-        })
+        pol_data.append(
+            {
+                "id": item.id,
+                "witenss_path": item.get_value("pol_witness_path"),
+                "proof_path": item.get_value("pol_proof_path"),
+                "proof": json.load(open(item.get_value("pol_proof_path"), "r")),
+                "public_outputs": item.get_value("pol_public_outputs"),
+            }
+        )
     data["pol_data"] = pol_data
 
     with open("data/proofs.json", "w") as file:
@@ -314,6 +326,7 @@ def get_pol_circuit(witness_gen_path, prover_path, snarkjs_path, zk_params_path)
         zk_params_path=zk_params_path,
     )
     return pol_circuit
+
 
 if __name__ == "__main__":
     main()
