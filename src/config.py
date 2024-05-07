@@ -39,6 +39,15 @@ SBA_ZK_PARAMS_PATH = os.environ.get(
     "/home/ostadgeorge/work/nobitex/sigmab/circuit/temp/stealth_balance_addition/stealth_balance_addition_0001.zkey",
 )
 
+POL_WITNESS_GEN_PATH = os.environ.get(
+    "POL_WITNESS_GEN_PATH",
+    "/home/ostadgeorge/work/nobitex/sigmab/circuit/temp/pol/pol_cpp/pol",
+)
+POL_ZK_PARAMS_PATH = os.environ.get(
+    "POL_ZK_PARAMS_PATH",
+    "/home/ostadgeorge/work/nobitex/sigmab/circuit/temp/pol/pol_0001.zkey",
+)
+
 PROVER_PATH = os.environ.get(
     "PROVER_PATH",
     "/home/ostadgeorge/work/nobitex/sigmab/circuit/rapidsnark/package/bin/prover",

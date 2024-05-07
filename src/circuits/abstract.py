@@ -5,6 +5,8 @@ import json
 import enum
 import ast
 
+from field import FieldEncoder
+
 
 class ContextKeys(enum.Enum):
     LATEST_WITNESS_PATH = "LATEST_WITNESS_PATH"
@@ -24,7 +26,7 @@ class AbstractCircuit:
 
     def generate_witness(self, **kwargs) -> str:
         with tempfile.NamedTemporaryFile() as f:
-            data = json.dumps(kwargs)
+            data = json.dumps(kwargs, cls=FieldEncoder)
             f.write(data.encode())
             f.flush()
 

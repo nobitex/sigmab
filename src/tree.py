@@ -1,5 +1,5 @@
-from utils.field import Field
-from utils.mimc7 import mimc7
+from field import Field
+from mimc7 import mimc7
 
 class LiabilityNode:
     def __init__(self, id, amount):
@@ -18,7 +18,6 @@ class LiabilityNode:
         return f"LiabilityNode(Id: {self.id}, Amount: {self.amount})"
 
 
-
 class Proof:
     def __init__(self, index, id, amount, proof_nodes, solvency_balance, solvency_balance_salt):
         self.index = index
@@ -31,6 +30,7 @@ class Proof:
     def __str__(self):
         nodes_str = ", ".join(str(node) for node in self.proof_nodes)
         return f"Proof (Index: {self.index}, Id: {self.id}, Amount: {self.amount}, Nodes: {nodes_str}, solvency_balance: {self.solvency_balance}, solvency_balance_salt: {self.solvency_balance_salt})"
+
 
 class SparseMerkleSumTree:
     def __init__(self, depth):
@@ -82,7 +82,6 @@ class SparseMerkleSumTree:
             proof_nodes.append(sibling)
             curr_index //= 2
         return Proof(index, leaf.id, leaf.amount, proof_nodes, solvency_balance, solvency_balance_salt)
-
 
     def root(self):
         return self.getNode(0, 0)

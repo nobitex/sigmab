@@ -26,5 +26,5 @@ class Field:
 class FieldEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Field):
-            return obj.val
+            return str(obj.val)
         return super().default(obj)

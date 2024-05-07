@@ -1,5 +1,6 @@
 from web3 import Web3
 from config import PROVIDER
+import hashlib
 import os
 
 
@@ -32,3 +33,26 @@ class ExchangeAccountData:
 
     def __hash__(self):
         return hash(self.address)
+
+
+class UserAccountData:
+    user_id: str
+    amount: int
+
+    context: dict
+
+    def __init__(self, user_id: str, amount: int):
+        self.user_id = user_id
+        self.amount = amount
+
+        self.context = {}
+    
+    def set_value(self, key, value):
+        self.context[key] = value
+    
+    def get_value(self, key):
+        return self.context[key]
+
+    @property
+    def id(self):
+        return int(hashlib.sha256(self.user_id.encode("utf-8")).hexdigest(), 16)
