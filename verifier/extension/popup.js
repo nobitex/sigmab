@@ -28,16 +28,29 @@ function sleep(ms) {
 validationStages = [
     ["mpt chains validation", async function () {
         await sleep(500);
-        for (var l = 0; l < context.proofs["MPT_PATH"].length; l++) {
-            for (var i = context.proofs["MPT_PATH"][l].length - 1; i >= 1; i--) {
-                if (context.proofs["MPT_PATH"][l][i]["pub"][1] !== context.proofs["MPT_PATH"][l][i - 1]["pub"][0]) {
+        for (var l = 0; l < context.proofs["mpt_path_data"].length; l++) {
+            for (var i = context.proofs["mpt_path_data"][l].length - 1; i >= 1; i--) {
+                if (context.proofs["mpt_path_data"][l]["public_outputs"][i][1] !== context.proofs["mpt_path_data"][l]["public_outputs"][i - 1][0]) {
                     return false;
                 }
             }
 
-            if (context.proofs["MPT_PATH"][l][0]["pub"][1] !== context.proofs["MPT_LAST"][l]["pub"][0]) {
+            if (context.proofs["mpt_path_data"][l]["public_outputs"][0][1] !== context.proofs["mpt_last_data"][l]["public_outputs"][0]) {
                 return false;
             }
+        }
+
+        return true;
+    }],
+    ["salt hash uniqueness validation", async function () {
+        await sleep(500);
+        var saltHashes = new Set();
+        for (var l = 0; l < context.proofs["mpt_last_data"].length; l++) {
+            saltHashes.add(context.proofs["mpt_last_data"][l]["public_outputs"][104]);
+        }
+
+        if (saltHashes.size > 1) {
+            return false;
         }
 
         return true;
@@ -47,9 +60,10 @@ validationStages = [
 verifyStages = [
     ["ecdsa verification", async function () {
         await sleep(200);
-        for (var i = 0; i < context.proofs["ECDSA"].length; i++) {
+        for (var i = 0; i < context.proofs["ecdsa_data"].length; i++) {
+            console.log("ecdsa_data", context.proofs["ecdsa_data"][i]["public_outputs"])
             try {
-                if (await window.sigmab.verifyECDSA(context.proofs["ECDSA"][i]["pub"], context.proofs["ECDSA"][i]["proof"])) {
+                if (await window.sigmab.verifyECDSA(context.proofs["ecdsa_data"][i]["public_outputs"], context.proofs["ecdsa_data"][i]["proof"])) {
                     return true;
                 }
             } catch (error) {
@@ -59,9 +73,9 @@ verifyStages = [
     }],
     ["mpt last verification", async function () {
         await sleep(200);
-        for (var i = 0; i < context.proofs["MPT_LAST"].length; i++) {
+        for (var i = 0; i < context.proofs["mpt_last_data"].length; i++) {
             try {
-                if (await window.sigmab.verifyMPTLast(context.proofs["MPT_LAST"][i]["pub"], context.proofs["MPT_LAST"][i]["proof"])) {
+                if (await window.sigmab.verifyMPTLast(context.proofs["mpt_last_data"][i]["public_outputs"], context.proofs["mpt_last_data"][i]["proof"])) {
                     return true;
                 }
             } catch (error) {
@@ -71,10 +85,10 @@ verifyStages = [
     }],
     ["mpt path verifications", async function () {
         await sleep(200);
-        for (var i = 0; i < context.proofs["MPT_PATH"].length; i++) {
-            for (var j = 0; j < context.proofs["MPT_PATH"][i].length; j++) {
+        for (var i = 0; i < context.proofs["mpt_path_data"].length; i++) {
+            for (var j = 0; j < context.proofs["mpt_path_data"][i]["proofs"].length; j++) {
                 try {
-                    if (await window.sigmab.verifyMPTPath(context.proofs["MPT_PATH"][i][j]["pub"], context.proofs["MPT_PATH"][i][j]["proof"])) {
+                    if (await window.sigmab.verifyMPTPath(context.proofs["mpt_path_data"][i]["public_outputs"][j], context.proofs["mpt_path_data"][i]["proofs"][j])) {
                         return true;
                     }
                 } catch (error) {
@@ -85,20 +99,18 @@ verifyStages = [
     }],
     ["sba verification", async function () {
         await sleep(200);
-        for (var i = 0; i < context.proofs["SBA"].length; i++) {
-            try {
-                if (await window.sigmab.verifySBA(context.proofs["SBA"][i]["pub"], context.proofs["SBA"][i]["proof"])) {
-                    return true;
-                }
-            } catch (error) {
-                console.error(error);
+        try {
+            if (await window.sigmab.verifySBA(context.proofs["sba_data"]["public_outputs"], context.proofs["sba_data"]["proof"])) {
+                return true;
             }
+        } catch (error) {
+            console.error(error);
         }
     }],
     ["pol verification", async function () {
         await sleep(200);
         try {
-            if (await window.sigmab.verifyPOL(context.proofs["POL"]["pub"], context.proofs["POL"]["proof"])) {
+            if (await window.sigmab.verifyPOL(context.proofs["pol_data"]["public_outputs"], context.proofs["pol_data"]["proof"])) {
                 return true;
             }
         } catch (error) {
@@ -130,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log(`${validationStages[i][0]} passed`);
                 } else {
                     console.log(`${validationStages[i][0]} failed`);
+                    context.verification_state = `failed ${validationStages[i][0]}`;
 
                     content.style.display = 'block';
                     spinner.style.display = 'none';

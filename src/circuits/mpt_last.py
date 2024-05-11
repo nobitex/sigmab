@@ -7,7 +7,7 @@ class MPTLastCircuit(AbstractCircuit):
     MAX_LOWER_LENGTH = 99
     MAX_PREFIX_LENGTH = MAX_BLOCKS * 136 - MAX_LOWER_LENGTH
 
-    def generate_witness(self, exchange_account, block, ecdsa_commitment, salt):
+    def generate_witness(self, exchange_account, block, salt):
         proof = exchange_account.get_value("account_proof")
         rev_proof = proof.accountProof[::-1]
         layers = []
@@ -25,7 +25,6 @@ class MPTLastCircuit(AbstractCircuit):
             proof.balance,
             proof.storageHash,
             proof.codeHash,
-            ecdsa_commitment,
         )
 
     def _generate_witness(
@@ -37,7 +36,6 @@ class MPTLastCircuit(AbstractCircuit):
         balance,
         storageHash,
         codeHash,
-        ecdsa_commitment,
     ):
         lowerLayerPrefixLen = len(lowerLayerPrefix)
         lowerLayerPrefix += (self.MAX_PREFIX_LENGTH - len(lowerLayerPrefix)) * b"\x00"
@@ -51,5 +49,4 @@ class MPTLastCircuit(AbstractCircuit):
             codeHash=list(codeHash),
             lowerLayerPrefix=list(lowerLayerPrefix),
             lowerLayerPrefixLen=lowerLayerPrefixLen,
-            ECDSACommitmentHash=ecdsa_commitment,
         )

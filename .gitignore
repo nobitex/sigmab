@@ -11,6 +11,7 @@ verifier/extension/verifier.js
 temp
 circuit/*.json
 data/proofs.json
+data/vks.json
 circuit/mpt_path_*
 circuit/mpt_last_*
 circuit/pol_*

@@ -63,7 +63,6 @@ template MptLast(maxBlocks, maxLowerLen, security) {
     signal input storageHash[32];
     signal input codeHash[32];
 
-    signal input ECDSACommitmentHash;
     signal input salt;
 
     signal output commitUpper;
@@ -155,8 +154,8 @@ template MptLast(maxBlocks, maxLowerLen, security) {
     commitmentHasher.right <== salt;
 
     // check the created commitment with the input commitment
-    ECDSACommitmentHash === commitmentHasher.hash;
-
+    signal output ECDSACommitmentHash;
+    ECDSACommitmentHash <== commitmentHasher.hash;
 
     component balanceCommitmentHaher = Hasher();
     balanceCommitmentHaher.left <== balance;
@@ -164,6 +163,12 @@ template MptLast(maxBlocks, maxLowerLen, security) {
 
     balanceCommitment <== balanceCommitmentHaher.hash;
 
+    signal output saltUiqenessCommitment;
+    component saltUniquenessHasher = Hasher();
+    saltUniquenessHasher.left <== salt;
+    saltUniquenessHasher.right <== salt;
+
+    saltUiqenessCommitment <== saltUniquenessHasher.hash;
  }
 
 component main = MptLast(4, 99, 20);

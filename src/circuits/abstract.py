@@ -12,7 +12,7 @@ class ContextKeys(enum.Enum):
     LATEST_WITNESS_PATH = "LATEST_WITNESS_PATH"
     LATEST_PROOF_PATH = "LATEST_PROOF_PATH"
     LATEST_PUBLIC_VALUES = "LATEST_PUBLIC_VALUES"
-    LATEST_VERIFICATION_KEY_PATH = "LATEST_VERIFICATION_KEY_PATH"
+    LATEST_VERIFICATION_KEY_DATA = "LATEST_VERIFICATION_KEY_DATA"
 
 
 class AbstractCircuit:
@@ -37,13 +37,14 @@ class AbstractCircuit:
                 self.context[ContextKeys.LATEST_WITNESS_PATH] = f_witness.name
                 return f_witness.name
 
-    def export_verification_key(self) -> str:
-        with tempfile.NamedTemporaryFile(delete=False) as f:
+    def export_verification_key(self) -> dict:
+        with tempfile.NamedTemporaryFile() as f:
             os.system(
                 f"{self.snarkjs_path} zkey export verificationkey {self.zk_params_path} {f.name}"
             )
-            self.context[ContextKeys.LATEST_VERIFICATION_KEY_PATH] = f.name
-            return f.name
+            with open(f.name, "r") as f_vk:
+                self.context[ContextKeys.LATEST_VERIFICATION_KEY_DATA] = json.load(f_vk)
+            return self.context[ContextKeys.LATEST_VERIFICATION_KEY_DATA]
 
     def prove(self, witness_path: str) -> str:
         with tempfile.NamedTemporaryFile() as f_public, tempfile.NamedTemporaryFile(
