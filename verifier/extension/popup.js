@@ -55,6 +55,19 @@ validationStages = [
 
         return true;
     }],
+    ["ecdsa uniqueness validation", async function () {
+        await sleep(500);
+        var ecdsaHashes = new Set();
+        for (var l = 0; l < context.proofs["ecdsa_data"].length; l++) {
+            if (ecdsaHashes.has(context.proofs["ecdsa_data"][l]["public_outputs"][1])) {
+                return false;
+            }
+            ecdsaHashes.add(context.proofs["ecdsa_data"][l]["public_outputs"][1]);
+        }
+
+        return true;
+    }],
+    // TODO (AmirAli Azarpour): SBA hash(balance, salt) == MPT last hash
 ]
 
 verifyStages = [
