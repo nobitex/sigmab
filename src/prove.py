@@ -90,8 +90,6 @@ def main():
         desc="MPT Proof Progress",
     )
     for exchange_account in mpt_proof_progress:
-        ecdsa_commitment = exchange_account.get_value("ecdsa_public_outputs")[1]
-
         account_proof = provider.eth.get_proof(
             exchange_account.address, [], block_number
         )
@@ -103,7 +101,7 @@ def main():
 
         #### MPT Last Proof Generation
         witeness_path = mpt_last_circuit.generate_witness(
-            exchange_account, block, ecdsa_commitment, salt
+            exchange_account, block, salt
         )
         proof_path = mpt_last_circuit.prove(witeness_path)
 
@@ -258,6 +256,7 @@ def main():
         "witness_path": sba_witness_path,
         "proof_path": sba_proof_path,
         "proof": json.load(open(sba_proof_path, "r")),
+        "public_outputs": sba_circuit.context.get(ContextKeys.LATEST_PUBLIC_VALUES),
     }
     data["sba_data"] = sba_data
 

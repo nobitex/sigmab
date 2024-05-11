@@ -35,20 +35,6 @@ mpt_path_zkey:
 	cd circuit && snarkjs zkey contribute temp/mpt_path/mpt_path_0000.zkey temp/mpt_path/mpt_path_0001.zkey --entropy=1234 --name="second contribution" -v
 	cd circuit && snarkjs zkey export verificationkey temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/verification_key.json
 
-gen_mpt_path_witness:
-
-	cd circuit/temp/mpt_path/mpt_path_cpp && ./mpt_path ../input_mpt_path.json mpt_path_witness.wtns
-	mv circuit/temp/mpt_path/mpt_path_cpp/mpt_path_witness.wtns circuit/temp/mpt_path/mpt_path_witness.wtns
-	mv circuit/temp/mpt_path/mpt_path_cpp/output.json circuit/temp/mpt_path/output_mpt_path.json
-
-gen_mpt_path_proof:
-	cd circuit && rapidsnark/package/bin/prover temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/mpt_path_witness.wtns mpt_path_proof.json mpt_path_public.json
-	snarkjs generatecall circuit/mpt_path_public.json circuit/mpt_path_proof.json > /tmp/mpt_path_proof.json 
-	mv circuit/mpt_path_proof.json circuit/temp/mpt_path/mpt_path_proof.json
-	mv circuit/mpt_path_public.json circuit/temp/mpt_path/mpt_path_public.json
-verify_mpt_path_proof:
-	cd circuit && snarkjs groth16 verify temp/mpt_path/verification_key.json temp/mpt_path/mpt_path_public.json temp/mpt_path/mpt_path_proof.json
-
 # mpt_last commands
 mpt_last:
 	mkdir -p circuit/temp/mpt_last
@@ -67,22 +53,6 @@ mpt_last_zkey:
 	mv circuit/mpt_last_0000.zkey circuit/temp/mpt_last/mpt_last_0000.zkey
 	cd circuit && snarkjs zkey contribute temp/mpt_last/mpt_last_0000.zkey temp/mpt_last/mpt_last_0001.zkey --entropy=1234 --name="second contribution" -v
 	cd circuit && snarkjs zkey export verificationkey temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/verification_key.json
-
-gen_mpt_last_witness:
-
-	cd circuit/temp/mpt_last/mpt_last_cpp && ./mpt_last ../input_mpt_last.json mpt_last_witness.wtns
-	mv circuit/temp/mpt_last/mpt_last_cpp/mpt_last_witness.wtns circuit/temp/mpt_last/mpt_last_witness.wtns
-	mv circuit/temp/mpt_last/mpt_last_cpp/output.json circuit/temp/mpt_last/output_mpt_last.json
-
-gen_mpt_last_proof:
-	cd circuit && rapidsnark/package/bin/prover temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/mpt_last_witness.wtns mpt_last_proof.json mpt_last_public.json
-	snarkjs generatecall circuit/mpt_last_public.json circuit/mpt_last_proof.json > /tmp/mpt_last_proof.json 
-	mv circuit/mpt_last_proof.json circuit/temp/mpt_last/mpt_last_proof.json
-	mv circuit/mpt_last_public.json circuit/temp/mpt_last/mpt_last_public.json
-
-verify_mpt_last_proof:
-	cd circuit && snarkjs groth16 verify temp/mpt_last/verification_key.json temp/mpt_last/mpt_last_public.json temp/mpt_last/mpt_last_proof.json
-
 
 # stealth_balance_addition commands
 stealth_balance_addition:
@@ -103,19 +73,6 @@ stealth_balance_addition_zkey:
 	cd circuit && snarkjs zkey contribute temp/stealth_balance_addition/stealth_balance_addition_0000.zkey temp/stealth_balance_addition/stealth_balance_addition_0001.zkey --entropy=1234 --name="second contribution" -v
 	cd circuit && snarkjs zkey export verificationkey temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/verification_key.json
 
-gen_stealth_balance_addition_witness:
-	cd circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp && ./stealth_balance_addition ../input_stealth_balance_addition.json stealth_balance_addition_witness.wtns
-	mv circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/stealth_balance_addition_witness.wtns circuit/temp/stealth_balance_addition/stealth_balance_addition_witness.wtns
-	mv circuit/temp/stealth_balance_addition/stealth_balance_addition_cpp/output.json circuit/temp/stealth_balance_addition/output_stealth_balance_addition.json
-
-gen_stealth_balance_addition_proof:
-	cd circuit && rapidsnark/package/bin/prover temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/stealth_balance_addition_witness.wtns stealth_balance_addition_proof.json stealth_balance_addition_public.json
-	snarkjs generatecall circuit/stealth_balance_addition_public.json circuit/stealth_balance_addition_proof.json > /tmp/stealth_balance_addition_proof.json 
-	mv circuit/stealth_balance_addition_proof.json circuit/temp/stealth_balance_addition/stealth_balance_addition_proof.json
-	mv circuit/stealth_balance_addition_public.json circuit/temp/stealth_balance_addition/stealth_balance_addition_public.json
-
-verify_stealth_balance_addition_proof:
-	cd circuit && snarkjs groth16 verify temp/stealth_balance_addition/verification_key.json temp/stealth_balance_addition/stealth_balance_addition_public.json temp/stealth_balance_addition/stealth_balance_addition_proof.json
 # pol commands
 pol:
 	mkdir -p circuit/temp/pol
@@ -138,21 +95,7 @@ pol_zkey:
 	cd circuit && snarkjs zkey contribute temp/pol/pol_0000.zkey temp/pol/pol_0001.zkey --entropy=1234 --name="second contribution" -v
 	cd circuit && snarkjs zkey export verificationkey temp/pol/pol_0001.zkey temp/pol/verification_key.json
 
-
-gen_pol_witness: 
-	python3 src/pol/liability.py
-	cd circuit/temp/pol/pol_cpp && ./pol ../input_pol.json pol_witness.wtns
-	mv circuit/temp/pol/pol_cpp/pol_witness.wtns circuit/temp/pol/pol_witness.wtns 
-	mv circuit/temp/pol/pol_cpp/output.json circuit/temp/pol/output_pol.json
-
-gen_pol_proof:
-	cd circuit && rapidsnark/package/bin/prover temp/pol/pol_0001.zkey temp/pol/pol_witness.wtns pol_proof.json pol_public.json
-	snarkjs generatecall circuit/pol_public.json circuit/pol_proof.json > /tmp/pol_proof.json 
-	mv circuit/pol_proof.json circuit/temp/pol/pol_proof.json
-	mv circuit/pol_public.json circuit/temp/pol/pol_public.json
-verify_pol_proof:
-	cd circuit && snarkjs groth16 verify temp/pol/verification_key.json temp/pol/pol_public.json temp/pol/pol_proof.json
-
+# ecdsa verify commands
 ecdsa_verify:
 	mkdir -p circuit/temp/ecdsa_verify
 	cd circuit && circom ecdsa_verify.circom --r1cs --wasm --sym --c
@@ -171,22 +114,6 @@ ecdsa_verify_zkey:
 	cd circuit && snarkjs zkey contribute temp/ecdsa_verify/ecdsa_verify_0000.zkey temp/ecdsa_verify/ecdsa_verify_0001.zkey --entropy=1234 --name="second contribution" -v
 	cd circuit && snarkjs zkey export verificationkey temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/verification_key.json
 
-gen_ecdsa_verify_witness:
-	python3 src/ecdsa_verify.py
-	cd circuit/temp/ecdsa_verify/ecdsa_verify_cpp && ./ecdsa_verify ../input_ecdsa_verify.json ecdsa_verify_witness.wtns
-	mv circuit/temp/ecdsa_verify/ecdsa_verify_cpp/ecdsa_verify_witness.wtns circuit/temp/ecdsa_verify/ecdsa_verify_witness.wtns 
-	mv circuit/temp/ecdsa_verify/ecdsa_verify_cpp/output.json circuit/temp/ecdsa_verify/output_ecdsa_verify.json
-
-
-gen_ecdsa_verify_proof:
-	cd circuit && rapidsnark/package/bin/prover temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/ecdsa_verify_witness.wtns ecdsa_verify_proof.json ecdsa_verify_public.json
-	snarkjs generatecall circuit/ecdsa_verify_public.json circuit/ecdsa_verify_proof.json > /tmp/ecdsa_verify_proof.json 
-	mv circuit/ecdsa_verify_proof.json circuit/temp/ecdsa_verify/ecdsa_verify_proof.json
-	mv circuit/ecdsa_verify_public.json circuit/temp/ecdsa_verify/ecdsa_verify_public.json
-verify_ecdsa_verify_proof:
-	cd circuit && snarkjs groth16 verify temp/ecdsa_verify/verification_key.json temp/ecdsa_verify/ecdsa_verify_public.json temp/ecdsa_verify/ecdsa_verify_proof.json
-
-
 # utils
 clean:
 	find . -type d -name '__pycache__' -exec rm -rf {} +
@@ -196,5 +123,6 @@ clean_all: clean
 	rm -rf circuit/*.zkey
 
 
-install: clean rapidsnark/package/bin/prover mpt_path mpt_path_zkey mpt_last mpt_last_zkey stealth_balance_addition stealth_balance_addition_zkey pol pol_zkey ecdsa_verify ecdsa_verify_zkey 
+# install: clean rapidsnark/package/bin/prover mpt_path mpt_path_zkey mpt_last mpt_last_zkey stealth_balance_addition stealth_balance_addition_zkey pol pol_zkey ecdsa_verify ecdsa_verify_zkey 
+install: clean mpt_path mpt_path_zkey mpt_last mpt_last_zkey stealth_balance_addition stealth_balance_addition_zkey pol pol_zkey ecdsa_verify ecdsa_verify_zkey 
 
