@@ -67,7 +67,53 @@ validationStages = [
 
         return true;
     }],
-    // TODO (AmirAli Azarpour): SBA hash(balance, salt) == MPT last hash
+    ["sba input accounts uniqueness", async function () {
+        await sleep(500);
+        var sbaHashes = new Set();
+        for (var l = 0; l < context.proofs["sba_data"]["public_outputs"].length; l++) {
+            if (
+                sbaHashes.has(context.proofs["sba_data"]["public_outputs"][l][0])
+                || sbaHashes.has(context.proofs["sba_data"]["public_outputs"][l][1])
+            ) {
+                return false;
+            }
+            sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][0]);
+            sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][1]);
+        }
+        return true;
+    }],
+    ["sba inputs exists in mpt last balance commitments", async function () {
+        await sleep(500);
+        var sbaHashes = new Set();
+        for (var l = 0; l < context.proofs["sba_data"]["public_outputs"].length; l++) {
+            if (l == 0) {
+                sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][0]);
+                sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][1]);
+            } else {
+                sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][0]);
+            }
+        }
+
+        for (var l = 0; l < context.proofs["mpt_last_data"].length; l++) {
+            console.log(context.proofs["mpt_last_data"][l]["public_outputs"][102])
+            if (!sbaHashes.delete(context.proofs["mpt_last_data"][l]["public_outputs"][102])) {
+                return false;
+            }
+        }
+
+        if (sbaHashes.size != 0) {
+            return false;
+        }
+
+        return true;
+    }],
+    ["check sba latest balance commitments is equal with solvency banlance commitment in pol circuit", async function () {
+        var l = context.proofs["sba_data"]["public_outputs"].length
+        if (context.proofs["pol_data"]["public_outputs"][1] == context.proofs["sba_data"]["public_outputs"][l - 1][2]) {
+            return true;
+        }
+        return false;
+    }]
 ]
 
 verifyStages = [
@@ -88,37 +134,38 @@ verifyStages = [
         await sleep(200);
         for (var i = 0; i < context.proofs["mpt_last_data"].length; i++) {
             try {
-                if (await window.sigmab.verifyMPTLast(context.proofs["mpt_last_data"][i]["public_outputs"], context.proofs["mpt_last_data"][i]["proof"])) {
-                    return true;
-                }
+                await window.sigmab.verifyMPTLast(context.proofs["mpt_last_data"][i]["public_outputs"], context.proofs["mpt_last_data"][i]["proof"])
             } catch (error) {
                 console.error(error);
+                return false;
             }
         }
+        return true;
     }],
     ["mpt path verifications", async function () {
         await sleep(200);
         for (var i = 0; i < context.proofs["mpt_path_data"].length; i++) {
             for (var j = 0; j < context.proofs["mpt_path_data"][i]["proofs"].length; j++) {
                 try {
-                    if (await window.sigmab.verifyMPTPath(context.proofs["mpt_path_data"][i]["public_outputs"][j], context.proofs["mpt_path_data"][i]["proofs"][j])) {
-                        return true;
-                    }
+                    await window.sigmab.verifyMPTPath(context.proofs["mpt_path_data"][i]["public_outputs"][j], context.proofs["mpt_path_data"][i]["proofs"][j])
                 } catch (error) {
                     console.error(error);
                 }
             }
         }
+        return true;
     }],
     ["sba verification", async function () {
         await sleep(200);
-        try {
-            if (await window.sigmab.verifySBA(context.proofs["sba_data"]["public_outputs"], context.proofs["sba_data"]["proof"])) {
-                return true;
+        for (var i = 0; i < context.proofs["sba_data"]["proofs"].length; i++) {
+            console.log(context.proofs["sba_data"]["public_outputs"][i], context.proofs["sba_data"]["proofs"][i])
+            try {
+                await window.sigmab.verifySBA(context.proofs["sba_data"]["public_outputs"][i], context.proofs["sba_data"]["proofs"][i])
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
         }
+        return true;
     }],
     ["pol verification", async function () {
         await sleep(200);
