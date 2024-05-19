@@ -164,20 +164,33 @@ def main():
         mpt_proof_progress.write(f"Proof paths: {proof_paths}")
 
     ### SBA Proof Generation
-    # TODO(AmirAli Azarpour): SBA for wallets more than 2. Currently only 2 wallets are supported.
     balances = [
-        exchange_accounts_data[0].get_value("balance"),
-        exchange_accounts_data[1].get_value("balance"),
+        exa.get_value("balance") for exa in exchange_accounts_data
     ]
-    salts = [salt, salt]
-    balance_commitments = [
-        exchange_accounts_data[0].get_value("mpt_last_public_outputs")[102],
-        exchange_accounts_data[1].get_value("mpt_last_public_outputs")[102],
-    ]
-    sba_witness_path = sba_circuit.generate_witness(
-        balances, salts, salt, balance_commitments
+
+    progress = tqdm.tqdm(
+        range(1, len(balances)), total=len(balances) - 1, desc="SBA Progress"
     )
-    sba_proof_path = sba_circuit.prove(sba_witness_path)
+
+    sba_proofs_paths = [] 
+    sba_witness_paths = []
+    sba_public_inputs = []
+    for idx in progress:
+        if idx == 1:
+            sba_witness_path = sba_circuit.generate_witness(
+                balances[idx - 1:idx + 1], salt
+            )
+            sba_proof_path = sba_circuit.prove(sba_witness_path)
+        else:
+            sba_witness_path = sba_circuit.generate_witness(
+                [balances[idx], sum(balances[:idx])], salt
+            )
+            sba_proof_path = sba_circuit.prove(sba_witness_path)
+
+        sba_witness_paths.append(sba_witness_path)
+        sba_proofs_paths.append(sba_proof_path)
+        sba_public_inputs.append(sba_circuit.context.get(ContextKeys.LATEST_PUBLIC_VALUES))
+
     print(f"Generated SBA proof path: {sba_proof_path}")
 
     ### POL Proof Generation
@@ -253,10 +266,10 @@ def main():
     data["mpt_last_data"] = mpt_last_data
 
     sba_data = {
-        "witness_path": sba_witness_path,
-        "proof_path": sba_proof_path,
-        "proof": json.load(open(sba_proof_path, "r")),
-        "public_outputs": sba_circuit.context.get(ContextKeys.LATEST_PUBLIC_VALUES),
+        "witness_paths": sba_witness_paths,
+        "proof_paths": sba_proofs_paths,
+        "proofs": [json.load(open(proof_path)) for proof_path in sba_proofs_paths],
+        "public_outputs": sba_public_inputs,
     }
     data["sba_data"] = sba_data
 
