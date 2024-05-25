@@ -286,6 +286,8 @@ def main():
         )
     data["pol_data"] = pol_data
 
+    data["salt"] = salt
+
     with open("data/proofs.json", "w") as file:
         json.dump(data, file, indent=4)
 
