@@ -7,17 +7,19 @@ import os
 class ExchangeAccountData:
     address: str
     pubkey: str
-    signature: str
+    signature_r: str
+    signature_s: str
     context: dict
 
-    def __init__(self, address: str, pubkey: str, signature: str):
+    def __init__(self, address: str, pubkey: str, signature_r: str, signature_s: str):
         self.address = address
         self.pubkey = pubkey
-        self.signature = signature
+        self.signature_r = signature_r
+        self.signature_s = signature_s
 
         self.context = {}
 
-    def set_value(self, key, value):
+    def set_value(self, key, value):    
         self.context[key] = value
 
     def get_value(self, key):
@@ -28,7 +30,8 @@ class ExchangeAccountData:
         obj = cls(
             account_data["address"],
             account_data["pubkey"],
-            bytes.fromhex(account_data["signature"]),
+            account_data["signature"]["r"],
+            account_data["signature"]["s"],
         )
         provider = Web3(Web3.HTTPProvider(PROVIDER))
         balance_wei = provider.eth.get_balance(obj.address)

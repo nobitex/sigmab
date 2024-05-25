@@ -65,7 +65,7 @@ def main():
     )
     for exchange_account in ecdsa_progress:
         witness_path = ecdsa_circuit.generate_witness(
-            message, exchange_account.pubkey, exchange_account.signature, salt
+            message, exchange_account.pubkey, exchange_account.signature_r, exchange_account.signature_s, salt
         )
         proof_path = ecdsa_circuit.prove(witness_path)
 
