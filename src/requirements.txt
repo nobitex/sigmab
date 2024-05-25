@@ -3,4 +3,7 @@ tqdm
 rlp
 eth_keys
 eth_utils
+eth_account
 ecdsa
+ledgereth
+ledgerblue
