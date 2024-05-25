@@ -5,7 +5,7 @@ const VKS = require('./vks.json');
 const sigmab = {
     verifyECDSA: async function (publicInputs, proof) {
         if (groth16) {
-            if(await groth16.verify(VKS["ECDSA_VK"], publicInputs, proof)) {
+            if (await groth16.verify(VKS["ECDSA_VK"], publicInputs, proof)) {
                 return true;
             } else {
                 return false;
@@ -15,7 +15,7 @@ const sigmab = {
 
     verifyMPTLast: async function (publicInputs, proof) {
         if (groth16) {
-            if(await groth16.verify(VKS["MPT_LAST_VK"], publicInputs, proof)) {
+            if (await groth16.verify(VKS["MPT_LAST_VK"], publicInputs, proof)) {
                 return true;
             } else {
                 return false;
@@ -25,7 +25,7 @@ const sigmab = {
 
     verifyMPTPath: async function (publicInputs, proof) {
         if (groth16) {
-            if(await groth16.verify(VKS["MPT_PATH_VK"], publicInputs, proof)) {
+            if (await groth16.verify(VKS["MPT_PATH_VK"], publicInputs, proof)) {
                 return true;
             } else {
                 return false;
@@ -35,7 +35,7 @@ const sigmab = {
 
     verifySBA: async function (publicInputs, proof) {
         if (groth16) {
-            if(await groth16.verify(VKS["SBA_VK"], publicInputs, proof)) {
+            if (await groth16.verify(VKS["SBA_VK"], publicInputs, proof)) {
                 return true;
             } else {
                 return false;
@@ -45,7 +45,7 @@ const sigmab = {
 
     verifyPOL: async function (publicInputs, proof) {
         if (groth16) {
-            if(await groth16.verify(VKS["POL_VK"], publicInputs, proof)) {
+            if (await groth16.verify(VKS["POL_VK"], publicInputs, proof)) {
                 return true;
             } else {
                 return false;
@@ -54,4 +54,4 @@ const sigmab = {
     }
 }
 
-export default sigmab;
+export default { sigmab };

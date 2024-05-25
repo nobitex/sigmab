@@ -288,6 +288,8 @@ def main():
 
     data["salt"] = salt
 
+    data["block_number"] = block_number
+
     with open("data/proofs.json", "w") as file:
         json.dump(data, file, indent=4)
 
