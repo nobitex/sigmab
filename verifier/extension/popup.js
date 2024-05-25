@@ -26,7 +26,7 @@ function sleep(ms) {
 }
 
 validationStages = [
-    ["mpt chains validation", async function () {
+    ["Checking if Merkle-Patricia-Trie nodes are chained with each other...", async function () {
         await sleep(500);
         for (var l = 0; l < context.proofs["mpt_path_data"].length; l++) {
             for (var i = context.proofs["mpt_path_data"][l].length - 1; i >= 1; i--) {
@@ -42,7 +42,7 @@ validationStages = [
 
         return true;
     }],
-    ["salt hash uniqueness validation", async function () {
+    ["Checking if the same salt is being used across account...", async function () {
         await sleep(500);
         var saltHashes = new Set();
         for (var l = 0; l < context.proofs["mpt_last_data"].length; l++) {
@@ -55,7 +55,7 @@ validationStages = [
 
         return true;
     }],
-    ["ecdsa uniqueness validation", async function () {
+    ["Checking if accounts are distinct...", async function () {
         await sleep(500);
         var ecdsaHashes = new Set();
         for (var l = 0; l < context.proofs["ecdsa_data"].length; l++) {
@@ -67,7 +67,7 @@ validationStages = [
 
         return true;
     }],
-    ["sba input accounts uniqueness", async function () {
+    ["Checking if balances of distinct accounts are being added...", async function () {
         await sleep(500);
         var sbaHashes = new Set();
         for (var l = 0; l < context.proofs["sba_data"]["public_outputs"].length; l++) {
@@ -82,7 +82,7 @@ validationStages = [
         }
         return true;
     }],
-    ["sba inputs exists in mpt last balance commitments", async function () {
+    ["Checking if the balances being added belong to the proven accounts...", async function () {
         await sleep(500);
         var sbaHashes = new Set();
         for (var l = 0; l < context.proofs["sba_data"]["public_outputs"].length; l++) {
@@ -117,7 +117,7 @@ validationStages = [
 ]
 
 verifyStages = [
-    ["ecdsa verification", async function () {
+    ["Verifying the ECDSA signatures...", async function () {
         await sleep(200);
         for (var i = 0; i < context.proofs["ecdsa_data"].length; i++) {
             console.log("ecdsa_data", context.proofs["ecdsa_data"][i]["public_outputs"])
@@ -130,7 +130,7 @@ verifyStages = [
             }
         }
     }],
-    ["mpt last verification", async function () {
+    ["Verifying the Merkle-Patricia-Trie leaf nodes...", async function () {
         await sleep(200);
         for (var i = 0; i < context.proofs["mpt_last_data"].length; i++) {
             try {
@@ -142,7 +142,7 @@ verifyStages = [
         }
         return true;
     }],
-    ["mpt path verifications", async function () {
+    ["Verifying the Merkle-Patricia-Trie intermediary nodes...", async function () {
         await sleep(200);
         for (var i = 0; i < context.proofs["mpt_path_data"].length; i++) {
             for (var j = 0; j < context.proofs["mpt_path_data"][i]["proofs"].length; j++) {
@@ -155,7 +155,7 @@ verifyStages = [
         }
         return true;
     }],
-    ["sba verification", async function () {
+    ["Verifying stealth balance additions...", async function () {
         await sleep(200);
         for (var i = 0; i < context.proofs["sba_data"]["proofs"].length; i++) {
             console.log(context.proofs["sba_data"]["public_outputs"][i], context.proofs["sba_data"]["proofs"][i])
@@ -167,7 +167,7 @@ verifyStages = [
         }
         return true;
     }],
-    ["pol verification", async function () {
+    ["Verifying existence in the liability tree...", async function () {
         await sleep(200);
         try {
             if (await window.sigmab.verifyPOL(context.proofs["pol_data"]["public_outputs"], context.proofs["pol_data"]["proof"])) {
