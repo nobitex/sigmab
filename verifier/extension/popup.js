@@ -46,7 +46,7 @@ validationStages = [
         await sleep(500);
         var saltHashes = new Set();
         for (var l = 0; l < context.proofs["mpt_last_data"].length; l++) {
-            saltHashes.add(context.proofs["mpt_last_data"][l]["public_outputs"][104]);
+            saltHashes.add(context.proofs["mpt_last_data"][l]["public_outputs"][4]);
         }
 
         if (saltHashes.size > 1) {
@@ -95,8 +95,8 @@ validationStages = [
         }
 
         for (var l = 0; l < context.proofs["mpt_last_data"].length; l++) {
-            console.log(context.proofs["mpt_last_data"][l]["public_outputs"][102])
-            if (!sbaHashes.delete(context.proofs["mpt_last_data"][l]["public_outputs"][102])) {
+            console.log(context.proofs["mpt_last_data"][l]["public_outputs"][2])
+            if (!sbaHashes.delete(context.proofs["mpt_last_data"][l]["public_outputs"][2])) {
                 return false;
             }
         }

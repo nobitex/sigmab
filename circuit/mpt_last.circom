@@ -74,8 +74,8 @@ template MptLast(maxBlocks, maxLowerLen, security) {
     account_rlp_calculator.storage_hash <== storageHash;
     account_rlp_calculator.code_hash <== codeHash;
 
-    signal output lowerLayerLen;
-    signal output lowerLayer[maxLowerLen];
+    signal lowerLayerLen;
+    signal lowerLayer[maxLowerLen];
     signal output balanceCommitment;
 
     lowerLayerLen <== account_rlp_calculator.rlp_encoded_len;
