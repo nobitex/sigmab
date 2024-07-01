@@ -1,0 +1,10 @@
+web3
+ledgereth
+python-dotenv
+eth-account
+rlp
+ledgerblue
+hexbytes
+ecdsa
+eth-keys
+eth-utils
