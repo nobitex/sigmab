@@ -290,6 +290,8 @@ def main():
 
     data["block_number"] = block_number
 
+    data["sum_balances"] = sum_balances
+
     with open("data/proofs.json", "w") as file:
         json.dump(data, file, indent=4)
 
