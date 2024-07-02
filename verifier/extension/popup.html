@@ -12,6 +12,7 @@
     rel="stylesheet">
     <script src="jq.min.js"></script>
     <link rel="stylesheet" type="text/css" href="progress.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .item {
             font-size: 1.2em;
@@ -22,9 +23,7 @@
         }
         
         body {
-            background-color: rgb(55, 60, 92);
             justify-content: center;
-            max-width: 350px;
         }
         
         .label {
@@ -39,35 +38,48 @@
         </style>
 </head>
 
-<body>
+<body class="w-[360px] rounded">
     <div id="progress" style="display: none;">
         <div class="simple-spinner">
             <h4 id="spinner-stage" style="color: white;">pol verification<h4>
                 <span></span>
             </div>
         </div>
-        <div id="content" style="display: block;">
-        <img src="sigmab.svg" style="width: 30%; margin: 2em auto; display: block;" />
-        <h1 class="roboto-bold" style="text-align: center; font-size: 1.5em; color: #fff;">sigmaB</h1>
-        <p class="roboto-bold-italic">This website wants to prove you:</p>
+    </div>
+    <nav class="bg-[#412B6E] h-24 flex justify-between items-center px-4"> 
+        <img src="./img/xMark.png" alt="x">
+        <img class="h-8" src="./img/Logo.png" alt="logo">
 
-        <div class="item roboto-light-italic"><span class="label roboto-thin">Issuer: </span>
-            <div id="issuer" class="inl">nobitex.ir</div>
+    </nav>
+    <div id="content" class="px-4" style="display: block;">
+        <div class="text-right  mt-6 ">
+        <h5 class="text-2xl font-bold">سیگما بی</h5>
+        <p class="text-right ">این وب سایت می خواهد به شما ثابت کند</p>
+</div>
+        <div class="my-3">
+            <p class=" text-right mb-2">: صادر کننده </p>
+            <div id="issuer" class=" bg-[#00000029] py-2 px-4  rounded-md">nobitex.ir</div>
         </div>
-        <div class="item roboto-light-italic"><span class="label roboto-thin">Date: </span>
-            <div id="date" class="inl">2024/2/21</div>
+        <div class="my-3">
+            <p class=" text-right mb-2">: ریشه‌ی درخت </p>
+            <div id="date" class=" bg-[#00000029] py-2 px-4  rounded-md">2024/2/21</div>
         </div>
-        <div class="item roboto-light-italic"><span class="label roboto-thin">Email: </span>
-            <div id="uid" class="inl"> - </div>
+        <div class="my-3">
+            <p class=" text-right mb-2">: تاریخ </p>
+            <div id="date" class=" bg-[#00000029] py-2 px-4  rounded-md">2024/2/21</div>
         </div>
-        <div class="item roboto-light-italic"><span class="label roboto-thin">Amount: </span>
-            <div id="amount" class="inl"> - </div> ETH
+        <div class="my-3">
+            <p class=" text-right mb-2">: ایمیل </p>
+            <div id="uid" class=" bg-[#00000029] py-2 px-4  rounded-md"> - </div>
         </div>
-
-        <a id="verifyButton">Verify!</a>
-        <p style="text-align: center; font-size: 0.8em; color: rgb(228, 228, 228);" class="roboto-regular-italic">By
+        <div class="my-3">
+            <p class=" text-right mb-2">: میزان </p>
+            <div id="amount" class=" bg-[#00000029] py-2 px-4  rounded-md"> - ETH</div> 
+        </div>
+        <a id="verifyButton" class="bg-[#754EC6] text-white w-full block py-3 mt-9 text-center rounded-md">تایید</a>
+        <p  class=" text-[#A7AFB8] text-center  mt-3">By
             <a href="https://labs.nobitex.ir" target="_blank"
-                style="display: inline-block; color: rgb(228, 228, 228);">Nobitex Labs</a>
+                class="text-[#966BED]">Nobitex Labs</a>
         </p>
     </div>
     <div id="result" style="position: absolute; z-index: 1000; width: 100% !important; height: 100vh !important; background-color: green; top: 0; left: 0; display: none;">

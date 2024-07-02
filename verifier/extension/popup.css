@@ -1,8 +1,33 @@
+@font-face {
+  font-family: "Vazir";
+  src: url("fonts/Vazir.eot");
+  src: url("fonts/Vazir.eot?#iefix") format("embedded-opentype"),
+    url("fonts/Vazir.woff") format("woff"),
+    url("fonts/Vazir.ttf") format("truetype");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("fonts/Vazir-Bold.eot");
+  src: url("fonts/Vazir-Bold.eot?#iefix") format("embedded-opentype"),
+    url("fonts/Vazir-Bold.woff") format("woff"),
+    url("fonts/Vazir-Bold.ttf") format("truetype");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("fonts/Vazir-Light.eot");
+  src: url("fonts/Vazir-Light.eot?#iefix") format("embedded-opentype"),
+    url("fonts/Vazir-Light.woff") format("woff"),
+    url("fonts/Vazir-Light.ttf") format("truetype");
+  font-weight: 300;
+}
+
 * {
-  color: #fff;
-  font-family: "Ubuntu Mono";
+  font-family: "Vazir", sans-serif;
   font-size: 14px;
-  font-weight: 700;
   font-style: normal;
 }
 
@@ -111,8 +136,7 @@ button {
   font-style: italic;
 }
 
-
-#verifyButton {
+/* #verifyButton {
   width: 50%;
   text-align: center;
   display: block;
@@ -128,28 +152,33 @@ button {
   font-family: sans-serif;
   letter-spacing: 4px;
   overflow: hidden;
-  background: rgba(255, 255, 255, .1);
-  box-shadow: 0 5px 5px rgba(0, 0, 0, .2);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
 }
 
 #verifyButton:before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 50%;
   height: 100%;
-  background: rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 #verifyButton:after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
   transition: 0.5s;
   transition-delay: 0.5s;
 }
@@ -216,4 +245,4 @@ button {
 #verifyButton:hover span:nth-child(4) {
   height: 100%;
   transform: translateY(-100%);
-}
+} */
