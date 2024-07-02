@@ -37,20 +37,67 @@
         }
         </style>
 </head>
+<body class="w-[360px] rounded h-[540px]">
+    <nav class="bg-[#412B6E] h-24 flex justify-between items-center px-4"> 
+        <img src="./img/xMark.png" alt="x">
+        <img class="h-8" src="./img/Logo.png" alt="logo">
 
-<body class="w-[360px] rounded">
-    <div id="progress" style="display: none;">
+    </nav>
+    <div class="px-4" id="progress" style="display: none;">
+    <div class="flex text-right justify-end my-5"><p class="mr-1 text-[#525B63]">درحال صحت‌سنجی</p> 
+        <img class="animate-spin" src="./img/loading.png" alt="">
+        </div>
+        <div class="text-right ">
+            <div>
+            <div class="flex justify-end mt-12">
+                <p class="font-bold">صحت‌سنجی وجود اکانت در درخت بدهی </p>
+                <span id="progress-1-num"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2 ">۱</span>
+            </div>
+            <span id="progress-1-border" class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed"></span>
+        </div>
+            <div>
+            <div class="flex justify-end">
+                <p class="font-bold">صحت‌سنجی وجود اکانت در درخت بدهی </p>
+                <span id="progress-2"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۲</span>
+            </div>
+            <span class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed"></span>
+        </div>
+        <div>
+            <div class="flex justify-end ">
+                <p class="font-bold">صحت‌سنجی وجود اکانت های اندوخته</p>
+                <span id="progress-3"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۳</span>
+            </div>
+            <span class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed"></span>
+        </div>
+            <div>
+            <div class="flex justify-end">
+                <p class="font-bold">استخراج دارایی اکانت های اندوخته</p>
+                <span id="progress-4"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۴</span>
+            </div>
+            <span class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed">
+        </div>
+            <div>
+            <div class="flex justify-end">
+                <p class="font-bold">محاسبه جمع موجودی اکانت های اندوخته</p>
+                <span id="progress-5"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۵</span>
+            </div>
+            <span class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed">
+            </div>
+            <div>
+            <div class="flex justify-end">
+                <p class="font-bold">صحت‌سنجی یکپارگی اثبات ها </p>
+                <span id="progress-6"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۶</span>
+            </div>
+            </div>
+        
+        </div>
         <div class="simple-spinner">
             <h4 id="spinner-stage" style="color: white;">pol verification<h4>
                 <span></span>
             </div>
         </div>
     </div>
-    <nav class="bg-[#412B6E] h-24 flex justify-between items-center px-4"> 
-        <img src="./img/xMark.png" alt="x">
-        <img class="h-8" src="./img/Logo.png" alt="logo">
 
-    </nav>
     <div id="content" class="px-4" style="display: block;">
         <div class="text-right  mt-6 ">
         <h5 class="text-2xl font-bold">سیگما بی</h5>
@@ -76,15 +123,23 @@
             <p class=" text-right mb-2">: میزان </p>
             <div id="amount" class=" bg-[#00000029] py-2 px-4  rounded-md"> - ETH</div> 
         </div>
-        <a id="verifyButton" class="bg-[#754EC6] text-white w-full block py-3 mt-9 text-center rounded-md">تایید</a>
-        <p  class=" text-[#A7AFB8] text-center  mt-3">By
-            <a href="https://labs.nobitex.ir" target="_blank"
-                class="text-[#966BED]">Nobitex Labs</a>
-        </p>
+        <a id="verifyButton" class="bg-[#754EC6] hover:bg-[#49307b] transition-all text-white w-full block py-3 mt-9 text-center rounded-md">تایید</a>
     </div>
-    <div id="result" style="position: absolute; z-index: 1000; width: 100% !important; height: 100vh !important; background-color: green; top: 0; left: 0; display: none;">
-        <h4 id="result-text" style="display: block; margin: 50vh auto; text-align: center; width: 100%;"> Proof verified successfully </h4>
+    <div id="result" style=" display: none;" class="h-full" >
+        <div class="h-[450px]">
+            <div class=" flex flex-col h-full items-center justify-center">
+            <img class="w-32" src="./img/done.png" alt="done">
+        <h4 id="result-text" style="display: block;  text-align: center; width: 100%;" class="text-xl mt-5">.صحت‌سنجی با موفقیت انجام شد</h4>
+
+            </div>
     </div>
+        <button class="bg-[#754EC6] hover:bg-[#49307b] transition-all  text-white w-full block py-3 mt-9 text-center rounded-md">تایید</button>
+
+    </div>
+    <p  class=" text-[#A7AFB8] text-center  mt-3">By
+        <a href="https://labs.nobitex.ir" target="_blank"
+            class="text-[#966BED]">Nobitex Labs</a>
+    </p>
 </body>
 
 </html>
