@@ -44,49 +44,49 @@
 
     </nav>
     <div class="px-4" id="progress" style="display: none;">
-    <div class="flex text-right justify-end my-5"><p class="mr-1 text-[#525B63]">درحال صحت‌سنجی</p> 
+    <div  class="flex text-right justify-end my-5"><p class="mr-1 text-[#525B63]">درحال صحت‌سنجی</p> 
         <img class="animate-spin" src="./img/loading.png" alt="">
         </div>
         <div class="text-right ">
             <div>
             <div class="flex justify-end mt-12">
                 <p class="font-bold">صحت‌سنجی وجود اکانت در درخت بدهی </p>
-                <span id="progress-1-num"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2 ">۱</span>
+                <span id="progress-1"  class="rounded bg-[#E9EDF2] rounded ml-2 h-6  w-6 text-center">۱</span>
             </div>
-            <span id="progress-1-border" class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed"></span>
+            <span id="progress-1-border" class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed "></span>
         </div>
             <div>
             <div class="flex justify-end">
-                <p class="font-bold">صحت‌سنجی وجود اکانت در درخت بدهی </p>
-                <span id="progress-2"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۲</span>
+                <p class="font-bold">صحت‌سنجی وجود اکانت های اندوخته</p>
+                <span id="progress-2"  class="rounded bg-[#E9EDF2] rounded ml-2 h-6  w-6 text-center">۲</span>
             </div>
-            <span class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed"></span>
+            <span id="progress-2-border" class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed"></span>
         </div>
         <div>
             <div class="flex justify-end ">
-                <p class="font-bold">صحت‌سنجی وجود اکانت های اندوخته</p>
-                <span id="progress-3"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۳</span>
+                <p class="font-bold">صحت‌سنجی مالکیت اکانت های اندوخته</p>
+                <span id="progress-3"  class="rounded bg-[#E9EDF2] rounded ml-2 h-6  w-6 text-center">۳</span>
             </div>
-            <span class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed"></span>
+            <span id="progress-3-border" class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed"></span>
         </div>
             <div>
             <div class="flex justify-end">
                 <p class="font-bold">استخراج دارایی اکانت های اندوخته</p>
-                <span id="progress-4"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۴</span>
+                <span id="progress-4"  class="rounded bg-[#E9EDF2] rounded ml-2 h-6  w-6 text-center">۴</span>
             </div>
-            <span class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed">
+            <span id="progress-4-border" class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed">
         </div>
             <div>
             <div class="flex justify-end">
                 <p class="font-bold">محاسبه جمع موجودی اکانت های اندوخته</p>
-                <span id="progress-5"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۵</span>
+                <span id="progress-5"  class="rounded bg-[#E9EDF2] rounded ml-2 h-6  w-6 text-center">۵</span>
             </div>
-            <span class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed">
+            <span id="progress-5-border" class="h-14 mt-1 inline-block border-l-2 pl-3 border-dashed">
             </div>
             <div>
             <div class="flex justify-end">
                 <p class="font-bold">صحت‌سنجی یکپارگی اثبات ها </p>
-                <span id="progress-6"  class="h-rounded bg-[#E9EDF2] px-2.5 py-.5 rounded ml-2">۶</span>
+                <span id="progress-6"  class="rounded bg-[#E9EDF2] rounded ml-2 h-6  w-6 text-center">۶</span>
             </div>
             </div>
         
@@ -125,7 +125,7 @@
         </div>
         <a id="verifyButton" class="bg-[#754EC6] hover:bg-[#49307b] transition-all text-white w-full block py-3 mt-9 text-center rounded-md">تایید</a>
     </div>
-    <div id="result" style=" display: none;" class="h-full" >
+    <div id="result" style=" display: none;" class="h-full px-4" >
         <div class="h-[450px]">
             <div class=" flex flex-col h-full items-center justify-center">
             <img class="w-32" src="./img/done.png" alt="done">
@@ -133,7 +133,7 @@
 
             </div>
     </div>
-        <button class="bg-[#754EC6] hover:bg-[#49307b] transition-all  text-white w-full block py-3 mt-9 text-center rounded-md">تایید</button>
+        <button id="submit-result" class="bg-[#754EC6] hover:bg-[#49307b] transition-all  text-white w-full block py-3 mt-9 text-center rounded-md">تایید</button>
 
     </div>
     <p  class=" text-[#A7AFB8] text-center  mt-3">By

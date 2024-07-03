@@ -299,12 +299,29 @@ verifyStages = [
 ];
 
 document.addEventListener("DOMContentLoaded", function () {
+
     var verifyButton = document.getElementById("verifyButton");
 
     var content = document.getElementById("content");
     var spinner = document.getElementById("progress");
+    var verificationResult = document.getElementById("result");
+    var verificationResultText = document.getElementById("result-text");
+    var progressStages = []
+    
+
+    var submitResult = document.getElementById("submit-result");
+        
+    submitResult.addEventListener("click",  ()=> {
+        verificationResult.style.display = "none";
+    });
+
 
     verifyButton.addEventListener("click", async function () {
+        for (let i = 0; i < 6; i++) {
+            progressStages.push({progressLevel :document.getElementById(`progress-${i+1}`),
+            progressBorder : document.getElementById(`progress-${i+1}-border`)})
+            
+        }
         content.style.display = "none";
         spinner.style.display = "block";
 
@@ -313,7 +330,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (context.proof !== null) {
             for (var i = 0; i < validationStages.length; i++) {
                 var spinnerStage = document.getElementById("spinner-stage");
-                spinnerStage.innerHTML = validationStages[i][0];
+                //spinnerStage.innerHTML = validationStages[i][0]; I think it would be useless
+                if (i<5) {
+                    progressStages[i].progressBorder.classList.add("border-[#8F6ED4]")
+                    progressStages[i].progressBorder.classList.remove("border-dashed");
+                }
+                progressStages[i].progressLevel.classList.add("!bg-[#754EC6]")
+                progressStages[i].progressLevel.classList.add("text-white") 
 
                 var result = await validationStages[i][1]();
                 if (result) {
@@ -362,23 +385,23 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        var verificationResult = document.getElementById("result");
-        var verificationResultText = document.getElementById("result-text");
+
         if (context.verification_state == "done") {
             verificationResult.style.display = "block";
-            verificationResult.style.opacity = 1;
-            verificationResult.style.backgroundColor = "green";
-            verificationResultText.innerHTML = "Proof verified successfully";
+            
+            // verificationResult.style.opacity = 1; I think it would be useless
+            // verificationResult.style.backgroundColor = "green";
+            // verificationResultText.innerHTML = "Proof verified successfully";
 
-            setInterval(function () {
-                if (verificationResult.style.display == "none") return;
-                verificationResult.style.opacity =
-                    verificationResult.style.opacity - 0.005;
-            }, 10);
-            setTimeout(function () {
-                verificationResult.style.display = "none";
-                verificationResult.style.opacity = 1;
-            }, 2000);
+            // setInterval(function () {
+            //     if (verificationResult.style.display == "none") return;
+            //     verificationResult.style.opacity =
+            //         verificationResult.style.opacity - 0.005;
+            // }, 10);
+            // setTimeout(function () {
+            //     verificationResult.style.display = "none";
+            //     verificationResult.style.opacity = 1;
+            // }, 2000);
         } else if (context.verification_state.startsWith("failed")) {
             verificationResult.style.display = "block";
             verificationResult.style.opacity = 1;
@@ -399,3 +422,4 @@ document.addEventListener("DOMContentLoaded", function () {
         context.verification_state = null;
     }, 100);
 });
+
