@@ -332,11 +332,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 var spinnerStage = document.getElementById("spinner-stage");
                 //spinnerStage.innerHTML = validationStages[i][0]; I think it would be useless
                 if (i<5) {
-                    progressStages[i].progressBorder.classList.add("border-[#8F6ED4]")
-                    progressStages[i].progressBorder.classList.remove("border-dashed");
+                    progressStages[i].progressBorder.classList.add("border-purple")
                 }
-                progressStages[i].progressLevel.classList.add("!bg-[#754EC6]")
-                progressStages[i].progressLevel.classList.add("text-white") 
+                progressStages[i].progressLevel.classList.add("active-step")
 
                 var result = await validationStages[i][1]();
                 if (result) {
