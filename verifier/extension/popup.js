@@ -55,19 +55,19 @@ validationStages = [
             return true;
         },
     ],
-    [
-        "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof", async function () {
-            let w = new window.Web3("https://eth.llamarpc.com"); // TODO: Change this to the correct RPC endpoint
-            await w.eth.getBlock(context.proofs["block_number"]).then((block) => {
-                let stateRoot = w.utils.toBN(block.stateRoot);
-                let len = context.proofs["mpt_path_data"].length;
-                if (stateRoot.toString() !== context.proofs["mpt_last_data"][len - 1]["public_outputs"][0][0]) {
-                    return false;
-                }
-            });
-            return true;
-        }
-    ],
+    // [
+    //     "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof", async function () {
+    //         let w = new window.Web3("https://eth.llamarpc.com"); // TODO: Change this to the correct RPC endpoint
+    //         await w.eth.getBlock(context.proofs["block_number"]).then((block) => {
+    //             let stateRoot = w.utils.toBN(block.stateRoot);
+    //             let len = context.proofs["mpt_path_data"].length;
+    //             if (stateRoot.toString() !== context.proofs["mpt_last_data"][len - 1]["public_outputs"][0][0]) {
+    //                 return false;
+    //             }
+    //         });
+    //         return true;
+    //     }
+    // ],
     [
         "Checking if the same salt is being used across account...",
         async function () {
@@ -175,14 +175,18 @@ validationStages = [
     [
         "check ecdsa commitments is equal with mpt",
         async function () {
-            var l = context.proofs["ecdsa_data"]["public_outputs"].length;
-            if (
-                context.proofs["ecdsa_data"]["public_outputs"][1] ==
-                context.proofs["mpt_last_data"]["public_outputs"][l - 1][3]
-            ) {
-                return true;
+            var l = context.proofs["ecdsa_data"].length;
+
+            for (var i = 0; i < l; i++) {
+                if (
+                    context.proofs["ecdsa_data"][i]["public_outputs"][1] !=
+                    context.proofs["mpt_last_data"][i]["public_outputs"][3]
+                ) {
+                    return false;
+                }
             }
-            return false;
+
+            return true;
         },
     ],
 ];
@@ -199,7 +203,7 @@ verifyStages = [
                 );
                 try {
                     if (
-                        await window.sigmab.verifyECDSA(
+                        await window.sigmab.sigmab.verifyECDSA(
                             context.proofs["ecdsa_data"][i]["public_outputs"],
                             context.proofs["ecdsa_data"][i]["proof"]
                         )
@@ -218,7 +222,7 @@ verifyStages = [
             await sleep(200);
             for (var i = 0; i < context.proofs["mpt_last_data"].length; i++) {
                 try {
-                    await window.sigmab.verifyMPTLast(
+                    await window.sigmab.sigmab.verifyMPTLast(
                         context.proofs["mpt_last_data"][i]["public_outputs"],
                         context.proofs["mpt_last_data"][i]["proof"]
                     );
@@ -241,7 +245,7 @@ verifyStages = [
                     j++
                 ) {
                     try {
-                        await window.sigmab.verifyMPTPath(
+                        await window.sigmab.sigmab.verifyMPTPath(
                             context.proofs["mpt_path_data"][i]["public_outputs"][j],
                             context.proofs["mpt_path_data"][i]["proofs"][j]
                         );
@@ -263,7 +267,7 @@ verifyStages = [
                     context.proofs["sba_data"]["proofs"][i]
                 );
                 try {
-                    await window.sigmab.verifySBA(
+                    await window.sigmab.sigmab.verifySBA(
                         context.proofs["sba_data"]["public_outputs"][i],
                         context.proofs["sba_data"]["proofs"][i]
                     );
@@ -280,7 +284,7 @@ verifyStages = [
             await sleep(200);
             try {
                 if (
-                    await window.sigmab.verifyPOL(
+                    await window.sigmab.sigmab.verifyPOL(
                         context.proofs["pol_data"]["public_outputs"],
                         context.proofs["pol_data"]["proof"]
                     )

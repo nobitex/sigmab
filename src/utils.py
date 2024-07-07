@@ -17,9 +17,10 @@ def load_solvency_data(solvency_data_path):
     return message, exchange_accounts_data
 
 
-def load_liability_data(liability_data_path):
-    with open(liability_data_path, "r") as file:
-        data = json.load(file)
+def load_liability_data(liability_data_path=None, data=None):
+    if data is None:
+        with open(liability_data_path, "r") as file:
+            data = json.load(file)
 
     liabilities_data = data.get("liabilities", [])
     res = []

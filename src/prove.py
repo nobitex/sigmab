@@ -227,7 +227,6 @@ def main():
     for item in exchange_accounts_data:
         ecdsa_data.append(
             {
-                "address": item.address,
                 "witness_path": item.get_value("ecdsa_witness_path"),
                 "proof_path": item.get_value("ecdsa_proof_path"),
                 "proof": json.load(open(item.get_value("ecdsa_proof_path"), "r")),
@@ -289,6 +288,8 @@ def main():
     data["salt"] = salt
 
     data["block_number"] = block_number
+
+    data["sum_balances"] = sum_balances
 
     with open("data/proofs.json", "w") as file:
         json.dump(data, file, indent=4)
