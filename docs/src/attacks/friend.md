@@ -1,6 +1,0 @@
-# Friend Attack
-
-Friend-attack is when your friend with a fat wallet tries to increase your solvency proof by participating in it. Two cryptocurrency exchanges could collude with each other and contribute in each other's solvency proof. sigmaB prevents this by requiring:
-
-- A transaction should be signed, moving all of the assets from the claiming pub-key to a master public-key which belongs to the main exchange. The transaction should be given as a private input to the circuit. It's safe for the main exchange to sign such transaction, but it's very unsafe for the friend exchange to sign it, since the main exchange could propagate it through the network and move all the funds in the friend exchange's account to his own address.
-- The signature of the pub-key's transaction should also be signed by the main exchange's meta public-key, and verified in the circuit. This way, the circuit could verify that the main exchange actually has access to the pub-key's transaction along it's signature, otherwise, the friend exchange could still create the dangerous transaction, participate in the solvency proof, and avoid giving the transaction to the main exchange, keeping his funds safe.

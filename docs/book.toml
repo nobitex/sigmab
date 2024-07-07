@@ -1,9 +1,0 @@
-[book]
-authors = ["Keyvan Kambakhsh"]
-language = "en"
-multilingual = false
-src = "src"
-title = "sigmaB - Private Proof of Solvency"
-
-[output.html]
-mathjax-support = true
