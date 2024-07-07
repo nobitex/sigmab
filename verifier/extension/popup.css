@@ -38,26 +38,6 @@ h1 {
   text-align: center;
 }
 
-a {
-  color: white;
-}
-
-a:visited {
-  color: white;
-}
-
-a:hover {
-  color: white;
-}
-
-a:focus {
-  color: white;
-}
-
-a:hover,
-a:active {
-  color: white;
-}
 
 button {
   text-align: center;
@@ -66,78 +46,12 @@ button {
   cursor: pointer;
 }
 
-.roboto-thin {
-  font-family: "Roboto", sans-serif;
-  font-weight: 100;
-  font-style: normal;
-}
-
-.roboto-thin-italic {
-  font-family: "Roboto", sans-serif;
-  font-weight: 100;
-  font-style: italic;
-}
-
-.roboto-light {
-  font-family: "Roboto", sans-serif;
-  font-weight: 300;
-  font-style: normal;
-}
-
-.roboto-light-italic {
-  font-family: "Roboto", sans-serif;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.roboto-regular {
-  font-family: "Roboto", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.roboto-regular-italic {
-  font-family: "Roboto", sans-serif;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.roboto-medium {
-  font-family: "Roboto", sans-serif;
-  font-weight: 500;
-  font-style: normal;
-}
-
-.roboto-medium-italic {
-  font-family: "Roboto", sans-serif;
-  font-weight: 500;
-  font-style: italic;
-}
-
-.roboto-bold {
-  font-family: "Roboto", sans-serif;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.roboto-bold-italic {
-  font-family: "Roboto", sans-serif;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.roboto-black {
-  font-family: "Roboto", sans-serif;
-  font-weight: 900;
-  font-style: normal;
-}
-
 /* popup.css */
 
 .popup-body {
   max-width: 360px;
   border-radius: 0.5rem;
-  min-height: 540px;
+  max-height: 650px;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -145,7 +59,7 @@ button {
 
 .header-nav {
   background-color: #412b6e;
-  height: 6rem;
+  height: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -153,7 +67,7 @@ button {
 }
 
 .logo-img {
-  height: 2rem;
+  height: 32px;
 }
 
 .progress-container {
@@ -232,7 +146,7 @@ button {
 
 .result-container {
   padding: 0 1rem;
-  height: 450px;
+  height: 460px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -295,7 +209,7 @@ button {
 }
 
 .padding-small {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
 }
 
 .rounded-md {
@@ -303,7 +217,7 @@ button {
 }
 
 .margin-top-medium {
-  margin-top: 1.25rem;
+  margin-top: 1.12rem;
 }
 
 .margin-bottom-small {

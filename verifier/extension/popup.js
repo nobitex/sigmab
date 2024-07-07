@@ -5,67 +5,64 @@ var context = {
     verification_state: null,
 };
 
+// Listen for messages from the background script
 chrome.runtime.onMessage.addListener(async function (request, sender) {
     context.proofs = request.data["proofs"];
     context.amount = request.data["amount"];
     context.uid = request.data["uid"];
 
-    var amonut = document.getElementById("amount");
-    amonut.innerHTML = context.amount;
+    // Update UI elements with received data
+    var amountElement = document.getElementById("amount");
+    amountElement.innerHTML = context.amount;
 
-    var date = document.getElementById("date");
+    var dateElement = document.getElementById("date");
     let d = new Date();
-    date.innerHTML = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+    dateElement.innerHTML = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
 
-    var uid = document.getElementById("uid");
-    uid.innerHTML = context.uid;
+    var uidElement = document.getElementById("uid");
+    uidElement.innerHTML = context.uid;
 });
 
+// Utility function to introduce a delay
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-validationStages = [
+// Validation stages
+const validationStages = [
     [
         "Checking if Merkle-Patricia-Trie nodes are chained with each other...",
         async function () {
             await sleep(500);
             for (var l = 0; l < context.proofs["mpt_path_data"].length; l++) {
-                for (
-                    var i = context.proofs["mpt_path_data"][l].length - 1;
-                    i >= 1;
-                    i--
-                ) {
-                    if (
-                        context.proofs["mpt_path_data"][l]["public_outputs"][i][1] !==
-                        context.proofs["mpt_path_data"][l]["public_outputs"][i - 1][0]
-                    ) {
+                for (var i = context.proofs["mpt_path_data"][l].length - 1; i >= 1; i--) {
+                    if (context.proofs["mpt_path_data"][l]["public_outputs"][i][1] !== context.proofs["mpt_path_data"][l]["public_outputs"][i - 1][0]) {
                         return false;
                     }
                 }
-
-                if (
-                    context.proofs["mpt_path_data"][l]["public_outputs"][0][1] !==
-                    context.proofs["mpt_last_data"][l]["public_outputs"][0]
-                ) {
+                if (context.proofs["mpt_path_data"][l]["public_outputs"][0][1] !== context.proofs["mpt_last_data"][l]["public_outputs"][0]) {
                     return false;
                 }
             }
-
             return true;
         },
     ],
     // [
-    //     "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof", async function () {
-    //         let w = new window.Web3("https://eth.llamarpc.com"); // TODO: Change this to the correct RPC endpoint
-    //         await w.eth.getBlock(context.proofs["block_number"]).then((block) => {
+    //     "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof",
+    //     async function () {
+    //         let w = new window.Web3("https://public.stackup.sh/api/v1/node/ethereum-mainnet"); // TODO: Change this to the correct RPC endpoint
+    //         try {
+    //             let block = await w.eth.getBlock(context.proofs["block_number"]);
     //             let stateRoot = w.utils.toBN(block.stateRoot);
     //             let len = context.proofs["mpt_path_data"].length;
     //             if (stateRoot.toString() !== context.proofs["mpt_last_data"][len - 1]["public_outputs"][0][0]) {
     //                 return false;
     //             }
-    //         });
-    //         return true;
+    //             return true;
+    //         } catch (error) {
+    //             console.error(error);
+    //             return false;
+    //         }
     //     }
     // ],
     [
@@ -76,12 +73,7 @@ validationStages = [
             for (var l = 0; l < context.proofs["mpt_last_data"].length; l++) {
                 saltHashes.add(context.proofs["mpt_last_data"][l]["public_outputs"][4]);
             }
-
-            if (saltHashes.size > 1) {
-                return false;
-            }
-
-            return true;
+            return saltHashes.size <= 1;
         },
     ],
     [
@@ -90,14 +82,11 @@ validationStages = [
             await sleep(500);
             var ecdsaHashes = new Set();
             for (var l = 0; l < context.proofs["ecdsa_data"].length; l++) {
-                if (
-                    ecdsaHashes.has(context.proofs["ecdsa_data"][l]["public_outputs"][1])
-                ) {
+                if (ecdsaHashes.has(context.proofs["ecdsa_data"][l]["public_outputs"][1])) {
                     return false;
                 }
                 ecdsaHashes.add(context.proofs["ecdsa_data"][l]["public_outputs"][1]);
             }
-
             return true;
         },
     ],
@@ -106,15 +95,8 @@ validationStages = [
         async function () {
             await sleep(500);
             var sbaHashes = new Set();
-            for (
-                var l = 0;
-                l < context.proofs["sba_data"]["public_outputs"].length;
-                l++
-            ) {
-                if (
-                    sbaHashes.has(context.proofs["sba_data"]["public_outputs"][l][0]) ||
-                    sbaHashes.has(context.proofs["sba_data"]["public_outputs"][l][1])
-                ) {
+            for (var l = 0; l < context.proofs["sba_data"]["public_outputs"].length; l++) {
+                if (sbaHashes.has(context.proofs["sba_data"]["public_outputs"][l][0]) || sbaHashes.has(context.proofs["sba_data"]["public_outputs"][l][1])) {
                     return false;
                 }
                 sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][0]);
@@ -128,90 +110,57 @@ validationStages = [
         async function () {
             await sleep(500);
             var sbaHashes = new Set();
-            for (
-                var l = 0;
-                l < context.proofs["sba_data"]["public_outputs"].length;
-                l++
-            ) {
-                if (l == 0) {
+            for (var l = 0; l < context.proofs["sba_data"]["public_outputs"].length; l++) {
+                if (l === 0) {
                     sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][0]);
                     sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][1]);
                 } else {
                     sbaHashes.add(context.proofs["sba_data"]["public_outputs"][l][0]);
                 }
             }
-
             for (var l = 0; l < context.proofs["mpt_last_data"].length; l++) {
-                console.log(context.proofs["mpt_last_data"][l]["public_outputs"][2]);
-                if (
-                    !sbaHashes.delete(
-                        context.proofs["mpt_last_data"][l]["public_outputs"][2]
-                    )
-                ) {
+                if (!sbaHashes.delete(context.proofs["mpt_last_data"][l]["public_outputs"][2])) {
                     return false;
                 }
             }
-
-            if (sbaHashes.size != 0) {
-                return false;
-            }
-
-            return true;
+            return sbaHashes.size === 0;
         },
     ],
     [
-        "check sba latest balance commitments is equal with solvency banlance commitment in pol circuit",
+        "Check SBA latest balance commitments is equal with solvency balance commitment in pol circuit",
         async function () {
             var l = context.proofs["sba_data"]["public_outputs"].length;
-            if (
-                context.proofs["pol_data"]["public_outputs"][1] ==
-                context.proofs["sba_data"]["public_outputs"][l - 1][2]
-            ) {
-                return true;
-            }
-            return false;
+            return context.proofs["pol_data"]["public_outputs"][1] === context.proofs["sba_data"]["public_outputs"][l - 1][2];
         },
     ],
     [
-        "check ecdsa commitments is equal with mpt",
+        "Check ECDSA commitments is equal with MPT",
         async function () {
             var l = context.proofs["ecdsa_data"].length;
-
             for (var i = 0; i < l; i++) {
-                if (
-                    context.proofs["ecdsa_data"][i]["public_outputs"][1] !=
-                    context.proofs["mpt_last_data"][i]["public_outputs"][3]
-                ) {
+                if (context.proofs["ecdsa_data"][i]["public_outputs"][1] !== context.proofs["mpt_last_data"][i]["public_outputs"][3]) {
                     return false;
                 }
             }
-
             return true;
         },
     ],
 ];
 
-verifyStages = [
+// Verification stages
+const verifyStages = [
     [
         "Verifying the ECDSA signatures...",
         async function () {
             await sleep(200);
             for (var i = 0; i < context.proofs["ecdsa_data"].length; i++) {
-                console.log(
-                    "ecdsa_data",
-                    context.proofs["ecdsa_data"][i]["public_outputs"]
-                );
                 try {
-                    if (
-                        await window.sigmab.sigmab.verifyECDSA(
-                            context.proofs["ecdsa_data"][i]["public_outputs"],
-                            context.proofs["ecdsa_data"][i]["proof"]
-                        )
-                    ) {
+                    if (await window.sigmab.sigmab.verifyECDSA(context.proofs["ecdsa_data"][i]["public_outputs"], context.proofs["ecdsa_data"][i]["proof"])) {
                         return true;
                     }
                 } catch (error) {
                     console.error(error);
+                    return false;
                 }
             }
         },
@@ -222,10 +171,7 @@ verifyStages = [
             await sleep(200);
             for (var i = 0; i < context.proofs["mpt_last_data"].length; i++) {
                 try {
-                    await window.sigmab.sigmab.verifyMPTLast(
-                        context.proofs["mpt_last_data"][i]["public_outputs"],
-                        context.proofs["mpt_last_data"][i]["proof"]
-                    );
+                    await window.sigmab.sigmab.verifyMPTLast(context.proofs["mpt_last_data"][i]["public_outputs"], context.proofs["mpt_last_data"][i]["proof"]);
                 } catch (error) {
                     console.error(error);
                     return false;
@@ -239,18 +185,12 @@ verifyStages = [
         async function () {
             await sleep(200);
             for (var i = 0; i < context.proofs["mpt_path_data"].length; i++) {
-                for (
-                    var j = 0;
-                    j < context.proofs["mpt_path_data"][i]["proofs"].length;
-                    j++
-                ) {
+                for (var j = 0; j < context.proofs["mpt_path_data"][i]["proofs"].length; j++) {
                     try {
-                        await window.sigmab.sigmab.verifyMPTPath(
-                            context.proofs["mpt_path_data"][i]["public_outputs"][j],
-                            context.proofs["mpt_path_data"][i]["proofs"][j]
-                        );
+                        await window.sigmab.sigmab.verifyMPTPath(context.proofs["mpt_path_data"][i]["public_outputs"][j], context.proofs["mpt_path_data"][i]["proofs"][j]);
                     } catch (error) {
                         console.error(error);
+                        return false;
                     }
                 }
             }
@@ -262,17 +202,11 @@ verifyStages = [
         async function () {
             await sleep(200);
             for (var i = 0; i < context.proofs["sba_data"]["proofs"].length; i++) {
-                console.log(
-                    context.proofs["sba_data"]["public_outputs"][i],
-                    context.proofs["sba_data"]["proofs"][i]
-                );
                 try {
-                    await window.sigmab.sigmab.verifySBA(
-                        context.proofs["sba_data"]["public_outputs"][i],
-                        context.proofs["sba_data"]["proofs"][i]
-                    );
+                    await window.sigmab.sigmab.verifySBA(context.proofs["sba_data"]["public_outputs"][i], context.proofs["sba_data"]["proofs"][i]);
                 } catch (error) {
                     console.error(error);
+                    return false;
                 }
             }
             return true;
@@ -283,58 +217,56 @@ verifyStages = [
         async function () {
             await sleep(200);
             try {
-                if (
-                    await window.sigmab.sigmab.verifyPOL(
-                        context.proofs["pol_data"]["public_outputs"],
-                        context.proofs["pol_data"]["proof"]
-                    )
-                ) {
+                if (await window.sigmab.sigmab.verifyPOL(context.proofs["pol_data"]["public_outputs"], context.proofs["pol_data"]["proof"])) {
                     return true;
                 }
             } catch (error) {
                 console.error(error);
+                return false;
             }
         },
     ],
 ];
 
+// DOMContentLoaded event listener to initialize the script
 document.addEventListener("DOMContentLoaded", function () {
-
     var verifyButton = document.getElementById("verifyButton");
 
     var content = document.getElementById("content");
     var spinner = document.getElementById("progress");
     var verificationResult = document.getElementById("result");
     var verificationResultText = document.getElementById("result-text");
-    var progressStages = []
-    
+    var progressStages = [];
+    for (let i = 0; i < 6; i++) {
+        progressStages.push({
+            progressLevel: document.getElementById(`progress-${i+1}`),
+            progressBorder: document.getElementById(`progress-${i+1}-border`)
+        });
+    }
 
     var submitResult = document.getElementById("submit-result");
-        
-    submitResult.addEventListener("click",  ()=> {
+    submitResult.addEventListener("click", () => {
         verificationResult.style.display = "none";
+        content.style.display = "block";
+        for (let i = 0; i < 6; i++) {
+            if (i < 5) {
+                progressStages[i].progressBorder.classList.remove("border-purple");
+            }
+            progressStages[i]?.progressLevel.classList.remove("active-step");
+        }
     });
 
-
     verifyButton.addEventListener("click", async function () {
-        for (let i = 0; i < 6; i++) {
-            progressStages.push({progressLevel :document.getElementById(`progress-${i+1}`),
-            progressBorder : document.getElementById(`progress-${i+1}-border`)})
-            
-        }
         content.style.display = "none";
         spinner.style.display = "block";
-
         context.verification_state = "init";
 
-        if (context.proof !== null) {
+        if (context.proofs !== null) {
             for (var i = 0; i < validationStages.length; i++) {
-                var spinnerStage = document.getElementById("spinner-stage");
-                //spinnerStage.innerHTML = validationStages[i][0]; I think it would be useless
-                if (i<5) {
-                    progressStages[i].progressBorder.classList.add("border-purple")
+                if (i < 5) {
+                    progressStages[i].progressBorder.classList.add("border-purple");
                 }
-                progressStages[i].progressLevel.classList.add("active-step")
+                progressStages[i]?.progressLevel.classList.add("active-step");
 
                 var result = await validationStages[i][1]();
                 if (result) {
@@ -342,16 +274,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     console.log(`${validationStages[i][0]} failed`);
                     context.verification_state = `failed ${validationStages[i][0]}`;
-
-                    content.style.display = "block";
                     spinner.style.display = "none";
                     return;
                 }
             }
 
             for (var i = 0; i < verifyStages.length; i++) {
-                var spinnerStage = document.getElementById("spinner-stage");
-                spinnerStage.innerHTML = verifyStages[i][0];
+                if (i < 5) {
+                    progressStages[i].progressBorder.classList.add("border-purple");
+                }
+                progressStages[i]?.progressLevel.classList.add("active-step");
 
                 var result = await verifyStages[i][1]();
                 if (result) {
@@ -360,18 +292,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     context.verification_state = `failed ${verifyStages[i][0]}`;
                     console.log(`${verifyStages[i][0]} failed`);
-
-                    content.style.display = "block";
                     spinner.style.display = "none";
                     return;
                 }
             }
 
-            content.style.display = "block";
             spinner.style.display = "none";
             context.verification_state = "done";
         } else {
-            content.style.display = "block";
             spinner.style.display = "none";
             context.verification_state = "no proof";
             alert("No proof to verify!");
@@ -383,41 +311,23 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         if (context.verification_state == "done") {
             verificationResult.style.display = "block";
-            
-            // verificationResult.style.opacity = 1; I think it would be useless
-            // verificationResult.style.backgroundColor = "green";
-            // verificationResultText.innerHTML = "Proof verified successfully";
-
-            // setInterval(function () {
-            //     if (verificationResult.style.display == "none") return;
-            //     verificationResult.style.opacity =
-            //         verificationResult.style.opacity - 0.005;
-            // }, 10);
-            // setTimeout(function () {
-            //     verificationResult.style.display = "none";
-            //     verificationResult.style.opacity = 1;
-            // }, 2000);
         } else if (context.verification_state.startsWith("failed")) {
             verificationResult.style.display = "block";
             verificationResult.style.opacity = 1;
             verificationResult.style.backgroundColor = "red";
             verificationResultText.innerHTML = "Proof verification failed";
 
-            setInterval(function () {
-                if (verificationResult.style.display == "none") return;
-                verificationResult.style.opacity =
-                    verificationResult.style.opacity - 0.005;
-            }, 10);
-            setTimeout(function () {
-                verificationResult.style.display = "none";
-                verificationResult.style.opacity = 1;
-            }, 2000);
+            // setInterval(function () {
+            //     if (verificationResult.style.display == "none") return;
+            //     verificationResult.style.opacity = verificationResult.style.opacity - 0.005;
+            // }, 10);
+            // setTimeout(function () {
+            //     verificationResult.style.display = "none";
+            //     verificationResult.style.opacity = 1;
+            // }, 2000);
         }
-        console.log(context.verification_state);
         context.verification_state = null;
     }, 100);
 });
-
