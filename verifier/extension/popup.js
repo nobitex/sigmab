@@ -150,6 +150,37 @@ const validationStages = [
 // Verification stages
 const verifyStages = [
     [
+        "Verifying existence in the liability tree...",
+        async function () {
+            await sleep(200);
+            try {
+                if (await window.sigmab.sigmab.verifyPOL(context.proofs["pol_data"]["public_outputs"], context.proofs["pol_data"]["proof"])) {
+                    return true;
+                }
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        },
+    ],
+    [
+        "Verifying the Merkle-Patricia-Trie intermediary nodes...",
+        async function () {
+            await sleep(200);
+            for (var i = 0; i < context.proofs["mpt_path_data"].length; i++) {
+                for (var j = 0; j < context.proofs["mpt_path_data"][i]["proofs"].length; j++) {
+                    try {
+                        await window.sigmab.sigmab.verifyMPTPath(context.proofs["mpt_path_data"][i]["public_outputs"][j], context.proofs["mpt_path_data"][i]["proofs"][j]);
+                    } catch (error) {
+                        console.error(error);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        },
+    ],
+    [
         "Verifying the ECDSA signatures...",
         async function () {
             await sleep(200);
@@ -180,23 +211,7 @@ const verifyStages = [
             return true;
         },
     ],
-    [
-        "Verifying the Merkle-Patricia-Trie intermediary nodes...",
-        async function () {
-            await sleep(200);
-            for (var i = 0; i < context.proofs["mpt_path_data"].length; i++) {
-                for (var j = 0; j < context.proofs["mpt_path_data"][i]["proofs"].length; j++) {
-                    try {
-                        await window.sigmab.sigmab.verifyMPTPath(context.proofs["mpt_path_data"][i]["public_outputs"][j], context.proofs["mpt_path_data"][i]["proofs"][j]);
-                    } catch (error) {
-                        console.error(error);
-                        return false;
-                    }
-                }
-            }
-            return true;
-        },
-    ],
+    
     [
         "Verifying stealth balance additions...",
         async function () {
@@ -210,20 +225,6 @@ const verifyStages = [
                 }
             }
             return true;
-        },
-    ],
-    [
-        "Verifying existence in the liability tree...",
-        async function () {
-            await sleep(200);
-            try {
-                if (await window.sigmab.sigmab.verifyPOL(context.proofs["pol_data"]["public_outputs"], context.proofs["pol_data"]["proof"])) {
-                    return true;
-                }
-            } catch (error) {
-                console.error(error);
-                return false;
-            }
         },
     ],
 ];
@@ -260,30 +261,11 @@ document.addEventListener("DOMContentLoaded", function () {
         content.style.display = "none";
         spinner.style.display = "block";
         context.verification_state = "init";
-
+        alert(verifyStages.length)
         if (context.proofs !== null) {
-            for (var i = 0; i < validationStages.length; i++) {
-                if (i < 5) {
-                    progressStages[i].progressBorder.classList.add("border-purple");
-                }
-                progressStages[i]?.progressLevel.classList.add("active-step");
-
-                var result = await validationStages[i][1]();
-                if (result) {
-                    console.log(`${validationStages[i][0]} passed`);
-                } else {
-                    console.log(`${validationStages[i][0]} failed`);
-                    context.verification_state = `failed ${validationStages[i][0]}`;
-                    spinner.style.display = "none";
-                    return;
-                }
-            }
-
             for (var i = 0; i < verifyStages.length; i++) {
-                if (i < 5) {
-                    progressStages[i].progressBorder.classList.add("border-purple");
-                }
-                progressStages[i]?.progressLevel.classList.add("active-step");
+                progressStages[i].progressBorder.classList.add("border-purple");
+                progressStages[i].progressLevel.classList.add("active-step");
 
                 var result = await verifyStages[i][1]();
                 if (result) {
@@ -296,6 +278,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
             }
+
+            for (var i = 0; i < validationStages.length; i++) {
+                var result = await validationStages[i][1]();
+                if (result) {
+                    console.log(`${validationStages[i][0]} passed`);
+                } else {
+                    console.log(`${validationStages[i][0]} failed`);
+                    context.verification_state = `failed ${validationStages[i][0]}`;
+                    spinner.style.display = "none";
+                    return;
+                }
+            }
+
+            progressStages[5]?.progressLevel.classList.add("active-step");
 
             spinner.style.display = "none";
             context.verification_state = "done";
