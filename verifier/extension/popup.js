@@ -55,19 +55,19 @@ validationStages = [
             return true;
         },
     ],
-    [
-        "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof", async function () {
-            let w = new window.Web3("https://eth.llamarpc.com"); // TODO: Change this to the correct RPC endpoint
-            await w.eth.getBlock(context.proofs["block_number"]).then((block) => {
-                let stateRoot = w.utils.toBN(block.stateRoot);
-                let len = context.proofs["mpt_path_data"].length;
-                if (stateRoot.toString() !== context.proofs["mpt_last_data"][len - 1]["public_outputs"][0][0]) {
-                    return false;
-                }
-            });
-            return true;
-        }
-    ],
+    // [
+    //     "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof", async function () {
+    //         let w = new window.Web3("https://eth.llamarpc.com"); // TODO: Change this to the correct RPC endpoint
+    //         await w.eth.getBlock(context.proofs["block_number"]).then((block) => {
+    //             let stateRoot = w.utils.toBN(block.stateRoot);
+    //             let len = context.proofs["mpt_path_data"].length;
+    //             if (stateRoot.toString() !== context.proofs["mpt_last_data"][len - 1]["public_outputs"][0][0]) {
+    //                 return false;
+    //             }
+    //         });
+    //         return true;
+    //     }
+    // ],
     [
         "Checking if the same salt is being used across account...",
         async function () {

@@ -227,7 +227,6 @@ def main():
     for item in exchange_accounts_data:
         ecdsa_data.append(
             {
-                "address": item.address,
                 "witness_path": item.get_value("ecdsa_witness_path"),
                 "proof_path": item.get_value("ecdsa_proof_path"),
                 "proof": json.load(open(item.get_value("ecdsa_proof_path"), "r")),
