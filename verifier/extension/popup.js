@@ -7,13 +7,19 @@ var context = {
 
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener(async function (request, sender) {
+
   context.proofs = request.data["proofs"];
-  context.amount = request.data["amount"];
+  context.amount = request.data["amount"];//String(request.data["amount"] * WEI_PER_ETHER)
   context.uid = request.data["uid"];
+
+  let rootHash = BigInt(context.proofs["pol_data"]["public_outputs"][0]).toString(16);
 
   // Update UI elements with received data
   var amountElement = document.getElementById("amount");
-  amountElement.innerHTML = context.amount;
+  amountElement.innerHTML = Web3.utils.fromWei(context.amount) + " ETH";
+
+  var rootHashElement = document.getElementById("tree-root");
+  rootHashElement.innerHTML = rootHash.slice(0, 12);
 
   var dateElement = document.getElementById("date");
   let d = new Date();
@@ -299,6 +305,13 @@ const verifyStages = [
 
 // DOMContentLoaded event listener to initialize the script
 document.addEventListener("DOMContentLoaded", function () {
+
+
+    document.getElementById("close-btn").addEventListener('click', function () {
+            console.log("im called");
+                window.close()
+        });
+
   var verifyButton = document.getElementById("verifyButton");
 
   var content = document.getElementById("content");
@@ -314,15 +327,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   var submitResult = document.getElementById("submit-result");
+  var closeBtn = document.getElementById("close-btn")
+  
+
   submitResult.addEventListener("click", () => {
+        window.close()
     verificationResult.style.display = "none";
-    content.style.display = "block";
-    for (let i = 0; i < 6; i++) {
-      if (i < 5) {
-        progressStages[i].progressBorder.classList.remove("border-purple");
-      }
-      progressStages[i]?.progressLevel.classList.remove("active-step");
-    }
   });
 
   verifyButton.addEventListener("click", async function () {
@@ -331,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function () {
     context.verification_state = "init";
     if (context.proofs !== null) {
       for (var i = 0; i < verifyStages.length; i++) {
-        progressStages[i].progressBorder.classList.add("border-purple");
+        i>=1?progressStages[i-1].progressBorder.classList.add("border-purple"):null;
         progressStages[i].progressLevel.classList.add("active-step");
 
         var result = await verifyStages[i][1]();
@@ -358,10 +368,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
+      progressStages[4].progressBorder.classList.add("border-purple");
       progressStages[5]?.progressLevel.classList.add("active-step");
 
-      spinner.style.display = "none";
-      context.verification_state = "done";
+      setInterval(() => {
+        spinner.style.display = "none";
+        context.verification_state = "done";
+      }, 3000); 
+     
     } else {
       spinner.style.display = "none";
       context.verification_state = "no proof";
@@ -377,19 +391,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if (context.verification_state == "done") {
       verificationResult.style.display = "block";
     } else if (context.verification_state.startsWith("failed")) {
+      resultImg= document.getElementById("result-img")
       verificationResult.style.display = "block";
       verificationResult.style.opacity = 1;
-      verificationResult.style.backgroundColor = "red";
+      resultImg.src = "./img/error.png"; // Change the path to the image you want to show on failure
+      resultImg.style.width="5rem"
       verificationResultText.innerHTML = "صحت سنجی با مشکل روبه رو شد";
 
-      // setInterval(function () {
-      //     if (verificationResult.style.display == "none") return;
-      //     verificationResult.style.opacity = verificationResult.style.opacity - 0.005;
-      // }, 10);
-      // setTimeout(function () {
-      //     verificationResult.style.display = "none";
-      //     verificationResult.style.opacity = 1;
-      // }, 2000);
     }
     context.verification_state = null;
   }, 100);

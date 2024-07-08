@@ -72,6 +72,10 @@ button {
 
 .progress-container {
   padding: 0 1rem;
+  height: 556px;
+}
+#close-btn{
+  cursor: pointer;
 }
 
 .progress-step {
@@ -146,7 +150,7 @@ button {
 
 .result-container {
   padding: 0 1rem;
-  height: 460px;
+  height: 482px;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -12,3 +12,4 @@ window.addEventListener(
 window.addEventListener("CheckExtensionInstalled", function () {
   window.dispatchEvent(new CustomEvent("ExtensionIsInstalled"));
 });
+
