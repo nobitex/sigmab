@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "BigmaC",
     "version": "1.0",
-    "description": "Nobitex Proof of Reserves Chrome Extension",
+    "description": "Nobitex Proof of Reserves Firefox Extension",
     "permissions": [
       "tabs"
     ],
