@@ -13,10 +13,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <script src="jq.min.js"></script>
     <link rel="stylesheet" type="text/css" href="progress.css">
+    <title>sigmaB | Private Proof of Reserves</title>
 </head>
 <body class="popup-body">
-    <nav class="header-nav">
-        <img src="./img/xMark.png" alt="x">
+    <nav  class="header-nav">
+        <img id="close-btn"  src="./img/xMark.png" alt="x">
         <img class="logo-img" src="./img/Logo.png" alt="logo">
     </nav>
     <div  style="display: none;" class="progress-container" id="progress">
@@ -68,14 +69,14 @@
             </div>
         </div>
         <div class="spinner-text">
-            <h4 id="spinner-stage">pol verification</h4>
+            <h4 id="spinner-stage"></h4>
             <span></span>
         </div>
     </div>
     <div id="content" style="display: block;" class="content-container">
         <div class="text-right margin-top-medium">
             <h5 class="text-xl text-bold">سیگما بی</h5>
-            <p class="text-right">این وب سایت می خواهد به شما ثابت کند</p>
+            <p class="text-right">این وب‌سایت می‌خواهد به شما اثبات اندوخته ارائه دهد</p>
         </div>
         <div class="margin-top-medium margin-bottom-small">
             <p class="text-right margin-bottom-small">صادر کننده</p>
@@ -90,7 +91,7 @@
             <div id="date" class="bg-light-gray padding-small rounded-md">2024/2/21</div>
         </div>
         <div class="margin-top-medium margin-bottom-small">
-            <p class="text-right margin-bottom-small"> ایمیل</p>
+            <p class="text-right margin-bottom-small"> شناسه کاربری</p>
             <div id="uid" class="bg-light-gray padding-small rounded-md">ostadgeorge@gmail.com</div>
         </div>
         <div class="margin-top-medium margin-bottom-small">
@@ -102,7 +103,7 @@
 
     <div id="result" style="display: none;" >
         <div class="result-container">
-            <img class="result-image " src="./img/done.png" alt="done">
+            <img id="result-img" class="result-image " src="./img/done.png" alt="done">
             <h4 id="result-text" class="result-text">.صحت‌سنجی با موفقیت انجام شد</h4>
         </div>
         <div class="submit-container">
