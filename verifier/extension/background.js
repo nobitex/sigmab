@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener(function (request, sender) {
   let width = 350;
-  let height = 670;
+  let height = 690;
   let right = 100;
   let left = request.windowWidth - width - right;
 

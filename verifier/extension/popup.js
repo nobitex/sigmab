@@ -336,12 +336,11 @@ const verifyStages = [
 
 // DOMContentLoaded event listener to initialize the script
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("close-btn").addEventListener("click", function () {
-    window.close();
-  });
+  
+
 
   var verifyButton = document.getElementById("verifyButton");
-
+  var checkbox = document.getElementById("accept");
   var content = document.getElementById("content");
   var spinner = document.getElementById("progress");
   var verificationResult = document.getElementById("result");
@@ -353,7 +352,14 @@ document.addEventListener("DOMContentLoaded", function () {
       progressBorder: document.getElementById(`progress-${i + 1}-border`),
     });
   }
+  
+  checkbox.addEventListener("change", () => {
+    verifyButton.disabled = !checkbox.checked;
+  });
 
+  document.getElementById("close-btn").addEventListener("click", function () {
+    window.close();
+  });
   var submitResult = document.getElementById("submit-result");
   var closeBtn = document.getElementById("close-btn");
 
