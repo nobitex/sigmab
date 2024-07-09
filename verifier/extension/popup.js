@@ -397,6 +397,7 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log(`${validationStages[i][0]} passed`);
         } else {
           if (result) {
+            document.getElementById("result-details").innerHTML = result;
             console.log(result);
           }
           console.log(`${validationStages[i][0]} failed`);
