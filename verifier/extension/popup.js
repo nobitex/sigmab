@@ -336,7 +336,7 @@ const verifyStages = [
 
 // DOMContentLoaded event listener to initialize the script
 document.addEventListener("DOMContentLoaded", function () {
-  
+
 
 
   var verifyButton = document.getElementById("verifyButton");
@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
       progressBorder: document.getElementById(`progress-${i + 1}-border`),
     });
   }
-  
+
   checkbox.addEventListener("change", () => {
     verifyButton.disabled = !checkbox.checked;
   });
@@ -396,7 +396,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (result === true) {
           console.log(`${validationStages[i][0]} passed`);
         } else {
-          if(result) {
+          if (result) {
             console.log(result);
           }
           console.log(`${validationStages[i][0]} failed`);
@@ -426,6 +426,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (context.verification_state == "done") {
+      resultDetails = document.getElementById("result-details");
+      resultDetails.innerHTML = "در تاریخ " + "<b>" + context.date + "</b>" + " برای حساب با شناسه " + "<b>" + "0912" + "</b>" + " به اندازه " + "<b>" + "0.1 ETH" + "</b>" + " رمزارز وجود داشته است!";
       verificationResult.style.display = "block";
     } else if (context.verification_state.startsWith("failed")) {
       resultImg = document.getElementById("result-img");

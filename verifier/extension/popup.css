@@ -286,4 +286,5 @@ button {
   text-align: center;
   margin-top: 10px;
   padding: 0 10px;
+  direction: rtl;
 }
