@@ -4,15 +4,17 @@ var context = {
   uid: null,
   verification_state: null,
 };
+var blockNumber = 20268439; // TODO :must come from proofs
 
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener(async function (request, sender) {
-
   context.proofs = request.data["proofs"];
-  context.amount = request.data["amount"];//String(request.data["amount"] * WEI_PER_ETHER)
+  context.amount = request.data["amount"]; //String(request.data["amount"] * WEI_PER_ETHER)
   context.uid = request.data["uid"];
 
-  let rootHash = BigInt(context.proofs["pol_data"]["public_outputs"][0]).toString(16);
+  let rootHash = BigInt(
+    context.proofs["pol_data"]["public_outputs"][0]
+  ).toString(16);
 
   // Update UI elements with received data
   var amountElement = document.getElementById("amount");
@@ -22,10 +24,25 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
   rootHashElement.innerHTML = rootHash.slice(0, 12);
 
   var dateElement = document.getElementById("date");
-  let d = new Date();
-  dateElement.innerHTML = `${d.getFullYear()}/${
-    d.getMonth() + 1
-  }/${d.getDate()}`;
+  dateElement.innerHTML = `#${blockNumber} `;
+  (async () => {
+    let w = new window.Web3(
+      "https://public.stackup.sh/api/v1/node/ethereum-mainnet"
+    ); // TODO: Change this to the correct RPC endpoint
+    try {
+      // let blockN = await w.eth.getBlockNumber();
+      let block = await w.eth.getBlock(blockNumber);
+      var d = new Date(block.timestamp * 1000);
+
+      dateElement.innerHTML += `( ${d.getFullYear()}/${
+        d.getMonth() + 1
+      }/${d.getDate()} )`;
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  })();
 
   var uidElement = document.getElementById("uid");
   uidElement.innerHTML = context.uid;
@@ -193,7 +210,7 @@ const verifyStages = [
   [
     "Verifying existence in the liability tree...",
     async function () {
-        const FIELD_SIZE =
+      const FIELD_SIZE =
         "21888242871839275222246405745257275088548364400416034343698204186575808495617";
       await sleep(200);
       try {
@@ -203,7 +220,6 @@ const verifyStages = [
             context.proofs["pol_data"]["proof"]
           )
         ) {
-          console.log("Im here");
           if (
             BigInt(context.proofs["pol_data"]["public_outputs"][2]) ===
               BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
@@ -305,12 +321,9 @@ const verifyStages = [
 
 // DOMContentLoaded event listener to initialize the script
 document.addEventListener("DOMContentLoaded", function () {
-
-
-    document.getElementById("close-btn").addEventListener('click', function () {
-            console.log("im called");
-                window.close()
-        });
+  document.getElementById("close-btn").addEventListener("click", function () {
+    window.close();
+  });
 
   var verifyButton = document.getElementById("verifyButton");
 
@@ -327,11 +340,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   var submitResult = document.getElementById("submit-result");
-  var closeBtn = document.getElementById("close-btn")
-  
+  var closeBtn = document.getElementById("close-btn");
 
   submitResult.addEventListener("click", () => {
-        window.close()
+    window.close();
     verificationResult.style.display = "none";
   });
 
@@ -341,7 +353,9 @@ document.addEventListener("DOMContentLoaded", function () {
     context.verification_state = "init";
     if (context.proofs !== null) {
       for (var i = 0; i < verifyStages.length; i++) {
-        i>=1?progressStages[i-1].progressBorder.classList.add("border-purple"):null;
+        i >= 1
+          ? progressStages[i - 1].progressBorder.classList.add("border-purple")
+          : null;
         progressStages[i].progressLevel.classList.add("active-step");
 
         var result = await verifyStages[i][1]();
@@ -374,8 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
       setInterval(() => {
         spinner.style.display = "none";
         context.verification_state = "done";
-      }, 3000); 
-     
+      }, 3000);
     } else {
       spinner.style.display = "none";
       context.verification_state = "no proof";
@@ -391,13 +404,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (context.verification_state == "done") {
       verificationResult.style.display = "block";
     } else if (context.verification_state.startsWith("failed")) {
-      resultImg= document.getElementById("result-img")
+      resultImg = document.getElementById("result-img");
       verificationResult.style.display = "block";
       verificationResult.style.opacity = 1;
       resultImg.src = "./img/error.png"; // Change the path to the image you want to show on failure
-      resultImg.style.width="5rem"
+      resultImg.style.width = "5rem";
       verificationResultText.innerHTML = "صحت سنجی با مشکل روبه رو شد";
-
     }
     context.verification_state = null;
   }, 100);
