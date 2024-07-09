@@ -5,6 +5,9 @@ var context = {
   verification_state: null,
 };
 
+const FIELD_SIZE =
+  "21888242871839275222246405745257275088548364400416034343698204186575808495617";
+
 // Listen for messages from the background script
 browser.runtime.onMessage.addListener(async function (request, sender) {
   context.proofs = request.data["proofs"];
@@ -17,9 +20,8 @@ browser.runtime.onMessage.addListener(async function (request, sender) {
 
   var dateElement = document.getElementById("date");
   let d = new Date();
-  dateElement.innerHTML = `${d.getFullYear()}/${
-    d.getMonth() + 1
-  }/${d.getDate()}`;
+  dateElement.innerHTML = `${d.getFullYear()}/${d.getMonth() + 1
+    }/${d.getDate()}`;
 
   var uidElement = document.getElementById("uid");
   uidElement.innerHTML = context.uid;
@@ -59,24 +61,28 @@ const validationStages = [
       return true;
     },
   ],
-  // [
-  //     "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof",
-  //     async function () {
-  //         let w = new window.Web3("https://public.stackup.sh/api/v1/node/ethereum-mainnet"); // TODO: Change this to the correct RPC endpoint
-  //         try {
-  //             let block = await w.eth.getBlock(context.proofs["block_number"]);
-  //             let stateRoot = w.utils.toBN(block.stateRoot);
-  //             let len = context.proofs["mpt_path_data"].length;
-  //             if (stateRoot.toString() !== context.proofs["mpt_last_data"][len - 1]["public_outputs"][0][0]) {
-  //                 return false;
-  //             }
-  //             return true;
-  //         } catch (error) {
-  //             console.error(error);
-  //             return false;
-  //         }
-  //     }
-  // ],
+  [
+    "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof",
+    async function () {
+      let w = new window.Web3("https://public.stackup.sh/api/v1/node/ethereum-mainnet"); // TODO: Change this to the correct RPC endpoint
+      try {
+        let block = await w.eth.getBlock(context.proofs["block_number"]);
+        let stateRoot = BigInt(block.stateRoot) % BigInt(FIELD_SIZE);
+        let len = context.proofs["mpt_path_data"].length;
+        for (let i = 0; i < len; i++) {
+          let pub_output_len = context.proofs["mpt_path_data"][i]["public_outputs"].length;
+          if (stateRoot.toString() !== context.proofs["mpt_path_data"][i]["public_outputs"][pub_output_len - 1][0]) {
+            return false;
+          }
+        }
+        return true;
+      } catch (error) {
+        console.error(error);
+        // it may be due to the network connection or the RPC endpoint is not correct
+        return false;
+      }
+    }
+  ],
   [
     "Checking if the same salt is being used across account...",
     async function () {
@@ -187,8 +193,6 @@ const verifyStages = [
   [
     "Verifying existence in the liability tree...",
     async function () {
-        const FIELD_SIZE =
-        "21888242871839275222246405745257275088548364400416034343698204186575808495617";
       await sleep(200);
       try {
         if (
@@ -200,9 +204,9 @@ const verifyStages = [
           console.log("Im here");
           if (
             BigInt(context.proofs["pol_data"]["public_outputs"][2]) ===
-              BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
+            BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
             BigInt(context.proofs["pol_data"]["public_outputs"][3]) ===
-              BigInt(context.amount)
+            BigInt(context.amount)
           ) {
             return true;
           }
