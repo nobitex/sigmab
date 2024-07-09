@@ -3,7 +3,8 @@ book
 verifier/dist
 verifier/node_modules
 verifier/package-lock.json
-verifier/extension/verifier.js
+verifier/extension/common/verifier.js
+extensions
 
 *.ptau
 *.r1cs
