@@ -1,3 +1,3 @@
 all:
 	npx webpack
-	cp dist/main.js extension/verifier.js
+	cp dist/main.js extension/common/verifier.js

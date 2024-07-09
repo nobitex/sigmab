@@ -10,11 +10,34 @@ rapidsnark/package/bin/prover:
 	cd circuit/rapidsnark && cd build_prover && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package
 	cd circuit/rapidsnark && cd build_prover && make -j4 && make install
 
+
+extension:
+
+	cd verifier && make all
+
+	mkdir -p extensions
+
+	cp -r verifier/extension/firefox/* extensions
+	cp -r verifier/extension/common/* extensions
+	cd extensions && zip -r ../Firefox-sigmab.zip . && cd ..
+	rm -rf extensions/*
+
+	cp -r verifier/extension/chrome/* extensions
+	cp -r verifier/extension/common/* extensions
+	cd extensions && zip -r ../Chrome-sigmab.zip . && cd ..
+	rm -rf extensions/*
+
+	mv Firefox-sigmab.zip extensions/Firefox-sigmab.xpi
+	mv Chrome-sigmab.zip extensions/Chrome-sigmab.zip
+
+
+
 trusted_setup:
 	mkdir -p circuit/temp/setup
 	cd circuit && snarkjs powersoftau new bn128 21 temp/setup/pot12_0000.ptau -v
 	cd circuit && snarkjs powersoftau contribute temp/setup/pot12_0000.ptau temp/setup/pot12_0001.ptau --entropy=1234 --name="first contribution" -v
 	cd circuit && snarkjs powersoftau prepare phase2 temp/setup/pot12_0001.ptau temp/setup/pot12_final.ptau -v
+
 
 # mpt_path commands
 mpt_path:
@@ -113,6 +136,9 @@ ecdsa_verify_zkey:
 	mv circuit/ecdsa_verify_0000.zkey circuit/temp/ecdsa_verify/ecdsa_verify_0000.zkey
 	cd circuit && snarkjs zkey contribute temp/ecdsa_verify/ecdsa_verify_0000.zkey temp/ecdsa_verify/ecdsa_verify_0001.zkey --entropy=1234 --name="second contribution" -v
 	cd circuit && snarkjs zkey export verificationkey temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/verification_key.json
+
+
+
 
 # utils
 clean:
