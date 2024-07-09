@@ -1,3 +1,6 @@
+const FIELD_SIZE =
+  "21888242871839275222246405745257275088548364400416034343698204186575808495617";
+
 var context = {
   proofs: null,
   amount: null,
@@ -34,9 +37,8 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
       let block = await w.eth.getBlock(blockNumber);
       var d = new Date(block.timestamp * 1000);
 
-      dateElement.innerHTML += `( ${d.getFullYear()}/${
-        d.getMonth() + 1
-      }/${d.getDate()} )`;
+      dateElement.innerHTML += `( ${d.getFullYear()}/${d.getMonth() + 1
+        }/${d.getDate()} )`;
       return true;
     } catch (error) {
       console.error(error);
@@ -85,23 +87,34 @@ const validationStages = [
   [
     "Check state-root on the block which proof provided is equal with the mpt last commitment in the proof",
     async function () {
-      let w = new window.Web3("https://public.stackup.sh/api/v1/node/ethereum-mainnet"); // TODO: Change this to the correct RPC endpoint
-      try {
-        let block = await w.eth.getBlock(context.proofs["block_number"]);
-        let stateRoot = BigInt(block.stateRoot) % BigInt(FIELD_SIZE);
-        let len = context.proofs["mpt_path_data"].length;
-        for (let i = 0; i < len; i++) {
-          let pub_output_len = context.proofs["mpt_path_data"][i]["public_outputs"].length;
-          if (stateRoot.toString() !== context.proofs["mpt_path_data"][i]["public_outputs"][pub_output_len - 1][0]) {
-            return false;
+      let nodes = [
+        "https://eth.llamarpc.com",
+        "https://eth-mainnet.public.blastapi.io",
+        "https://rpc.ankr.com/eth",
+        "https://public.stackup.sh/api/v1/node/ethereum-mainnet",
+        "https://nodes.mewapi.io/rpc/eth",
+        "https://cloudflare-eth.com/"
+      ];
+      for (var idx in nodes) {
+        let w = new window.Web3(nodes[idx]);
+        try {
+          let block = await w.eth.getBlock(context.proofs["block_number"]);
+          let stateRoot = BigInt(block.stateRoot) % BigInt(FIELD_SIZE);
+          let len = context.proofs["mpt_path_data"].length;
+          for (let i = 0; i < len; i++) {
+            let pub_output_len = context.proofs["mpt_path_data"][i]["public_outputs"].length;
+            if (stateRoot.toString() !== context.proofs["mpt_path_data"][i]["public_outputs"][pub_output_len - 1][0]) {
+              continue;
+            }
           }
+          var d = new Date(block.timestamp * 1000);
+          context.date = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+          return true;
+        } catch (error) {
+          continue;
         }
-        return true;
-      } catch (error) {
-        console.error(error);
-        // it may be due to the network connection or the RPC endpoint is not correct
-        return false;
       }
+      return "دسترسی به نود های عمومی اتریوم امکان‌پذیر نیست!"
     }
   ],
   [
@@ -214,8 +227,6 @@ const verifyStages = [
   [
     "Verifying existence in the liability tree...",
     async function () {
-      const FIELD_SIZE =
-        "21888242871839275222246405745257275088548364400416034343698204186575808495617";
       await sleep(200);
       try {
         if (
@@ -226,9 +237,9 @@ const verifyStages = [
         ) {
           if (
             BigInt(context.proofs["pol_data"]["public_outputs"][2]) ===
-              BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
+            BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
             BigInt(context.proofs["pol_data"]["public_outputs"][3]) ===
-              BigInt(context.amount)
+            BigInt(context.amount)
           ) {
             return true;
           }
@@ -363,7 +374,7 @@ document.addEventListener("DOMContentLoaded", function () {
         progressStages[i].progressLevel.classList.add("active-step");
 
         var result = await verifyStages[i][1]();
-        if (result) {
+        if (result === true) {
           context.verification_state = `passed ${verifyStages[i][0]}`;
           console.log(`${verifyStages[i][0]} passed`);
         } else {
@@ -376,9 +387,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       for (var i = 0; i < validationStages.length; i++) {
         var result = await validationStages[i][1]();
-        if (result) {
+        if (result === true) {
           console.log(`${validationStages[i][0]} passed`);
         } else {
+          if(result) {
+            console.log(result);
+          }
           console.log(`${validationStages[i][0]} failed`);
           context.verification_state = `failed ${validationStages[i][0]}`;
           spinner.style.display = "none";
