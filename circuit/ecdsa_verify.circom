@@ -52,4 +52,4 @@ template VerifyMsgECDSA () {
 
 }
 
-component main = VerifyMsgECDSA();
+component main { public [msghash] } = VerifyMsgECDSA();
