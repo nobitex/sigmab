@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="popup.css">
+    <script src="verifier.js"></script>
+    <script src="web3.min.js"></script>
+    <script src="popup.js"></script>
+    <script src="sha256.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <script src="jq.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="progress.css">
+</head>
+<body class="popup-body">
+    <nav class="header-nav">
+        <img src="./img/xMark.png" alt="x">
+        <img class="logo-img" src="./img/Logo.png" alt="logo">
+    </nav>
+    <div  style="display: none;" class="progress-container" id="progress">
+        <div class="progress-step">
+            <p class="progress-text">درحال صحت‌سنجی</p>
+            <img class="loading-icon" src="./img/loading.png" alt="">
+        </div>
+        <div class="text-right">
+            <div>
+                <div class="verify-step">
+                    <p class="text-bold">صحت‌سنجی وجود اکانت در درخت بدهی</p>
+                    <span id="progress-1" class="step-number">۱</span>
+                </div>
+                <span id="progress-1-border" class="dashed-border"></span>
+            </div>
+            <div>
+                <div class="verify-step">
+                    <p class="text-bold">صحت‌سنجی وجود اکانت های اندوخته</p>
+                    <span id="progress-2" class="step-number">۲</span>
+                </div>
+                <span id="progress-2-border" class="dashed-border"></span>
+            </div>
+            <div>
+                <div class="verify-step">
+                    <p class="text-bold">صحت‌سنجی مالکیت اکانت های اندوخته</p>
+                    <span id="progress-3" class="step-number">۳</span>
+                </div>
+                <span id="progress-3-border" class="dashed-border"></span>
+            </div>
+            <div>
+                <div class="verify-step">
+                    <p class="text-bold">استخراج دارایی اکانت های اندوخته</p>
+                    <span id="progress-4" class="step-number">۴</span>
+                </div>
+                <span id="progress-4-border" class="dashed-border"></span>
+            </div>
+            <div>
+                <div class="verify-step">
+                    <p class="text-bold">محاسبه جمع موجودی اکانت های اندوخته</p>
+                    <span id="progress-5" class="step-number">۵</span>
+                </div>
+                <span id="progress-5-border" class="dashed-border"></span>
+            </div>
+            <div>
+                <div class="verify-step">
+                    <p class="text-bold">صحت‌سنجی یکپارگی اثبات ها</p>
+                    <span id="progress-6" class="step-number">۶</span>
+                </div>
+            </div>
+        </div>
+        <div class="spinner-text">
+            <h4 id="spinner-stage">pol verification</h4>
+            <span></span>
+        </div>
+    </div>
+    <div id="content" style="display: block;" class="content-container">
+        <div class="text-right margin-top-medium">
+            <h5 class="text-xl text-bold">سیگما بی</h5>
+            <p class="text-right">این وب سایت می خواهد به شما ثابت کند</p>
+        </div>
+        <div class="margin-top-medium margin-bottom-small">
+            <p class="text-right margin-bottom-small">صادر کننده</p>
+            <div id="issuer" class="bg-light-gray padding-small rounded-md">nobitex.ir</div>
+        </div>
+        <div class="margin-top-medium margin-bottom-small">
+            <p class="text-right margin-bottom-small"> ریشه‌ی درخت</p>
+            <div id="tree-root" class="bg-light-gray padding-small rounded-md">2024/2/21</div>
+        </div>
+        <div class="margin-top-medium margin-bottom-small">
+            <p class="text-right margin-bottom-small"> تاریخ</p>
+            <div id="date" class="bg-light-gray padding-small rounded-md">2024/2/21</div>
+        </div>
+        <div class="margin-top-medium margin-bottom-small">
+            <p class="text-right margin-bottom-small"> ایمیل</p>
+            <div id="uid" class="bg-light-gray padding-small rounded-md">ostadgeorge@gmail.com</div>
+        </div>
+        <div class="margin-top-medium margin-bottom-small">
+            <p class="text-right margin-bottom-small"> میزان</p>
+            <div id="amount" class="bg-light-gray padding-small rounded-md">12000 ETH</div>
+        </div>
+        <button id="verifyButton" class="primary-button">تایید</button>
+    </div>
+
+    <div id="result" style="display: none;" >
+        <div class="result-container">
+            <img class="result-image " src="./img/done.png" alt="done">
+            <h4 id="result-text" class="result-text">.صحت‌سنجی با موفقیت انجام شد</h4>
+        </div>
+        <div class="submit-container">
+        <button id="submit-result" class="primary-button">تایید</button>
+        </div>
+    </div>
+
+    <p class="footer-text ">By
+        <a href="https://labs.nobitex.ir" target="_blank" class="footer-link">Nobitex Labs</a>
+    </p>
+</body>
+</html>
