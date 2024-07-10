@@ -188,8 +188,7 @@ function hashMessage(message) {
   );
 }
 
-function hashCheck() {
-  const message = "I am Nobitex.";
+function messageHash(message) {
   const eth_encoded_msg = toUtf8Bytes(message);
   const message_hash = window.sha256(eth_encoded_msg);
 
@@ -235,9 +234,8 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
       let block = await w.eth.getBlock(blockNumber);
       var d = new Date(block.timestamp * 1000);
 
-      dateElement.innerHTML += `( ${d.getFullYear()}/${
-        d.getMonth() + 1
-      }/${d.getDate()} )`;
+      dateElement.innerHTML += `( ${d.getFullYear()}/${d.getMonth() + 1
+        }/${d.getDate()} )`;
       return true;
     } catch (error) {
       console.error(error);
@@ -306,16 +304,15 @@ const validationStages = [
             if (
               stateRoot.toString() !==
               context.proofs["mpt_path_data"][i]["public_outputs"][
-                pub_output_len - 1
+              pub_output_len - 1
               ][0]
             ) {
               continue;
             }
           }
           var d = new Date(block.timestamp * 1000);
-          context.date = `${d.getFullYear()}/${
-            d.getMonth() + 1
-          }/${d.getDate()}`;
+          context.date = `${d.getFullYear()}/${d.getMonth() + 1
+            }/${d.getDate()}`;
           return true;
         } catch (error) {
           continue;
@@ -427,6 +424,31 @@ const validationStages = [
       return true;
     },
   ],
+  [
+    "Verifying the ECDSA msg hash...",
+    async function () {
+      await sleep(200);
+      const signableHash = messageHash("I am Nobitex.");
+
+      for (let i = 0; i < context.proofs["ecdsa_data"].length; i++) {
+        try {
+          const publicOutputs =
+            context.proofs["ecdsa_data"][i]["public_outputs"];
+          if (
+            publicOutputs[2] === signableHash[0] &&
+            publicOutputs[3] === signableHash[1] &&
+            publicOutputs[4] === signableHash[2] &&
+            publicOutputs[5] === signableHash[3]
+          ) {
+            return true;
+          }
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+      }
+    },
+  ],
 ];
 
 // Verification stages
@@ -444,9 +466,9 @@ const verifyStages = [
         ) {
           if (
             BigInt(context.proofs["pol_data"]["public_outputs"][2]) ===
-              BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
+            BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
             BigInt(context.proofs["pol_data"]["public_outputs"][3]) ===
-              BigInt(context.amount)
+            BigInt(context.amount)
           ) {
             return true;
           }
@@ -492,31 +514,6 @@ const verifyStages = [
               context.proofs["ecdsa_data"][i]["public_outputs"],
               context.proofs["ecdsa_data"][i]["proof"]
             )
-          ) {
-            return true;
-          }
-        } catch (error) {
-          console.error(error);
-          return false;
-        }
-      }
-    },
-  ],
-  [
-    "Verifying the ECDSA msg hash...",
-    async function () {
-      await sleep(200);
-      const signableHash = hashCheck();
-
-      for (let i = 0; i < context.proofs["ecdsa_data"].length; i++) {
-        try {
-          const publicOutputs =
-            context.proofs["ecdsa_data"][i]["public_outputs"];
-          if (
-            publicOutputs[2] === signableHash[0] &&
-            publicOutputs[3] === signableHash[1] &&
-            publicOutputs[4] === signableHash[2] &&
-            publicOutputs[5] === signableHash[3]
           ) {
             return true;
           }
