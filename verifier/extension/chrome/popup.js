@@ -205,7 +205,7 @@ function hashCheck() {
     return ret.map(String);
   }
 
-  console.log(b2a(64, 4, signable));
+  return b2a(64, 4, signable);
 }
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener(async function (request, sender) {
@@ -492,6 +492,31 @@ const verifyStages = [
               context.proofs["ecdsa_data"][i]["public_outputs"],
               context.proofs["ecdsa_data"][i]["proof"]
             )
+          ) {
+            return true;
+          }
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+      }
+    },
+  ],
+  [
+    "Verifying the ECDSA msg hash...",
+    async function () {
+      await sleep(200);
+      const signableHash = hashCheck();
+
+      for (let i = 0; i < context.proofs["ecdsa_data"].length; i++) {
+        try {
+          const publicOutputs =
+            context.proofs["ecdsa_data"][i]["public_outputs"];
+          if (
+            publicOutputs[2] === signableHash[0] &&
+            publicOutputs[3] === signableHash[1] &&
+            publicOutputs[4] === signableHash[2] &&
+            publicOutputs[5] === signableHash[3]
           ) {
             return true;
           }
