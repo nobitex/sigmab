@@ -76,6 +76,11 @@ template CombineNode() {
     out_id <== id_calc.hash;
 
     out_sum <== a_sum + b_sum;
+
+    component overflow_check = LessEqThan(64);
+    overflow_check.in[0] <== a_sum;
+    overflow_check.in[1] <== out_sum;
+    overflow_check.out === 1;
 }
 
 template SmstProofVerifier(depth) {
