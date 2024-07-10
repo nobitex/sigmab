@@ -77,10 +77,11 @@ template CombineNode() {
 
     out_sum <== a_sum + b_sum;
 
-    component overflow_check = LessEqThan(64);
-    overflow_check.in[0] <== a_sum;
-    overflow_check.in[1] <== out_sum;
-    overflow_check.out === 1;
+    component range_check_a = BitDecompose(64);
+    range_check_a.num <== a_sum;
+
+    component range_check_b = BitDecompose(64);
+    range_check_b.num <== b_sum;
 }
 
 template SmstProofVerifier(depth) {
