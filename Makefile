@@ -1,7 +1,7 @@
 .PHONY = all
+TMPDIR := $(shell mktemp -d)
+
 # trusted set up
-
-
 rapidsnark/package/bin/prover:
 	cd circuit/rapidsnark && git submodule init
 	cd circuit/rapidsnark && git submodule update
@@ -11,26 +11,7 @@ rapidsnark/package/bin/prover:
 	cd circuit/rapidsnark && cd build_prover && make -j4 && make install
 
 
-extension:
-
-	cd verifier && make all
-
-	mkdir -p extensions
-
-	cp -r verifier/extension/firefox/* extensions
-	cp -r verifier/extension/common/* extensions
-	cd extensions && zip -r ../Firefox-sigmab.zip . && cd ..
-	rm -rf extensions/*
-
-	cp -r verifier/extension/chrome/* extensions
-	cp -r verifier/extension/common/* extensions
-	cd extensions && zip -r ../Chrome-sigmab.zip . && cd ..
-	rm -rf extensions/*
-
-	mv Firefox-sigmab.zip extensions/Firefox-sigmab.xpi
-	mv Chrome-sigmab.zip extensions/Chrome-sigmab.zip
-
-
+extension: make-verifier firefox chrome
 
 trusted_setup:
 	mkdir -p circuit/temp/setup
@@ -138,6 +119,34 @@ ecdsa_verify_zkey:
 	cd circuit && snarkjs zkey export verificationkey temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/verification_key.json
 
 
+firefox: TMPDIR := $(shell mktemp -d)
+firefox: 
+	mkdir -p extensions
+	cp -r verifier/extension/firefox/* $(TMPDIR)    
+	cp -r verifier/extension/common/* $(TMPDIR)
+
+	FILES="$(TMPDIR)/background.js $(TMPDIR)/content.js $(TMPDIR)/popup.js"
+
+	for file in $(FILES); do \
+		sed -i 's/chrome/browser/g' $$file; \
+	done
+
+	cd $(TMPDIR) && zip -r Firefox-sigmab.zip . 
+	mv $(TMPDIR)/Firefox-sigmab.zip extensions/Firefox-sigmab.xpi
+	
+
+chrome: TMPDIR := $(shell mktemp -d)
+chrome: 
+	mkdir -p extensions
+	cp -r verifier/extension/chrome/* $(TMPDIR)
+	cp -r verifier/extension/common/* $(TMPDIR)
+
+	cd $(TMPDIR) && zip -r Chrome-sigmab.zip . 
+	mv $(TMPDIR)/Chrome-sigmab.zip extensions/Chrome-sigmab.zip
+	
+
+make-verifier:
+	cd verifier && make all
 
 
 # utils
