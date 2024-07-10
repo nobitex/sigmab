@@ -9,6 +9,205 @@ var context = {
 };
 var blockNumber = 20268439; // TODO :must come from proofs
 
+function addSlice(array) {
+  if (array.slice) {
+    return array;
+  }
+
+  array.slice = function () {
+    const args = Array.prototype.slice.call(arguments);
+    return addSlice(new Uint8Array(Array.prototype.slice.apply(array, args)));
+  };
+
+  return array;
+}
+
+function isHexString(value, length) {
+  if (typeof value !== "string" || !value.match(/^0x[0-9A-Fa-f]*$/)) {
+    return false;
+  }
+  if (length && value.length !== 2 + 2 * length) {
+    return false;
+  }
+  return true;
+}
+
+function isInteger(value) {
+  return typeof value === "number" && value == value && value % 1 === 0;
+}
+
+function isBytes(value) {
+  if (value == null) {
+    return false;
+  }
+
+  if (value.constructor === Uint8Array) {
+    return true;
+  }
+  if (typeof value === "string") {
+    return false;
+  }
+  if (!isInteger(value.length) || value.length < 0) {
+    return false;
+  }
+
+  for (let i = 0; i < value.length; i++) {
+    const v = value[i];
+    if (!isInteger(v) || v < 0 || v >= 256) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function arrayify(value, options) {
+  if (!options) {
+    options = {};
+  }
+
+  if (typeof value === "number") {
+    const result = [];
+    while (value) {
+      result.unshift(value & 0xff);
+      value = parseInt(String(value / 256));
+    }
+    if (result.length === 0) {
+      result.push(0);
+    }
+
+    return addSlice(new Uint8Array(result));
+  }
+
+  if (
+    options.allowMissingPrefix &&
+    typeof value === "string" &&
+    value.substring(0, 2) !== "0x"
+  ) {
+    value = "0x" + value;
+  }
+
+  // if (isHexable(value)) { value = value.toHexString(); }
+
+  if (isHexString(value)) {
+    let hex = value.substring(2);
+    if (hex.length % 2) {
+      if (options.hexPad === "left") {
+        hex = "0" + hex;
+      } else if (options.hexPad === "right") {
+        hex += "0";
+      } else {
+      }
+    }
+
+    const result = [];
+    for (let i = 0; i < hex.length; i += 2) {
+      result.push(parseInt(hex.substring(i, i + 2), 16));
+    }
+
+    return addSlice(new Uint8Array(result));
+  }
+
+  if (isBytes(value)) {
+    return addSlice(new Uint8Array(value));
+  }
+}
+
+function concat(items) {
+  const objects = items.map((item) => arrayify(item));
+  const length = objects.reduce((accum, item) => accum + item.length, 0);
+
+  const result = new Uint8Array(length);
+
+  objects.reduce((offset, object) => {
+    result.set(object, offset);
+    return offset + object.length;
+  }, 0);
+
+  return addSlice(result);
+}
+
+function toUtf8Bytes(str) {
+  let result = [];
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+
+    if (c < 0x80) {
+      result.push(c);
+    } else if (c < 0x800) {
+      result.push((c >> 6) | 0xc0);
+      result.push((c & 0x3f) | 0x80);
+    } else if ((c & 0xfc00) == 0xd800) {
+      i++;
+      const c2 = str.charCodeAt(i);
+
+      if (i >= str.length || (c2 & 0xfc00) !== 0xdc00) {
+        throw new Error("invalid utf-8 string");
+      }
+
+      // Surrogate Pair
+      const pair = 0x10000 + ((c & 0x03ff) << 10) + (c2 & 0x03ff);
+      result.push((pair >> 18) | 0xf0);
+      result.push(((pair >> 12) & 0x3f) | 0x80);
+      result.push(((pair >> 6) & 0x3f) | 0x80);
+      result.push((pair & 0x3f) | 0x80);
+    } else {
+      result.push((c >> 12) | 0xe0);
+      result.push(((c >> 6) & 0x3f) | 0x80);
+      result.push((c & 0x3f) | 0x80);
+    }
+  }
+
+  return arrayify(result);
+}
+
+function hexToBytes(hex) {
+  if (hex.length % 2 !== 0) {
+    hex = "0" + hex;
+  }
+  let bytes = [];
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes.push(parseInt(hex.substr(i, 2), 16));
+  }
+  return bytes;
+}
+
+function hashMessage(message) {
+  const messagePrefix = "\x19Ethereum Signed Message:\n";
+  if (typeof message === "string") {
+    message = toUtf8Bytes(message);
+  }
+
+  return window.keccak256(
+    arrayify(
+      concat([
+        toUtf8Bytes(messagePrefix),
+        toUtf8Bytes(String(message.length)),
+        message,
+      ])
+    )
+  );
+}
+
+function runWeb3Script() {
+  const message = "I am Nobitex.";
+  const eth_encoded_msg = toUtf8Bytes(message);
+  const message_hash = window.sha256(eth_encoded_msg);
+
+  const signable = BigInt("0x" + hashMessage(hexToBytes(message_hash)));
+
+  function b2a(n, k, x) {
+    const mod = BigInt(2 ** n);
+    const ret = [];
+    for (let i = 0; i < k; i++) {
+      ret.push(x % mod);
+      x = x / mod;
+    }
+    return ret.map(String);
+  }
+
+  console.log(b2a(64, 4, signable));
+}
+
 // Listen for messages from the background script
 browser.runtime.onMessage.addListener(async function (request, sender) {
   context.proofs = request.data["proofs"];
@@ -37,8 +236,9 @@ browser.runtime.onMessage.addListener(async function (request, sender) {
       let block = await w.eth.getBlock(blockNumber);
       var d = new Date(block.timestamp * 1000);
 
-      dateElement.innerHTML += `( ${d.getFullYear()}/${d.getMonth() + 1
-        }/${d.getDate()} )`;
+      dateElement.innerHTML += `( ${d.getFullYear()}/${
+        d.getMonth() + 1
+      }/${d.getDate()} )`;
       return true;
     } catch (error) {
       console.error(error);
@@ -93,7 +293,7 @@ const validationStages = [
         "https://rpc.ankr.com/eth",
         "https://public.stackup.sh/api/v1/node/ethereum-mainnet",
         "https://nodes.mewapi.io/rpc/eth",
-        "https://cloudflare-eth.com/"
+        "https://cloudflare-eth.com/",
       ];
       for (var idx in nodes) {
         let w = new window.Web3(nodes[idx]);
@@ -102,20 +302,28 @@ const validationStages = [
           let stateRoot = BigInt(block.stateRoot) % BigInt(FIELD_SIZE);
           let len = context.proofs["mpt_path_data"].length;
           for (let i = 0; i < len; i++) {
-            let pub_output_len = context.proofs["mpt_path_data"][i]["public_outputs"].length;
-            if (stateRoot.toString() !== context.proofs["mpt_path_data"][i]["public_outputs"][pub_output_len - 1][0]) {
+            let pub_output_len =
+              context.proofs["mpt_path_data"][i]["public_outputs"].length;
+            if (
+              stateRoot.toString() !==
+              context.proofs["mpt_path_data"][i]["public_outputs"][
+                pub_output_len - 1
+              ][0]
+            ) {
               continue;
             }
           }
           var d = new Date(block.timestamp * 1000);
-          context.date = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+          context.date = `${d.getFullYear()}/${
+            d.getMonth() + 1
+          }/${d.getDate()}`;
           return true;
         } catch (error) {
           continue;
         }
       }
-      return "دسترسی به نود های عمومی اتریوم امکان‌پذیر نیست!"
-    }
+      return "دسترسی به نود های عمومی اتریوم امکان‌پذیر نیست!";
+    },
   ],
   [
     "Checking if the same salt is being used across account...",
@@ -237,9 +445,9 @@ const verifyStages = [
         ) {
           if (
             BigInt(context.proofs["pol_data"]["public_outputs"][2]) ===
-            BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
+              BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
             BigInt(context.proofs["pol_data"]["public_outputs"][3]) ===
-            BigInt(context.amount)
+              BigInt(context.amount)
           ) {
             return true;
           }
@@ -336,9 +544,6 @@ const verifyStages = [
 
 // DOMContentLoaded event listener to initialize the script
 document.addEventListener("DOMContentLoaded", function () {
-
-
-
   var verifyButton = document.getElementById("verifyButton");
   var checkbox = document.getElementById("accept");
   var content = document.getElementById("content");
@@ -428,7 +633,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (context.verification_state == "done") {
       resultDetails = document.getElementById("result-details");
-      resultDetails.innerHTML = "در تاریخ " + "<b>" + context.date + "</b>" + " برای حساب با شناسه " + "<b>" + "0912" + "</b>" + " به اندازه " + "<b>" + "0.1 ETH" + "</b>" + " رمزارز وجود داشته است!";
+      resultDetails.innerHTML =
+        "در تاریخ " +
+        "<b>" +
+        context.date +
+        "</b>" +
+        " برای حساب با شناسه " +
+        "<b>" +
+        "0912" +
+        "</b>" +
+        " به اندازه " +
+        "<b>" +
+        "0.1 ETH" +
+        "</b>" +
+        " رمزارز وجود داشته است!";
       verificationResult.style.display = "block";
     } else if (context.verification_state.startsWith("failed")) {
       resultImg = document.getElementById("result-img");
