@@ -77,10 +77,10 @@ template CombineNode() {
 
     out_sum <== a_sum + b_sum;
 
-    component range_check_a = BitDecompose(64);
+    component range_check_a = BitDecompose(100);
     range_check_a.num <== a_sum;
 
-    component range_check_b = BitDecompose(64);
+    component range_check_b = BitDecompose(100);
     range_check_b.num <== b_sum;
 }
 
