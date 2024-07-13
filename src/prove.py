@@ -285,14 +285,21 @@ def main():
         )
     data["pol_data"] = pol_data
 
-    data["salt"] = salt
 
     data["block_number"] = block_number
 
-    data["sum_balances"] = sum_balances
 
     with open("data/proofs.json", "w") as file:
         json.dump(data, file, indent=4)
+        
+    with open("data/liability_data.json", "r") as file:
+            liability_data = json.load(file)
+        
+    liability_data["sum_balances"] = sum_balances
+    liability_data["salt"] = salt
+    
+    with open("data/liability_data.json", 'w') as file:
+        json.dump(liability_data, file, indent=4)
 
 
 def get_mpt_last_circuit(witness_gen_path, prover_path, snarkjs_path, zk_params_path):
