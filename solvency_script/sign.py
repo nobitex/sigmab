@@ -54,7 +54,7 @@ def pk_sign(message):
     
 def main():
     
-    message = 'I am Nobitex.'
+    message = 'I am nobitex.ir!'
     message_hash = hashlib.sha256(message.encode("utf-8")).digest()
     
     print(f"The message: {message}")
