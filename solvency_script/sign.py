@@ -1,4 +1,4 @@
-from ledgereth.web3 import LedgerSignerMiddleware
+from ledgereth.web3 import LedgerSignerMiddleware, get_accounts
 import time, hashlib
 from web3.auto import w3
 import os
@@ -15,21 +15,27 @@ def ledger_sign(message):
     print("Signing with ledger is selected.")
     print("Unlock your ledger.")
     data_input = input("Enter a list of your account addresses for ledger sign (comma-separated & without space): ")
+    account_counts = int(input("Enter the index of your last accounts: "))
     input_accounts = data_input.split(',')
     # ledger data
     try:
         w3.middleware_onion.add(LedgerSignerMiddleware)
-        ledger_accounts = w3.eth.accounts
+        print("loading ledger accounts ... ")
+        accounts = get_accounts(count = account_counts + 1)
+        ledger_accounts = [account.address for account in accounts]
     except Exception as e:
-        raise ValueError(f"Error: Locked ledger. ")
+        error_message = str(e)
+        if "0x5515 UNKNOWN" in error_message:
+            raise ValueError("Ledger locked due to error: 0x5515 UNKNOWN")
+        else:
+            raise ValueError(f"Error: {e}")
 
-    
     # check validty of the input data
     check_accounts(ledger_accounts, input_accounts)    
 
     for account in input_accounts:
         generate_ledger_signature(message, account)
-        
+
 
 def pk_sign(message):
     print("Signing with private key is selected.") 
