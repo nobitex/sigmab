@@ -5,11 +5,10 @@ import os
 from dotenv import load_dotenv
 from eth_account import Account
 from utils import (
-    check_accounts,
+    get_accounts_data,
     generate_ledger_signature,
     generate_pk_signature
 )
-
 
 def ledger_sign(message):
     print("Signing with ledger is selected.")
@@ -17,12 +16,10 @@ def ledger_sign(message):
     data_input = input("Enter a list of your account addresses for ledger sign (comma-separated & without space): ")
     account_counts = int(input("Enter the index of your last accounts: "))
     input_accounts = data_input.split(',')
-    # ledger data
     try:
         w3.middleware_onion.add(LedgerSignerMiddleware)
         print("loading ledger accounts ... ")
         accounts = get_accounts(count = account_counts + 1)
-        ledger_accounts = [account.address for account in accounts]
     except Exception as e:
         error_message = str(e)
         if "0x5515 UNKNOWN" in error_message:
@@ -30,10 +27,8 @@ def ledger_sign(message):
         else:
             raise ValueError(f"Error: {e}")
 
-    # check validty of the input data
-    check_accounts(ledger_accounts, input_accounts)    
-
-    for account in input_accounts:
+    accounts_list = get_accounts_data(accounts, input_accounts)
+    for account in accounts_list:
         generate_ledger_signature(message, account)
 
 

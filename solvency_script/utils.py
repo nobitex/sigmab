@@ -19,11 +19,16 @@ import ecdsa, io, json, hashlib
 from ecdsa import VerifyingKey, SECP256k1, util
 from eth_keys import keys
 from ledgereth.comms import init_dongle
-        
-def check_accounts(base_accounts, given_accounts):
-    missing_items = [item for item in given_accounts if item not in base_accounts]
+
+def get_accounts_data(base_accounts, given_accounts):
+    address_to_path = {account.address: account.path for account in base_accounts}
+
+    missing_items = [item for item in given_accounts if item not in address_to_path]
     if missing_items:
-        raise ValueError(f"The following account do not exist in your accounts list: {', '.join(missing_items)}")
+        raise ValueError(f"The following accounts do not exist in your accounts list: {', '.join(missing_items)}")
+    
+    account_info = [{"address": account, "path": address_to_path[account]} for account in given_accounts]
+    return account_info
 
 
 def read_existing_data(file_path):
@@ -71,20 +76,18 @@ def update_data_file(message, data_input, base64_representation, r, s):
     
     
 def generate_ledger_signature(message, account):
-    signer_account = find_account(account)
-    account_path = signer_account.path
     
     try:
         dongle = init_dongle(None)
     except Exception as e: 
         raise ValueError(f"Error initializing ledegr: {e}")
     
-    print("Signing with the account :", signer_account.address)
+    print("Signing with the account :", account["address"])
     print("Sign the message on your ledger...")
     
     try:
         message_hash = hashlib.sha256(message.encode("utf-8")).digest() 
-        signature = sign_message(message_hash, account_path, dongle).signature
+        signature = sign_message(message_hash, account["path"], dongle).signature
         signature = signature[2:]
         r = signature[:64]  
         s = signature[64:128]
@@ -103,7 +106,7 @@ def generate_ledger_signature(message, account):
         
         base64_representation = base64.b64encode(recovered_public_key._raw_key).decode('utf-8')
         
-        update_data_file(message, signer_account.address, base64_representation, int(r, 16), int(s, 16))
+        update_data_file(message, account["address"], base64_representation, int(r, 16), int(s, 16))
         print("Signature data generated successfully. ")
         
     except Exception as e: 
