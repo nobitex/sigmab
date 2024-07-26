@@ -132,7 +132,20 @@ $`f_3(a,b,salt) = (h(a, salt), h(b, salt), h(a + b, salt))`$
 
 لیست افرادی که در فرایند راه‌اندازی امن سیگما-بی شرکت کرده اند:
 
-- کیوان کامبخش @keyvank
+- [کیوان کامبخش](https://github.com/keyvank) 
+- [محمدعلی حیدری ](https://github.com/ostadgeorge)
+- [پردیس طولابی](https://github.com/toolabi)
+- [حمید باطنی](https://github.com/irnb)
+- [علیرضا مفتخر](https://github.com/alirezamft)
+- [امیرحسین آذرپور](https://github.com/AmirH-A)
+- [امیرعلی آذرپور](https://github.com/amalaz)
+- [محمد سهراب ثامنی](https://github.com/sohrabsameny)
+- [نیما یزدان مهر](https://github.com/n1rna)
+- [پریسا حسنی زاده](https://github.com/parizad1188)
+- [شهریار ابراهیمی](https://github.com/lovely-necromancer)
+- [ سیاوش تفضلی](https://github.com/SiavashTafazoli)
+- [پدرام میرشاه](https://github.com/itsspedram)
+
 
 دور ریختن زباله ها سمی حتی توسط یکی از این افراد باعث می‌شود اطمینان حاصل کنیم که تولید اثبات های جعلی امکان‌پذیر نیست.
 
