@@ -37,7 +37,9 @@ mpt_path_zkey:
 	cd circuit && snarkjs groth16 setup temp/mpt_path/mpt_path.r1cs temp/setup/pot20_final.ptau mpt_path_0000.zkey
 	mv circuit/mpt_path_0000.zkey circuit/temp/mpt_path/mpt_path_0000.zkey
 	cd circuit && snarkjs zkey contribute temp/mpt_path/mpt_path_0000.zkey temp/mpt_path/mpt_path_0001.zkey --entropy=1234 --name="second contribution" -v
-	cd circuit && snarkjs zkey export verificationkey temp/mpt_path/mpt_path_0001.zkey temp/mpt_path/verification_key.json
+
+mpt_path_vkey:
+	cd circuit && snarkjs zkey export verificationkey temp/mpt_path/mpt_path_0013.zkey temp/mpt_path/verification_key.json
 
 # mpt_last commands
 mpt_last:
@@ -56,7 +58,9 @@ mpt_last_zkey:
 	cd circuit && snarkjs groth16 setup temp/mpt_last/mpt_last.r1cs temp/setup/pot20_final.ptau mpt_last_0000.zkey
 	mv circuit/mpt_last_0000.zkey circuit/temp/mpt_last/mpt_last_0000.zkey
 	cd circuit && snarkjs zkey contribute temp/mpt_last/mpt_last_0000.zkey temp/mpt_last/mpt_last_0001.zkey --entropy=1234 --name="second contribution" -v
-	cd circuit && snarkjs zkey export verificationkey temp/mpt_last/mpt_last_0001.zkey temp/mpt_last/verification_key.json
+
+mpt_last_vkey:
+	cd circuit && snarkjs zkey export verificationkey temp/mpt_last/mpt_last_0013.zkey temp/mpt_last/verification_key.json
 
 # stealth_balance_addition commands
 stealth_balance_addition:
@@ -75,7 +79,9 @@ stealth_balance_addition_zkey:
 	cd circuit && snarkjs groth16 setup temp/stealth_balance_addition/stealth_balance_addition.r1cs temp/setup/pot20_final.ptau stealth_balance_addition_0000.zkey
 	mv circuit/stealth_balance_addition_0000.zkey circuit/temp/stealth_balance_addition/stealth_balance_addition_0000.zkey
 	cd circuit && snarkjs zkey contribute temp/stealth_balance_addition/stealth_balance_addition_0000.zkey temp/stealth_balance_addition/stealth_balance_addition_0001.zkey --entropy=1234 --name="second contribution" -v
-	cd circuit && snarkjs zkey export verificationkey temp/stealth_balance_addition/stealth_balance_addition_0001.zkey temp/stealth_balance_addition/verification_key.json
+
+stealth_balance_addition_vkey:
+	cd circuit && snarkjs zkey export verificationkey temp/stealth_balance_addition/stealth_balance_addition_0013.zkey temp/stealth_balance_addition/verification_key.json
 
 # pol commands
 pol:
@@ -97,7 +103,9 @@ pol_zkey:
 	cd circuit && snarkjs groth16 setup temp/pol/pol.r1cs temp/setup/pot20_final.ptau pol_0000.zkey
 	mv circuit/pol_0000.zkey circuit/temp/pol/pol_0000.zkey
 	cd circuit && snarkjs zkey contribute temp/pol/pol_0000.zkey temp/pol/pol_0001.zkey --entropy=1234 --name="second contribution" -v
-	cd circuit && snarkjs zkey export verificationkey temp/pol/pol_0001.zkey temp/pol/verification_key.json
+
+pol_vkey:	
+	cd circuit && snarkjs zkey export verificationkey temp/pol/pol_0013.zkey temp/pol/verification_key.json
 
 # ecdsa verify commands
 ecdsa_verify:
@@ -116,7 +124,9 @@ ecdsa_verify_zkey:
 	cd circuit && snarkjs groth16 setup temp/ecdsa_verify/ecdsa_verify.r1cs temp/setup/pot22_final.ptau ecdsa_verify_0000.zkey
 	mv circuit/ecdsa_verify_0000.zkey circuit/temp/ecdsa_verify/ecdsa_verify_0000.zkey
 	cd circuit && snarkjs zkey contribute temp/ecdsa_verify/ecdsa_verify_0000.zkey temp/ecdsa_verify/ecdsa_verify_0001.zkey --entropy=1234 --name="second contribution" -v
-	cd circuit && snarkjs zkey export verificationkey temp/ecdsa_verify/ecdsa_verify_0001.zkey temp/ecdsa_verify/verification_key.json
+
+ecdsa_verify_vkey:
+	cd circuit && snarkjs zkey export verificationkey temp/ecdsa_verify/ecdsa_verify_0013.zkey temp/ecdsa_verify/verification_key.json
 
 
 firefox: TMPDIR := $(shell mktemp -d)
@@ -147,6 +157,8 @@ chrome:
 
 make-verifier:
 	cd verifier && make all
+
+verification_keys: ecdsa_verify_vkey mpt_path_vkey mpt_last_vkey stealth_balance_addition_vkey pol_vkey
 
 
 # utils
