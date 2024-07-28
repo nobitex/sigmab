@@ -28,11 +28,11 @@ class POLCircuit(AbstractCircuit):
         solvency_balance_salt,
     ):
         return super().generate_witness(
-            index=index,
-            unique_id=unique_id,
-            amount=amount,
-            proof_ids=[p for p in proof_ids],
-            proof_sums=[p for p in proof_sums],
-            solvency_balance=solvency_balance,
-            solvency_balance_salt=solvency_balance_salt,
+            index=str(index),
+            unique_id=str(unique_id),
+            amount=str(amount),
+            proof_ids=[str(p) for p in proof_ids],
+            proof_sums=[str(p) for p in proof_sums],
+            solvency_balance=str(solvency_balance),
+            solvency_balance_salt=str(solvency_balance_salt),
         )
