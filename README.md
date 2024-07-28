@@ -138,6 +138,7 @@ $`f_3(a,b,salt) = (h(a, salt), h(b, salt), h(a + b, salt))`$
 - [حمید باطنی](https://github.com/irnb)
 - [علیرضا مفتخر](https://github.com/alirezamft)
 - [امیرحسین آذرپور](https://github.com/AmirH-A)
+- [امیرحسین حسنینی](https://github.com/am1rh0ss3in)
 - [امیرعلی آذرپور](https://github.com/amalaz)
 - [محمد سهراب ثامنی](https://github.com/sohrabsameny)
 - [نیما یزدان مهر](https://github.com/n1rna)

@@ -134,6 +134,7 @@ List of people who participated in the Sigma-B Trusted-Setup process:
 - [Hamid Bateni](https://github.com/irnb)
 - [Alireza Moftakhar](https://github.com/alirezamft)
 - [Amirhossein Azarpoor](https://github.com/AmirH-A)
+- [Amirhossein Hasanini](https://github.com/am1rh0ss3in)
 - [Amirali Azarpoor](https://github.com/amalaz)
 - [Mohammadsohrab Sameni](https://github.com/sohrabsameny)
 - [Nima Yazdanmehr](https://github.com/n1rna)
