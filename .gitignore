@@ -11,10 +11,7 @@ extensions
 *.sym
 temp
 circuit/*.json
-data/proofs.json
-data/liability_data.json
-data/solvency_data.json
-data/vks.json
+data/*.json
 circuit/mpt_path_*
 circuit/mpt_last_*
 circuit/pol_*
