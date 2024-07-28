@@ -17,7 +17,7 @@ class Field:
         return Field(self.val * other.val)
 
     def __str__(self):
-        return f"Field({self.val})"
+        return str(self.val)
 
     def __eq__(self, other):
         return self.val == other.val

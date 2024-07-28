@@ -14,7 +14,7 @@ MPT_LAST_WITNESS_GEN_PATH = os.environ.get(
 )
 MPT_LAST_ZK_PARAMS_PATH = os.environ.get(
     "MPT_LAST_ZK_PARAMS_PATH",
-    f"{CWD}/circuit/temp/mpt_last/mpt_last_0001.zkey",
+    f"{CWD}/circuit/temp/mpt_last/mpt_last_0013.zkey",
 )
 
 MPT_PATH_WITNESS_GEN_PATH = os.environ.get(
@@ -23,7 +23,7 @@ MPT_PATH_WITNESS_GEN_PATH = os.environ.get(
 )
 MPT_PATH_ZK_PARAMS_PATH = os.environ.get(
     "MPT_PATH_ZK_PARAMS_PATH",
-    f"{CWD}/circuit/temp/mpt_path/mpt_path_0001.zkey",
+    f"{CWD}/circuit/temp/mpt_path/mpt_path_0013.zkey",
 )
 
 ECDSA_WITNESS_GEN_PATH = os.environ.get(
@@ -32,7 +32,7 @@ ECDSA_WITNESS_GEN_PATH = os.environ.get(
 )
 ECDSA_ZK_PARAMS_PATH = os.environ.get(
     "ECDSA_ZK_PARAMS_PATH",
-    f"{CWD}/circuit/temp/ecdsa_verify/ecdsa_verify_0001.zkey",
+    f"{CWD}/circuit/temp/ecdsa_verify/ecdsa_verify_0013.zkey",
 )
 
 SBA_WITNESS_GEN_PATH = os.environ.get(
@@ -41,7 +41,7 @@ SBA_WITNESS_GEN_PATH = os.environ.get(
 )
 SBA_ZK_PARAMS_PATH = os.environ.get(
     "SBA_ZK_PARAMS_PATH",
-    f"{CWD}/circuit/temp/stealth_balance_addition/stealth_balance_addition_0001.zkey",
+    f"{CWD}/circuit/temp/stealth_balance_addition/stealth_balance_addition_0013.zkey",
 )
 
 POL_WITNESS_GEN_PATH = os.environ.get(
@@ -50,7 +50,7 @@ POL_WITNESS_GEN_PATH = os.environ.get(
 )
 POL_ZK_PARAMS_PATH = os.environ.get(
     "POL_ZK_PARAMS_PATH",
-    f"{CWD}/circuit/temp/pol/pol_0001.zkey",
+    f"{CWD}/circuit/temp/pol/pol_0013.zkey",
 )
 
 PROVER_PATH = os.environ.get(
