@@ -21,6 +21,10 @@ import json
 
 
 def main():
+
+    salt = random.randint(0, 10**5)
+    message, exchange_accounts_data = load_solvency_data("data/solvency_data.json")
+    solveny_counts = len(exchange_accounts_data)
     mpt_last_circuit = get_mpt_last_circuit(
         witness_gen_path=MPT_LAST_WITNESS_GEN_PATH,
         prover_path=PROVER_PATH,
@@ -42,13 +46,19 @@ def main():
         zk_params_path=ECDSA_ZK_PARAMS_PATH,
     )
 
-    sba_circuit = get_sba_circuit(
-        witness_gen_path=SBA_WITNESS_GEN_PATH,
-        prover_path=PROVER_PATH,
-        snarkjs_path=SNARKJS_PATH,
-        zk_params_path=SBA_ZK_PARAMS_PATH,
-    )
+    if solveny_counts > 1:
+        sba_circuit = get_sba_circuit(
+            witness_gen_path=SBA_WITNESS_GEN_PATH,
+            prover_path=PROVER_PATH,
+            snarkjs_path=SNARKJS_PATH,
+            zk_params_path=SBA_ZK_PARAMS_PATH,
+        )
+    elif solveny_counts == 1:
+        print("the SBA circuit is bypassed.")
+    else:
+         print("Insufficient data to generate SBA proof.")
 
+    
     pol_circuit = get_pol_circuit(
         witness_gen_path=POL_WITNESS_GEN_PATH,
         prover_path=PROVER_PATH,
@@ -56,8 +66,6 @@ def main():
         zk_params_path=POL_ZK_PARAMS_PATH,
     )
 
-    salt = random.randint(0, 10**5)
-    message, exchange_accounts_data = load_solvency_data("data/solvency_data.json")
 
     ### ECDSA Proof Generation
     ecdsa_progress = tqdm.tqdm(
@@ -168,30 +176,31 @@ def main():
         exa.get_value("balance") for exa in exchange_accounts_data
     ]
 
-    progress = tqdm.tqdm(
-        range(1, len(balances)), total=len(balances) - 1, desc="SBA Progress"
-    )
+    if solveny_counts > 1:
+        progress = tqdm.tqdm(
+            range(1, len(balances)), total=len(balances) - 1, desc="SBA Progress"
+        )
 
-    sba_proofs_paths = [] 
-    sba_witness_paths = []
-    sba_public_inputs = []
-    for idx in progress:
-        if idx == 1:
-            sba_witness_path = sba_circuit.generate_witness(
-                balances[idx - 1:idx + 1], salt
-            )
-            sba_proof_path = sba_circuit.prove(sba_witness_path)
-        else:
-            sba_witness_path = sba_circuit.generate_witness(
-                [balances[idx], sum(balances[:idx])], salt
-            )
-            sba_proof_path = sba_circuit.prove(sba_witness_path)
+        sba_proofs_paths = [] 
+        sba_witness_paths = []
+        sba_public_inputs = []
+        for idx in progress:
+            if idx == 1:
+                sba_witness_path = sba_circuit.generate_witness(
+                    balances[idx - 1:idx + 1], salt
+                )
+                sba_proof_path = sba_circuit.prove(sba_witness_path)
+            else:
+                sba_witness_path = sba_circuit.generate_witness(
+                    [balances[idx], sum(balances[:idx])], salt
+                )
+                sba_proof_path = sba_circuit.prove(sba_witness_path)
 
-        sba_witness_paths.append(sba_witness_path)
-        sba_proofs_paths.append(sba_proof_path)
-        sba_public_inputs.append(sba_circuit.context.get(ContextKeys.LATEST_PUBLIC_VALUES))
+            sba_witness_paths.append(sba_witness_path)
+            sba_proofs_paths.append(sba_proof_path)
+            sba_public_inputs.append(sba_circuit.context.get(ContextKeys.LATEST_PUBLIC_VALUES))
 
-    print(f"Generated SBA proof path: {sba_proof_path}")
+        print(f"Generated SBA proof path: {sba_proof_path}")
 
     ### POL Proof Generation
     sum_balances = 0
@@ -239,7 +248,6 @@ def main():
     for item in exchange_accounts_data:
         mpt_path_data.append(
             {
-                "address": item.address,
                 "witness_paths": item.get_value("mpt_path_witness_paths"),
                 "proof_paths": item.get_value("mpt_path_proof_paths"),
                 "proofs": [
@@ -255,7 +263,6 @@ def main():
     for item in exchange_accounts_data:
         mpt_last_data.append(
             {
-                "address": item.address,
                 "witness_path": item.get_value("mpt_last_witness_path"),
                 "proof_path": item.get_value("mpt_last_proof_path"),
                 "proof": json.load(open(item.get_value("mpt_last_proof_path"), "r")),
@@ -264,13 +271,15 @@ def main():
         )
     data["mpt_last_data"] = mpt_last_data
 
-    sba_data = {
-        "witness_paths": sba_witness_paths,
-        "proof_paths": sba_proofs_paths,
-        "proofs": [json.load(open(proof_path)) for proof_path in sba_proofs_paths],
-        "public_outputs": sba_public_inputs,
-    }
-    data["sba_data"] = sba_data
+    if solveny_counts > 1:
+        sba_data = {
+            "witness_paths": sba_witness_paths,
+            "proof_paths": sba_proofs_paths,
+            "proofs": [json.load(open(proof_path)) for proof_path in sba_proofs_paths],
+            "public_outputs": sba_public_inputs,
+        }
+        data["sba_data"] = sba_data
+
 
     pol_data = []
     for idx, item in enumerate(liability_data):
