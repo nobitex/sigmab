@@ -428,7 +428,7 @@ const validationStages = [
     "Verifying the ECDSA msg hash...",
     async function () {
       await sleep(200);
-      const signableHash = messageHash("I am Nobitex.");
+      const signableHash = messageHash("I am nobitex.ir!");
 
       for (let i = 0; i < context.proofs["ecdsa_data"].length; i++) {
         try {
