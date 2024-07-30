@@ -146,6 +146,7 @@ $`f_3(a,b,salt) = (h(a, salt), h(b, salt), h(a + b, salt))`$
 - [شهریار ابراهیمی](https://github.com/lovely-necromancer)
 - [ سیاوش تفضلی](https://github.com/SiavashTafazoli)
 - [پدرام میرشاه](https://github.com/itsspedram)
+- [عباس آشتیانی](https://github.com/abbasashtiani)
 
 
 دور ریختن زباله ها سمی حتی توسط یکی از این افراد باعث می‌شود اطمینان حاصل کنیم که تولید اثبات های جعلی امکان‌پذیر نیست.

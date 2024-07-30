@@ -142,7 +142,7 @@ List of people who participated in the Sigma-B Trusted-Setup process:
 - [Shahriar Ebrahimi](https://github.com/lovely-necromancer)
 - [Siyavash tafazoli](https://github.com/SiavashTafazoli)
 - [Pedram Mirshah](https://github.com/itsspedram)
-
+- [Abbas Ashtiani](https://github.com/abbasashtiani)
 
 
 
