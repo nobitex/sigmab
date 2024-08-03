@@ -661,13 +661,13 @@ document.addEventListener("DOMContentLoaded", function () {
         "</b>" +
         " برای حساب با شناسه " +
         "<b>" +
-        "0912" +
+        context.uid +
         "</b>" +
         " به اندازه " +
         "<b>" +
-        "0.1 ETH" +
+        context.amount +
         "</b>" +
-        " رمزارز وجود داشته است!";
+        " اتر وجود داشته است!";
       verificationResult.style.display = "block";
     } else if (context.verification_state.startsWith("failed")) {
       resultImg = document.getElementById("result-img");
