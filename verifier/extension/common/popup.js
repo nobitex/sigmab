@@ -655,19 +655,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (context.verification_state == "done") {
       resultDetails = document.getElementById("result-details");
       resultDetails.innerHTML =
-        "در تاریخ " +
-        "<b>" +
-        context.date +
-        "</b>" +
-        " برای حساب با شناسه " +
-        "<b>" +
-        context.uid +
-        "</b>" +
-        " به اندازه " +
-        "<b>" +
-        context.amount +
-        "</b>" +
-        " اتر وجود داشته است!";
+        "صادرکننده با موفقیت ثابت کرد که موجودی حساب کاربری شما را در حساب‌های اندوخته خود در نظر گرفته است.";
       verificationResult.style.display = "block";
     } else if (context.verification_state.startsWith("failed")) {
       resultImg = document.getElementById("result-img");
@@ -675,7 +663,7 @@ document.addEventListener("DOMContentLoaded", function () {
       verificationResult.style.opacity = 1;
       resultImg.src = "./img/error.png"; // Change the path to the image you want to show on failure
       resultImg.style.width = "5rem";
-      verificationResultText.innerHTML = "صحت سنجی با مشکل روبه رو شد";
+      verificationResultText.innerHTML = "صحت‌سنجی با مشکل روبه رو شد";
     }
     context.verification_state = null;
   }, 100);
