@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "BigmaC",
+    "name": "sigmaB",
     "version": "1.0",
     "description": "Nobitex Proof of Reserves Firefox Extension",
     "permissions": [
