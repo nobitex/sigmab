@@ -2,7 +2,7 @@ function talk() {
   console.log();
   data = {
     proofs: PROOF_DATA,
-    amount: "",
+    amount: "1000",
     uid: "blue@gmail.com",
   };
   console.log("Triggering SigmaB with data: ", data);
