@@ -143,6 +143,6 @@ List of people who participated in the Sigma-B Trusted-Setup process:
 - [Siyavash tafazoli](https://github.com/SiavashTafazoli)
 - [Pedram Mirshah](https://github.com/itsspedram)
 - [Abbas Ashtiani](https://github.com/abbasashtiani)
-
+- [Ali Maghsoudi](https://github.com/Alitelepromo)
 
 
