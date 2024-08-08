@@ -8,18 +8,18 @@
 
 ### طریقه نصب روی مرورگر کروم
 
-1. ابتدا [chrome-extension.zip](https://github.com/nobitex/sigmab) را دانلود کنید.
+1. ابتدا [sigmab-chrome.zip](https://github.com/nobitex/sigmab/releases/download/v0.1.0/sigmab-chrome.zip) را دانلود کنید.
 1. به صفحه Chrome Extensions بروید.
 3. از قسمت بالا-راست صفحه، گزینه Developer-Mode را فعال کنید.
-4. فایل `chrome-extension.zip` را بر روی صفحه افزونه‌ها درگ-اند-دراپ کنید.
+4. فایل `sigmab-chrome.zip` را بر روی صفحه افزونه‌ها درگ-اند-دراپ کنید.
 
 ### طریقه نصب روی مرورگر فایرفاکس
 
-1. ابتدا [firefox-extension.zip](https://github.com/nobitex/sigmab) را دانلود کنید.
+1. ابتدا [sigmab-firefox.xpi](https://github.com/nobitex/sigmab/releases/download/v0.1.0/sigmab-firefox.xpi) را دانلود کنید.
 1. به صفحه Add-ons and themes بروید.
 2. بر روی دکمه چرخ‌دنده ⚙️ کلیک کرده و سپس گزینه Debug Add-ons را انتخاب کنید.
 3. دکمه Load temporary Add-on را بزنید.
-4. فایل `firefox-extension.zip` را در این بخش انتخاب کنید.
+4. فایل `sigmab-firefox.xpi` را در این بخش انتخاب کنید.
 
 پس از نصب افزونه سیگما-بی، می‌توانید اثبات اندوخته خود را از وبسایت صرافی دریافت کرده و آن را صحت‌سنجی کنید!
 
