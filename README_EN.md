@@ -145,4 +145,5 @@ List of people who participated in the Sigma-B Trusted-Setup process:
 - [Abbas Ashtiani](https://github.com/abbasashtiani)
 - [Ali Maghsoudi](https://github.com/Alitelepromo)
 - [Arash Fatahzade](https://github.com/iRhonin)
+- [Omid Mesgarha](https://github.com/armagg)
 
