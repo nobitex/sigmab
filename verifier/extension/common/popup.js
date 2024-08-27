@@ -211,6 +211,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
   context.proofs = request.data["proofs"];
   context.amount = request.data["amount"]; //String(request.data["amount"] * WEI_PER_ETHER)
   context.uid = request.data["uid"];
+  context.uid_salt = request.proofs["liability_salt"];
 
   let rootHash = BigInt(
     context.proofs["pol_data"]["public_outputs"][0]
@@ -466,7 +467,7 @@ const verifyStages = [
         ) {
           if (
             BigInt(context.proofs["pol_data"]["public_outputs"][2]) ===
-            BigInt(`0x${window.sha256(context.uid)}`) % BigInt(FIELD_SIZE) &&
+            BigInt(`0x${window.sha256(context.uid + "-" + context.uid_salt)}`) % BigInt(FIELD_SIZE) &&
             BigInt(context.proofs["pol_data"]["public_outputs"][3]) ===
             BigInt(context.amount)
           ) {
