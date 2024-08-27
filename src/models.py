@@ -19,7 +19,7 @@ class ExchangeAccountData:
 
         self.context = {}
 
-    def set_value(self, key, value):    
+    def set_value(self, key, value):
         self.context[key] = value
 
     def get_value(self, key):

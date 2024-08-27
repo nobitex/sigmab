@@ -21,7 +21,6 @@ import json
 
 
 def main():
-
     salt = random.randint(0, 10**5)
     message, exchange_accounts_data = load_solvency_data("data/solvency_data.json")
     solveny_counts = len(exchange_accounts_data)
@@ -56,9 +55,8 @@ def main():
     elif solveny_counts == 1:
         print("the SBA circuit is bypassed.")
     else:
-         print("Insufficient data to generate SBA proof.")
+        print("Insufficient data to generate SBA proof.")
 
-    
     pol_circuit = get_pol_circuit(
         witness_gen_path=POL_WITNESS_GEN_PATH,
         prover_path=PROVER_PATH,
@@ -66,14 +64,17 @@ def main():
         zk_params_path=POL_ZK_PARAMS_PATH,
     )
 
-
     ### ECDSA Proof Generation
     ecdsa_progress = tqdm.tqdm(
         exchange_accounts_data, total=len(exchange_accounts_data), desc="ECDSA Progress"
     )
     for exchange_account in ecdsa_progress:
         witness_path = ecdsa_circuit.generate_witness(
-            message, exchange_account.pubkey, exchange_account.signature_r, exchange_account.signature_s, salt
+            message,
+            exchange_account.pubkey,
+            exchange_account.signature_r,
+            exchange_account.signature_s,
+            salt,
         )
         proof_path = ecdsa_circuit.prove(witness_path)
 
@@ -108,9 +109,7 @@ def main():
         )
 
         #### MPT Last Proof Generation
-        witeness_path = mpt_last_circuit.generate_witness(
-            exchange_account, block, salt
-        )
+        witeness_path = mpt_last_circuit.generate_witness(exchange_account, block, salt)
         proof_path = mpt_last_circuit.prove(witeness_path)
 
         exchange_account.set_value("mpt_last_witness_path", witeness_path)
@@ -172,22 +171,20 @@ def main():
         mpt_proof_progress.write(f"Proof paths: {proof_paths}")
 
     ### SBA Proof Generation
-    balances = [
-        exa.get_value("balance") for exa in exchange_accounts_data
-    ]
+    balances = [exa.get_value("balance") for exa in exchange_accounts_data]
 
     if solveny_counts > 1:
         progress = tqdm.tqdm(
             range(1, len(balances)), total=len(balances) - 1, desc="SBA Progress"
         )
 
-        sba_proofs_paths = [] 
+        sba_proofs_paths = []
         sba_witness_paths = []
         sba_public_inputs = []
         for idx in progress:
             if idx == 1:
                 sba_witness_path = sba_circuit.generate_witness(
-                    balances[idx - 1:idx + 1], salt
+                    balances[idx - 1 : idx + 1], salt
                 )
                 sba_proof_path = sba_circuit.prove(sba_witness_path)
             else:
@@ -198,7 +195,9 @@ def main():
 
             sba_witness_paths.append(sba_witness_path)
             sba_proofs_paths.append(sba_proof_path)
-            sba_public_inputs.append(sba_circuit.context.get(ContextKeys.LATEST_PUBLIC_VALUES))
+            sba_public_inputs.append(
+                sba_circuit.context.get(ContextKeys.LATEST_PUBLIC_VALUES)
+            )
 
         print(f"Generated SBA proof path: {sba_proof_path}")
 
@@ -280,7 +279,6 @@ def main():
         }
         data["sba_data"] = sba_data
 
-
     pol_data = []
     for idx, item in enumerate(liability_data):
         pol_data.append(
@@ -294,20 +292,18 @@ def main():
         )
     data["pol_data"] = pol_data
 
-
     data["block_number"] = block_number
-
 
     with open("data/proofs.json", "w") as file:
         json.dump(data, file, indent=4)
-        
+
     with open("data/liability_data.json", "r") as file:
-            liability_data = json.load(file)
-        
+        liability_data = json.load(file)
+
     liability_data["sum_balances"] = sum_balances
     liability_data["salt"] = salt
-    
-    with open("data/liability_data.json", 'w') as file:
+
+    with open("data/liability_data.json", "w") as file:
         json.dump(liability_data, file, indent=4)
 
 

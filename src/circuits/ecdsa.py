@@ -7,6 +7,7 @@ from eth_account.messages import encode_defunct, _hash_eip191_message
 import hashlib
 import base64
 
+
 class ECDSACircuit(AbstractCircuit):
     def _generate_witness(self, msg_hash, r, s, pubkey, salt):
         return super().generate_witness(
@@ -20,8 +21,8 @@ class ECDSACircuit(AbstractCircuit):
         signable = encode_defunct(hexstr=message_hash_hex)
         hashed = _hash_eip191_message(signable)
         msg = int.from_bytes(hashed, "big")
-        
-        public_key = base64.b64decode(public_key.encode('utf-8'))
+
+        public_key = base64.b64decode(public_key.encode("utf-8"))
         vk = VerifyingKey.from_string(public_key, curve=SECP256k1)
         pubkey = vk.pubkey.point
 
@@ -37,6 +38,6 @@ class ECDSACircuit(AbstractCircuit):
         s = b2a(64, 4, signature_s)
         msg_hash = b2a(64, 4, msg)
         pub0 = b2a(64, 4, pubkey.x())
-        pub1 = b2a(64, 4, pubkey.y())   
+        pub1 = b2a(64, 4, pubkey.y())
 
         return self._generate_witness(msg_hash, r, s, [pub0, pub1], salt)
