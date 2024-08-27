@@ -62,4 +62,4 @@ class UserAccountData:
 
     @property
     def id(self):
-        return int(hashlib.sha256(self.user_id.encode("utf-8")).hexdigest(), 16)
+        return int(self.user_id, 16)
