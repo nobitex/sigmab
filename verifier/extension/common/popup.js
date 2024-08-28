@@ -211,7 +211,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
   context.proofs = request.data["proofs"];
   context.amount = request.data["amount"]; //String(request.data["amount"] * WEI_PER_ETHER)
   context.uid = request.data["uid"];
-  context.uid_salt = request.proofs["liability_salt"];
+  context.uid_salt = request.data["liability_salt"];
 
   let rootHash = BigInt(
     context.proofs["pol_data"]["public_outputs"][0]
@@ -228,7 +228,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
   dateElement.innerHTML = `#${blockNumber} `;
   (async () => {
     let w = new window.Web3(
-      "https://public.stackup.sh/api/v1/node/ethereum-mainnet"
+      "https://go.getblock.io/aefd01aa907c4805ba3c00a9e5b48c6b"
     ); // TODO: Change this to the correct RPC endpoint
     try {
       // let blockN = await w.eth.getBlockNumber();
