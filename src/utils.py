@@ -25,7 +25,8 @@ def load_liability_data(liability_data_path=None, data=None):
     liabilities_data = data.get("liabilities", [])
     res = []
     for idx, item in enumerate(liabilities_data):
-        user = UserAccountData(item["id"], item["amount"])
+        amount = int(item["amount"]) 
+        user = UserAccountData(item["id"], amount)
         user.set_value("tree_index", idx)
         res.append(user)
 
