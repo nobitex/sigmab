@@ -2045,5 +2045,6 @@ const PROOF_DATA = {
             ]
         }
     ,
-    "block_number": 20625195
+    "block_number": 20625195,
+    "liability_salt": 'ebbbcd268156dbd845744be48ab6df3118d42e87c1bd36e789ea5944ffd6fdc5'
 };
