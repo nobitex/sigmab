@@ -219,7 +219,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
 
   // Update UI elements with received data
   var amountElement = document.getElementById("amount");
-  amountElement.innerHTML = parseFloat(Web3.utils.fromWei(context.amount)).toFixed(5)  + " ETH";
+  amountElement.innerHTML = parseFloat(Web3.utils.fromWei(context.amount)).toFixed(5) + " ETH";
 
   var rootHashElement = document.getElementById("tree-root");
   rootHashElement.innerHTML = rootHash.slice(0, 12);
@@ -246,7 +246,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
         return true;
       } catch (error) {
         console.error(error);
-        return false;
+        continue;
       }
     }
   })();
@@ -326,7 +326,7 @@ const validationStages = [
           continue;
         }
       }
-      return "دسترسی به نود های عمومی اتریوم امکان‌پذیر نیست!";
+      return "دسترسی به نود‌های عمومی اتریوم امکان‌پذیر نیست!";
     },
   ],
   [
