@@ -208,7 +208,7 @@ def main():
 
     liability_data = load_liability_data("data/liability_data.json")
     liability_nodes = build_liability_nodes(liability_data)
-    liability_tree = build_liability_tree(liability_nodes, 10)
+    liability_tree = build_liability_tree(liability_nodes, 17)
 
     pol_proof_progress = tqdm.tqdm(
         liability_data, total=len(liability_data), desc="POL Progress"

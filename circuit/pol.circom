@@ -148,4 +148,4 @@ template SmstProofVerifier(depth) {
     less_eq_checker.out === 1;
 }
 
-component main { public [unique_id, amount] } = SmstProofVerifier(10);
+component main { public [unique_id, amount] } = SmstProofVerifier(17);
