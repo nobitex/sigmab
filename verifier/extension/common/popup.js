@@ -227,20 +227,27 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
   var dateElement = document.getElementById("date");
   dateElement.innerHTML = `#${blockNumber} `;
   (async () => {
-    let w = new window.Web3(
-      "https://ethereum-rpc.publicnode.com"
-    ); // TODO: Change this to the correct RPC endpoint
-    try {
-      // let blockN = await w.eth.getBlockNumber();
-      let block = await w.eth.getBlock(blockNumber);
-      var d = new Date(block.timestamp * 1000);
+    let nodes = [
+      "https://eth.llamarpc.com",
+      "https://eth-mainnet.public.blastapi.io",
+      "https://rpc.ankr.com/eth",
+      "https://public.stackup.sh/api/v1/node/ethereum-mainnet",
+      "https://nodes.mewapi.io/rpc/eth",
+      "https://cloudflare-eth.com/",
+    ];
+    for (var idx in nodes) {
+      let w = new window.Web3(nodes[idx]);
+      try {
+        let block = await w.eth.getBlock(blockNumber);
+        var d = new Date(block.timestamp * 1000);
 
-      dateElement.innerHTML += `( ${d.getFullYear()}/${d.getMonth() + 1
-        }/${d.getDate()} )`;
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
+        dateElement.innerHTML += `( ${d.getFullYear()}/${d.getMonth() + 1
+          }/${d.getDate()} )`;
+        return true;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
     }
   })();
 
