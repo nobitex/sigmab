@@ -219,7 +219,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
 
   // Update UI elements with received data
   var amountElement = document.getElementById("amount");
-  amountElement.innerHTML = Web3.utils.fromWei(context.amount) + " ETH";
+  amountElement.innerHTML = parseFloat(Web3.utils.fromWei(context.amount)).toFixed(5)  + " ETH";
 
   var rootHashElement = document.getElementById("tree-root");
   rootHashElement.innerHTML = rootHash.slice(0, 12);
@@ -663,7 +663,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (context.verification_state == "done") {
       resultDetails = document.getElementById("result-details");
       resultDetails.innerHTML =
-        "صادرکننده با موفقیت ثابت کرد که موجودی حساب کاربری شما را در حساب‌های اندوخته خود در نظر گرفته است.";
+        "صادرکننده با موفقیت ثابت کرد که موجودی حساب کاربری شما را در حساب‌های اندوخته خود در نظر گرفته است";
       verificationResult.style.display = "block";
     } else if (context.verification_state.startsWith("failed")) {
       resultImg = document.getElementById("result-img");
@@ -671,7 +671,12 @@ document.addEventListener("DOMContentLoaded", function () {
       verificationResult.style.opacity = 1;
       resultImg.src = "./img/error.png"; // Change the path to the image you want to show on failure
       resultImg.style.width = "5rem";
-      verificationResultText.innerHTML = "صحت‌سنجی با مشکل روبه رو شد";
+      verificationResultText.innerHTML = "صحت‌سنجی با مشکل مواجه شد";
+
+      resultBtn = document.getElementById("submit-result");
+      resultBtn.innerHTML = "بستن";
+      resultBtn.classList.remove("primary-button");
+      resultBtn.classList.add("secondary-button");
     }
     context.verification_state = null;
   }, 100);
