@@ -183,5 +183,6 @@ $`f_3(a,b,salt) = (h(a, salt), h(b, salt), h(a + b, salt))`$
 - [کیوان کامبخش](https://github.com/keyvank)
 - [امیرحسین آذرپور](https://github.com/azarpoor)
 - [علیرضا کاظمینی](https://github.com/alirezakazemeini)
+- [محیا کاظمی](https://github.com/mahi-kz72)
 
 شرکت‌کننده‌های جدید به مرور اضافه خواهند شد.
