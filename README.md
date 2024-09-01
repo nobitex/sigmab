@@ -10,7 +10,7 @@
 
 1. ابتدا [sigmab-chrome.zip](https://github.com/nobitex/sigmab/releases/download/v0.1.0/sigmab-chrome.zip) را دانلود کنید.
 1. به صفحه Chrome Extensions بروید.
-1. از قسمت بالا-راست صفحه، گزینه Developer-Mode را فعال کنید.
+1. از قسمت بالا-راست صفحه، گزینه Developer mode را فعال کنید.
 1. فایل `sigmab-chrome.zip` را بر روی صفحه افزونه‌ها درگ-اند-دراپ کنید.
 
 ### طریقه نصب روی مرورگر فایرفاکس
