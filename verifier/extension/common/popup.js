@@ -7,7 +7,7 @@ var context = {
   uid: null,
   verification_state: null,
 };
-var blockNumber = 20268439; // TODO :must come from proofs
+
 
 function addSlice(array) {
   if (array.slice) {
@@ -212,6 +212,8 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
   context.amount = request.data["amount"]; //String(request.data["amount"] * WEI_PER_ETHER)
   context.uid = request.data["uid"];
   context.uid_salt = request.data["proofs"]["liability_salt"];
+  context.block_number = request.data["proofs"]["block_number"];
+
 
   let rootHash = BigInt(
     context.proofs["pol_data"]["public_outputs"][0]
@@ -225,7 +227,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
   rootHashElement.innerHTML = rootHash.slice(0, 12);
 
   var dateElement = document.getElementById("date");
-  dateElement.innerHTML = `#${blockNumber} `;
+  dateElement.innerHTML = `#${context.block_number} `;
   (async () => {
     let nodes = [
       "https://eth.llamarpc.com",
@@ -238,7 +240,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender) {
     for (var idx in nodes) {
       let w = new window.Web3(nodes[idx]);
       try {
-        let block = await w.eth.getBlock(blockNumber);
+        let block = await w.eth.getBlock(context.block_number);
         var d = new Date(block.timestamp * 1000);
 
         dateElement.innerHTML += `( ${d.getFullYear()}/${d.getMonth() + 1
